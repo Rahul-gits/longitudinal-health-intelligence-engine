@@ -2,10 +2,7 @@ import React, { useState } from 'react';
 import { PATIENT_INFO } from '../data/mockPatientData';
 import { 
   Stethoscope, 
-  FileText, 
   CheckCircle2, 
-  AlertTriangle, 
-  Send, 
   Download,
   Sparkles,
   ShieldCheck
@@ -31,16 +28,16 @@ export const ClinicianPortal: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Clinician Portal Header */}
-      <div className="p-5 rounded-2xl bg-gradient-to-r from-slate-900 via-blue-950/40 to-slate-900 border border-slate-800 flex flex-wrap items-center justify-between gap-4">
+      <div className="p-5 bg-[#3A86FF] text-white border-3 border-black shadow-[6px_6px_0px_0px_#000] flex flex-wrap items-center justify-between gap-4">
         <div>
-          <div className="flex items-center space-x-2 text-xs font-semibold text-blue-400 uppercase tracking-wider mb-1">
-            <Stethoscope className="w-4 h-4" />
-            <span>Clinical Decision Support System (CDSS) Portal</span>
+          <div className="flex items-center space-x-2 text-xs font-black uppercase tracking-wider mb-1 bg-black text-[#FFE600] px-2 py-0.5 w-fit border border-black -rotate-1">
+            <Stethoscope className="w-4 h-4 stroke-[2.5]" />
+            <span>CLINICAL DECISION SUPPORT PORTAL</span>
           </div>
-          <h2 className="text-xl font-bold text-white tracking-tight">
-            AI-Generated Clinical Handoff: {PATIENT_INFO.name}
+          <h2 className="text-xl font-black font-display tracking-tight mt-1 text-white">
+            CLINICAL HANDOFF: {PATIENT_INFO.name.toUpperCase()}
           </h2>
-          <p className="text-xs text-slate-300">
+          <p className="text-xs font-mono font-bold text-white/90">
             Synthesized 30-second executive summary for Dr. Aris Thorne (Cardiology / Nephrology Review).
           </p>
         </div>
@@ -48,49 +45,49 @@ export const ClinicianPortal: React.FC = () => {
         <div className="flex items-center space-x-3">
           <button
             onClick={() => alert('Clinical Handoff Report exported to EHR (Epic / Cerner FHIR API simulator).')}
-            className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-bold flex items-center space-x-1.5 transition-all"
+            className="px-5 py-2.5 bg-[#FFE600] text-black hover:bg-[#CCFF00] font-black font-display text-xs flex items-center space-x-1.5 border-2 border-black shadow-[3px_3px_0px_0px_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[5px_5px_0px_0px_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[1px_1px_0px_0px_#000] transition-all cursor-pointer uppercase"
           >
-            <Download className="w-4 h-4 text-cyan-400" />
-            <span>Export FHIR Handoff</span>
+            <Download className="w-4 h-4 text-black stroke-[2.5]" />
+            <span>EXPORT FHIR HANDOFF</span>
           </button>
         </div>
       </div>
 
       {/* 30-Second Clinical Handoff Card */}
-      <div className="p-6 rounded-2xl bg-[#131B2E] border border-blue-500/30 space-y-4 shadow-xl">
-        <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-          <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-blue-400" /> 30-Second Clinical Handoff Note
+      <div className="p-6 bg-[#FFFFFF] border-3 border-black shadow-[6px_6px_0px_0px_#000] space-y-4">
+        <div className="flex items-center justify-between border-b-2 border-black pb-3">
+          <h3 className="text-sm font-black font-display text-black uppercase tracking-wider flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-black stroke-[2.5]" /> 30-SECOND CLINICAL HANDOFF NOTE
           </h3>
-          <span className="text-xs text-slate-400 font-mono">Generated: 2026-08-13 19:46 IST</span>
+          <span className="text-xs font-mono font-bold bg-[#FFE600] text-black px-2 py-0.5 border border-black">2026-08-13 19:46 IST</span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-          <div className="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800 space-y-1">
-            <span className="text-[10px] font-bold text-blue-400 uppercase block">Chief Complaint & Duration</span>
-            <p className="text-slate-200">{handoffSummary.chiefComplaint}</p>
+          <div className="p-4 bg-[#FAF8F5] border-2 border-black shadow-[2px_2px_0px_0px_#000] space-y-1">
+            <span className="text-[10px] font-black text-black uppercase block font-mono bg-[#00F5D4] px-1 w-fit border border-black">Chief Complaint & Duration</span>
+            <p className="text-black font-semibold mt-1">{handoffSummary.chiefComplaint}</p>
           </div>
 
-          <div className="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800 space-y-1">
-            <span className="text-[10px] font-bold text-rose-400 uppercase block">Recent Biomarker Shift</span>
-            <p className="text-slate-200">{handoffSummary.recentLabChanges}</p>
+          <div className="p-4 bg-[#FAF8F5] border-2 border-black shadow-[2px_2px_0px_0px_#000] space-y-1">
+            <span className="text-[10px] font-black text-black uppercase block font-mono bg-[#FF70A6] px-1 w-fit border border-black">Recent Biomarker Shift</span>
+            <p className="text-black font-semibold mt-1">{handoffSummary.recentLabChanges}</p>
           </div>
 
-          <div className="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800 space-y-1">
-            <span className="text-[10px] font-bold text-purple-400 uppercase block">Active Medications & OTC Risk</span>
-            <p className="text-slate-200">{handoffSummary.currentMedications}</p>
+          <div className="p-4 bg-[#FAF8F5] border-2 border-black shadow-[2px_2px_0px_0px_#000] space-y-1">
+            <span className="text-[10px] font-black text-black uppercase block font-mono bg-[#FFE600] px-1 w-fit border border-black">Active Medications & OTC Risk</span>
+            <p className="text-black font-semibold mt-1">{handoffSummary.currentMedications}</p>
           </div>
 
-          <div className="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/30 space-y-1">
-            <span className="text-[10px] font-bold text-rose-300 uppercase block">Root Cause AI Impression</span>
-            <p className="text-slate-200">{handoffSummary.aiIdentifiedConcern}</p>
+          <div className="p-4 bg-[#FF70A6] border-2 border-black shadow-[2px_2px_0px_0px_#000] space-y-1">
+            <span className="text-[10px] font-black text-black uppercase block font-mono bg-black text-white px-1 w-fit">Root Cause AI Impression</span>
+            <p className="text-black font-bold mt-1">{handoffSummary.aiIdentifiedConcern}</p>
           </div>
         </div>
 
         {/* Recommended Actions List */}
-        <div className="p-4 rounded-xl bg-slate-900/90 border border-slate-800 space-y-2">
-          <h4 className="text-xs font-bold text-cyan-400 uppercase tracking-wider">Suggested Physician Orders</h4>
-          <ul className="space-y-1.5 text-xs text-slate-200 pl-4 list-disc">
+        <div className="p-4 bg-[#00F5D4] border-2 border-black shadow-[3px_3px_0px_0px_#000] space-y-2">
+          <h4 className="text-xs font-black font-display text-black uppercase tracking-wider bg-black text-[#00F5D4] px-1.5 py-0.5 w-fit border border-black">Suggested Physician Orders</h4>
+          <ul className="space-y-1.5 text-xs font-bold text-black pl-4 list-disc font-mono">
             {handoffSummary.recommendedClinicianActions.map((act, idx) => (
               <li key={idx}>{act}</li>
             ))}
@@ -99,9 +96,9 @@ export const ClinicianPortal: React.FC = () => {
       </div>
 
       {/* Clinician Approval & Sign-Off Workflow */}
-      <div className="p-6 rounded-2xl bg-[#131B2E] border border-slate-800 space-y-4">
-        <h3 className="text-sm font-bold text-white flex items-center gap-2">
-          <Stethoscope className="w-4 h-4 text-emerald-400" /> Physician Approval & EHR Entry Sign-Off
+      <div className="p-6 bg-[#FFFFFF] border-3 border-black shadow-[6px_6px_0px_0px_#000] space-y-4">
+        <h3 className="text-sm font-black font-display text-black uppercase tracking-wider flex items-center gap-2">
+          <Stethoscope className="w-5 h-5 text-black stroke-[2.5]" /> PHYSICIAN APPROVAL & EHR ENTRY SIGN-OFF
         </h3>
 
         <div className="space-y-3">
@@ -110,26 +107,26 @@ export const ClinicianPortal: React.FC = () => {
             value={physicianNotes}
             onChange={(e) => setPhysicianNotes(e.target.value)}
             placeholder="Add attending physician clinical notes or modifications to care plan..."
-            className="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-blue-500"
+            className="w-full bg-[#FAF8F5] border-2 border-black p-3 text-xs font-bold text-black focus:outline-none focus:bg-[#FFE600]/20 shadow-[2px_2px_0px_0px_#000]"
           />
 
-          <div className="flex items-center justify-between">
+          <div className="flex flex-wrap items-center justify-between gap-4">
             <button
               onClick={() => setIsApproved(true)}
               disabled={isApproved}
-              className={`px-5 py-2.5 rounded-xl font-bold text-xs flex items-center space-x-2 transition-all ${
+              className={`px-6 py-3 font-black font-display text-xs flex items-center space-x-2 border-2 border-black shadow-[3px_3px_0px_0px_#000] uppercase transition-all cursor-pointer ${
                 isApproved
-                  ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
-                  : 'bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-600/20'
+                  ? 'bg-[#CCFF00] text-black shadow-[1px_1px_0px_0px_#000]'
+                  : 'bg-[#3A86FF] hover:bg-[#2563EB] text-white hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[5px_5px_0px_0px_#000]'
               }`}
             >
-              <CheckCircle2 className="w-4 h-4" />
-              <span>{isApproved ? 'Care Plan Approved & Signed' : 'Approve & Sign Clinical Care Plan'}</span>
+              <CheckCircle2 className="w-4 h-4 stroke-[2.5]" />
+              <span>{isApproved ? 'CARE PLAN APPROVED & SIGNED' : 'APPROVE & SIGN CLINICAL CARE PLAN'}</span>
             </button>
 
             {isApproved && (
-              <span className="text-xs text-emerald-400 font-medium flex items-center gap-1">
-                <ShieldCheck className="w-4 h-4" /> Signed by Dr. Aris Thorne, MD (Timestamp: 2026-08-13)
+              <span className="text-xs font-mono font-black text-black bg-[#CCFF00] px-3 py-1.5 border border-black shadow-[2px_2px_0px_0px_#000] flex items-center gap-1.5">
+                <ShieldCheck className="w-4 h-4 stroke-[2.5]" /> Signed by Dr. Aris Thorne, MD (Timestamp: 2026-08-13)
               </span>
             )}
           </div>

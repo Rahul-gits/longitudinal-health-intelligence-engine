@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { PersonaTurn, PersonaId, ClusterType } from '../types/health';
+import { PersonaTurn, PersonaId } from '../types/health';
 import { PERSONA_PROFILES } from '../data/mockPatientData';
 import { 
   Play, 
@@ -16,8 +16,7 @@ import {
   CheckCircle2, 
   Send,
   MessageSquare,
-  Sparkles,
-  ExternalLink
+  Sparkles
 } from 'lucide-react';
 
 interface PersonaDebateStudioProps {
@@ -81,85 +80,85 @@ export const PersonaDebateStudio: React.FC<PersonaDebateStudioProps> = ({
   };
 
   return (
-    <div className="flex flex-col h-full bg-[#131B2E]/90 rounded-2xl border border-slate-800 overflow-hidden shadow-xl">
+    <div className="flex flex-col h-full bg-[#FFFFFF] border-3 border-black shadow-[5px_5px_0px_0px_#000] overflow-hidden">
       {/* Panel Header & Controls Bar */}
-      <div className="px-4 py-3 border-b border-slate-800 bg-slate-900/80 flex flex-wrap items-center justify-between gap-3">
+      <div className="px-4 py-3 border-b-3 border-black bg-[#FF70A6] flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center space-x-2">
-          <div className="w-7 h-7 rounded-lg bg-rose-500/10 border border-rose-500/30 flex items-center justify-center">
-            <MessageSquare className="w-4 h-4 text-rose-400" />
+          <div className="w-8 h-8 bg-black text-[#FF70A6] border-2 border-black shadow-[2px_2px_0px_0px_#000] flex items-center justify-center -rotate-2">
+            <MessageSquare className="w-4 h-4 stroke-[2.5]" />
           </div>
           <div>
-            <h3 className="text-sm font-bold text-white flex items-center gap-1.5">
-              Panel 1: Persona Debate Studio
+            <h3 className="text-sm font-black font-display text-black uppercase tracking-wider">
+              PANEL 1: DEBATE STUDIO
             </h3>
-            <p className="text-[11px] text-slate-400">Clinical Case Conference Multi-Agent Dialogue</p>
+            <p className="text-[10px] font-mono font-bold text-black/90">Multi-Agent Case Conference</p>
           </div>
         </div>
 
         {/* Playback Controls */}
-        <div className="flex items-center space-x-1.5 bg-slate-950 p-1 rounded-xl border border-slate-800">
+        <div className="flex items-center space-x-1.5 bg-[#FAF8F5] p-1 border-2 border-black shadow-[2px_2px_0px_0px_#000]">
           <button
             onClick={onPrevTurn}
             disabled={currentTurnIndex === 0}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 disabled:opacity-30"
+            className="p-1.5 border border-black bg-white text-black hover:bg-[#FFE600] disabled:opacity-30 cursor-pointer"
             title="Previous Turn"
           >
-            <SkipBack className="w-4 h-4" />
+            <SkipBack className="w-3.5 h-3.5 stroke-[2.5]" />
           </button>
           <button
             onClick={() => setIsPlaying(!isPlaying)}
-            className={`p-1.5 rounded-lg text-white font-semibold transition-all ${
-              isPlaying ? 'bg-amber-500/20 text-amber-400 border border-amber-500/40' : 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 hover:bg-cyan-500/30'
+            className={`p-1.5 border border-black font-bold transition-all cursor-pointer ${
+              isPlaying ? 'bg-[#FF6B35] text-white' : 'bg-[#FFE600] text-black hover:bg-[#CCFF00]'
             }`}
             title={isPlaying ? 'Pause Debate' : 'Play Live Conference'}
           >
-            {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+            {isPlaying ? <Pause className="w-3.5 h-3.5 stroke-[2.5]" /> : <Play className="w-3.5 h-3.5 stroke-[2.5]" />}
           </button>
           <button
             onClick={onNextTurn}
             disabled={currentTurnIndex === turns.length - 1}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 disabled:opacity-30"
+            className="p-1.5 border border-black bg-white text-black hover:bg-[#FFE600] disabled:opacity-30 cursor-pointer"
             title="Next Turn"
           >
-            <SkipForward className="w-4 h-4" />
+            <SkipForward className="w-3.5 h-3.5 stroke-[2.5]" />
           </button>
           <button
             onClick={() => { setIsPlaying(false); onReset(); }}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800"
+            className="p-1.5 border border-black bg-white text-black hover:bg-[#00F5D4] cursor-pointer"
             title="Restart Case Conference"
           >
-            <RotateCcw className="w-4 h-4" />
+            <RotateCcw className="w-3.5 h-3.5 stroke-[2.5]" />
           </button>
         </div>
       </div>
 
       {/* Progress Step Indicator */}
-      <div className="px-4 py-2 bg-slate-950/60 border-b border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400">
-        <span className="font-mono text-cyan-400 font-semibold">
-          Turn {currentTurnIndex + 1} of {turns.length}
+      <div className="px-4 py-2 bg-[#FAF8F5] border-b-2 border-black flex items-center justify-between text-[11px] font-mono font-bold">
+        <span className="bg-black text-[#FFE600] px-2 py-0.5 border border-black text-[10px]">
+          TURN {currentTurnIndex + 1} / {turns.length}
         </span>
-        <div className="flex items-center space-x-1 flex-1 mx-4 max-w-xs">
+        <div className="flex items-center space-x-1 flex-1 mx-3 max-w-xs">
           {turns.map((_, idx) => (
             <div
               key={idx}
               onClick={() => onTurnSelect(idx)}
-              className={`h-1.5 flex-1 rounded-full cursor-pointer transition-all ${
+              className={`h-2 flex-1 border border-black cursor-pointer transition-all ${
                 idx === currentTurnIndex
-                  ? 'bg-cyan-400 ring-2 ring-cyan-500/40 scale-y-125'
+                  ? 'bg-[#FFE600] shadow-[1px_1px_0px_0px_#000]'
                   : idx < currentTurnIndex
-                  ? 'bg-slate-600'
-                  : 'bg-slate-800'
+                  ? 'bg-[#00F5D4]'
+                  : 'bg-[#FFFFFF]'
               }`}
             />
           ))}
         </div>
-        <span className="text-slate-400">
+        <span className="text-black font-extrabold truncate max-w-[100px]">
           {PERSONA_PROFILES[turns[currentTurnIndex]?.personaId]?.name}
         </span>
       </div>
 
       {/* Dialogue Scroll Container */}
-      <div className="flex-1 p-4 space-y-4 overflow-y-auto min-h-[380px]">
+      <div className="flex-1 p-4 space-y-4 overflow-y-auto min-h-[380px] bg-[#FAF8F5]">
         {turns.slice(0, currentTurnIndex + 1).map((turn, index) => {
           const profile = PERSONA_PROFILES[turn.personaId];
           const Icon = getPersonaIcon(turn.personaId);
@@ -169,55 +168,55 @@ export const PersonaDebateStudio: React.FC<PersonaDebateStudioProps> = ({
             <div
               key={turn.id}
               onClick={() => onTurnSelect(index)}
-              className={`p-3.5 rounded-2xl border transition-all cursor-pointer ${
+              className={`p-4 border-3 border-black transition-all cursor-pointer ${
                 isLatest
-                  ? 'bg-slate-900 border-cyan-500/50 shadow-lg shadow-cyan-500/10 ring-1 ring-cyan-500/20'
-                  : 'bg-slate-900/50 border-slate-800 hover:border-slate-700 opacity-90'
+                  ? 'bg-[#FFFFFF] shadow-[5px_5px_0px_0px_#000] -translate-y-0.5'
+                  : 'bg-[#FAF8F5] shadow-[2px_2px_0px_0px_#000] opacity-90 hover:opacity-100'
               }`}
             >
               {/* Persona Header Bar */}
-              <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center justify-between mb-2 pb-2 border-b-2 border-black">
                 <div className="flex items-center space-x-2.5">
                   <div
-                    className="w-8 h-8 rounded-xl flex items-center justify-center border shadow-sm"
-                    style={{ backgroundColor: `${profile.color}15`, borderColor: `${profile.color}40` }}
+                    className="w-8 h-8 border-2 border-black shadow-[2px_2px_0px_0px_#000] flex items-center justify-center"
+                    style={{ backgroundColor: profile.color }}
                   >
-                    <Icon className="w-4 h-4" style={{ color: profile.color }} />
+                    <Icon className="w-4 h-4 text-black stroke-[2.5]" />
                   </div>
                   <div>
                     <div className="flex items-center space-x-2">
-                      <span className="font-bold text-white text-xs">{profile.name}</span>
-                      <span className={`px-2 py-0.2 rounded text-[10px] font-medium border ${profile.badgeBg}`}>
+                      <span className="font-black font-display text-black text-xs">{profile.name}</span>
+                      <span className="px-2 py-0.2 text-[9px] font-black uppercase tracking-wider bg-black text-white border border-black">
                         {profile.roleTitle}
                       </span>
                     </div>
-                    <span className="text-[10px] text-slate-400 font-mono">{turn.timestamp}</span>
+                    <span className="text-[10px] text-black/70 font-mono font-bold">{turn.timestamp}</span>
                   </div>
                 </div>
 
                 <button
                   onClick={(e) => { e.stopPropagation(); onOpenExplainabilityModal(turn); }}
-                  className="flex items-center space-x-1 px-2 py-1 rounded text-[10px] font-medium bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 transition-all"
+                  className="flex items-center space-x-1 px-2 py-1 bg-[#FFE600] text-black font-black text-[10px] border border-black shadow-[1px_1px_0px_0px_#000] hover:bg-[#CCFF00] transition-all cursor-pointer uppercase"
                   title="View Evidence & Reasoning Trace"
                 >
-                  <Sparkles className="w-3 h-3 text-cyan-400" />
-                  <span>Explain</span>
+                  <Sparkles className="w-3 h-3 text-black stroke-[2.5]" />
+                  <span>Trace</span>
                 </button>
               </div>
 
               {/* Persona Headline & Speech Text */}
-              <h4 className="text-xs font-bold text-slate-200 mb-1">{turn.headline}</h4>
-              <p className="text-xs text-slate-300 leading-relaxed font-sans">{turn.speechText}</p>
+              <h4 className="text-xs font-black font-display text-black mb-1">{turn.headline}</h4>
+              <p className="text-xs font-semibold text-black/90 leading-relaxed font-sans">{turn.speechText}</p>
 
               {/* Cited Clusters & Evidence Tags */}
-              <div className="mt-3 pt-2.5 border-t border-slate-800/80 flex flex-wrap items-center justify-between gap-2 text-[10px]">
+              <div className="mt-3 pt-2.5 border-t-2 border-black flex flex-wrap items-center justify-between gap-2 text-[10px] font-mono font-bold">
                 {/* Cluster Citations */}
                 <div className="flex items-center space-x-1.5 flex-wrap">
-                  <span className="text-slate-500 font-medium">Citing Data Clusters:</span>
+                  <span className="text-black/80 font-black">Clusters:</span>
                   {turn.citedClusterIds.map(clusterId => (
                     <span
                       key={clusterId}
-                      className="px-2 py-0.5 rounded font-mono uppercase bg-slate-800 text-slate-300 border border-slate-700"
+                      className="px-2 py-0.5 uppercase bg-[#00F5D4] text-black border border-black shadow-[1px_1px_0px_0px_#000]"
                     >
                       {clusterId}
                     </span>
@@ -226,9 +225,9 @@ export const PersonaDebateStudio: React.FC<PersonaDebateStudioProps> = ({
 
                 {/* Evidence RAG Badges */}
                 {turn.evidenceCitations && turn.evidenceCitations.length > 0 && (
-                  <div className="flex items-center space-x-1 text-cyan-400">
-                    <BookOpen className="w-3 h-3" />
-                    <span className="truncate max-w-[180px]">{turn.evidenceCitations[0]}</span>
+                  <div className="flex items-center space-x-1 bg-[#FF70A6] text-black px-2 py-0.5 border border-black shadow-[1px_1px_0px_0px_#000]">
+                    <BookOpen className="w-3 h-3 stroke-[2.5]" />
+                    <span className="truncate max-w-[160px] font-black">{turn.evidenceCitations[0]}</span>
                   </div>
                 )}
               </div>
@@ -238,20 +237,20 @@ export const PersonaDebateStudio: React.FC<PersonaDebateStudioProps> = ({
       </div>
 
       {/* Interactive Case Input Bar */}
-      <form onSubmit={handleCustomSubmit} className="p-3 bg-slate-900 border-t border-slate-800 flex items-center space-x-2">
+      <form onSubmit={handleCustomSubmit} className="p-3 bg-[#FFFFFF] border-t-3 border-black flex items-center space-x-2">
         <input
           type="text"
           value={customInput}
           onChange={(e) => setCustomInput(e.target.value)}
-          placeholder="Askpersonas to evaluate a new symptom or drug question..."
-          className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-500"
+          placeholder="Ask personas to evaluate a new symptom or drug..."
+          className="flex-1 bg-[#FAF8F5] border-2 border-black px-3 py-2 text-xs font-bold text-black placeholder-black/60 focus:outline-none focus:bg-[#FFE600]/20 shadow-[2px_2px_0px_0px_#000]"
         />
         <button
           type="submit"
           disabled={!customInput.trim()}
-          className="px-3.5 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 disabled:opacity-40 text-slate-950 font-bold text-xs flex items-center space-x-1 transition-all"
+          className="px-4 py-2 bg-[#CCFF00] hover:bg-[#A3E635] disabled:opacity-40 text-black border-2 border-black font-black font-display text-xs flex items-center space-x-1 shadow-[2px_2px_0px_0px_#000] cursor-pointer uppercase"
         >
-          <Send className="w-3.5 h-3.5" />
+          <Send className="w-3.5 h-3.5 stroke-[2.5]" />
           <span>Discuss</span>
         </button>
       </form>

@@ -5,46 +5,129 @@
 @layer base {
   body {
     font-family: 'Plus Jakarta Sans', sans-serif;
+    background-color: #FAF8F5;
+    color: #000000;
   }
   
+  h1, h2, h3, h4, h5, h6, .font-display {
+    font-family: 'Space Grotesk', sans-serif;
+  }
+
   code, pre, .font-mono {
     font-family: 'JetBrains Mono', monospace;
   }
 }
 
-/* Custom scrollbars */
+/* Custom Neubrutalist Scrollbars */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 10px;
+  height: 10px;
 }
 ::-webkit-scrollbar-track {
-  background: #0B0F19;
+  background: #FAF8F5;
+  border-left: 2px solid #000000;
 }
 ::-webkit-scrollbar-thumb {
-  background: #1E293B;
-  border-radius: 9999px;
+  background: #FFE600;
+  border: 2px solid #000000;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #334155;
+  background: #FF70A6;
 }
 
-/* Glassmorphism helpers */
+/* Neubrutalist Base Component Helpers */
+.neo-card {
+  background-color: #FFFFFF;
+  border: 3px solid #000000;
+  box-shadow: 5px 5px 0px 0px #000000;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.neo-card-yellow {
+  background-color: #FFE600;
+  border: 3px solid #000000;
+  box-shadow: 5px 5px 0px 0px #000000;
+}
+
+.neo-card-pink {
+  background-color: #FF70A6;
+  border: 3px solid #000000;
+  box-shadow: 5px 5px 0px 0px #000000;
+}
+
+.neo-card-lime {
+  background-color: #CCFF00;
+  border: 3px solid #000000;
+  box-shadow: 5px 5px 0px 0px #000000;
+}
+
+.neo-card-cyan {
+  background-color: #00F5D4;
+  border: 3px solid #000000;
+  box-shadow: 5px 5px 0px 0px #000000;
+}
+
+.neo-card-orange {
+  background-color: #FF6B35;
+  border: 3px solid #000000;
+  box-shadow: 5px 5px 0px 0px #000000;
+}
+
+.neo-button {
+  border: 2px solid #000000;
+  box-shadow: 3px 3px 0px 0px #000000;
+  font-weight: 700;
+  transition: all 0.1s ease-in-out;
+}
+
+.neo-button:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 5px 5px 0px 0px #000000;
+}
+
+.neo-button:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0px 0px #000000;
+}
+
+.neo-badge {
+  border: 2px solid #000000;
+  font-weight: 800;
+  box-shadow: 2px 2px 0px 0px #000000;
+  text-transform: uppercase;
+}
+
+.neo-input {
+  border: 2px solid #000000;
+  box-shadow: 3px 3px 0px 0px #000000;
+  background-color: #FFFFFF;
+  color: #000000;
+  font-weight: 600;
+}
+
+.neo-input:focus {
+  outline: none;
+  background-color: #FFFDF5;
+  box-shadow: 5px 5px 0px 0px #000000;
+}
+
+/* Glassmorphism backward compatibility converted to Neubrutalist panel */
 .glass-panel {
-  background: rgba(19, 27, 46, 0.75);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #FFFFFF;
+  border: 3px solid #000000;
+  box-shadow: 4px 4px 0px 0px #000000;
 }
 
 .glass-panel-glow {
-  background: rgba(19, 27, 46, 0.85);
-  backdrop-filter: blur(16px);
-  border: 1px solid rgba(6, 182, 212, 0.25);
-  box-shadow: 0 0 25px -5px rgba(6, 182, 212, 0.15);
+  background: #FFE600;
+  border: 3px solid #000000;
+  box-shadow: 6px 6px 0px 0px #000000;
 }
 
-/* Node pulse effect */
+/* Node pulse effect for Neubrutalism */
 .node-active {
-  box-shadow: 0 0 15px 4px currentColor;
+  border: 3px solid #000000;
+  box-shadow: 4px 4px 0px 0px #000000;
   animation: pulse 1.5s infinite ease-in-out;
 }
+

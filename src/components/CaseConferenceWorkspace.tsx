@@ -5,6 +5,7 @@ import { DataClusterGraph } from './DataClusterGraph';
 import { ConsensusPanel } from './ConsensusPanel';
 import { ExplainabilityModal } from './ExplainabilityModal';
 import { PersonaTurn, ClusterType } from '../types/health';
+import { Layers, CheckCircle2 } from 'lucide-react';
 
 interface CaseConferenceWorkspaceProps {
   engine: ClinicalConferenceEngine;
@@ -52,26 +53,29 @@ export const CaseConferenceWorkspace: React.FC<CaseConferenceWorkspaceProps> = (
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       {/* Workspace Banner */}
-      <div className="p-4 rounded-2xl bg-gradient-to-r from-slate-900 via-cyan-950/30 to-slate-900 border border-slate-800 flex flex-wrap items-center justify-between gap-4">
+      <div className="p-5 bg-[#00F5D4] border-3 border-black shadow-[6px_6px_0px_0px_#000] flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h2 className="text-lg font-extrabold text-white tracking-tight flex items-center gap-2">
-            Clinical Case Conference & Data Clustering Engine
+          <h2 className="text-xl font-black font-display text-black tracking-tight flex items-center gap-2 uppercase">
+            <Layers className="w-6 h-6 stroke-[2.5]" /> CLINICAL CASE CONFERENCE WORKSPACE
           </h2>
-          <p className="text-xs text-slate-300">
-            Visually simulating multi-disciplinary persona debate, dynamic data clustering, and clinical consensus.
+          <p className="text-xs font-bold text-black/90 font-mono mt-1">
+            Synchronized 3-Panel Multi-Disciplinary Debate, 7-Cluster Graph Telemetry, & Consensus Engine.
           </p>
         </div>
-        <div className="flex items-center space-x-2 text-xs text-slate-400">
-          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-cyan-400"></span> 3 Panels Synced</span>
-          <span className="text-slate-600">|</span>
-          <span className="font-mono text-cyan-300">Case ID: #PT-884920</span>
+        <div className="flex items-center space-x-3 text-xs font-bold font-mono">
+          <span className="bg-black text-[#00F5D4] px-2.5 py-1 border border-black shadow-[2px_2px_0px_0px_#000] flex items-center gap-1.5 uppercase">
+            <CheckCircle2 className="w-3.5 h-3.5 stroke-[2.5]" /> 3 PANELS SYNCED
+          </span>
+          <span className="bg-[#FFE600] text-black px-2.5 py-1 border border-black shadow-[2px_2px_0px_0px_#000]">
+            CASE #PT-884920
+          </span>
         </div>
       </div>
 
       {/* Synchronized 3-Panel Grid Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch min-h-[640px]">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch min-h-[640px]">
         {/* Panel 1: Persona Debate Studio (4 Cols on LG) */}
         <div className="lg:col-span-4 h-full">
           <PersonaDebateStudio
