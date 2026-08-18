@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Navigation } from './components/Navigation';
 import { CommandCenter } from './components/CommandCenter';
 import { CaseConferenceWorkspace } from './components/CaseConferenceWorkspace';
+import { SwarmIntelligenceWorkspace } from './components/SwarmIntelligenceWorkspace';
 import { HealthTimeline } from './components/HealthTimeline';
 import { ReportIntelligence } from './components/ReportIntelligence';
 import { MedicationIntelligence } from './components/MedicationIntelligence';
@@ -30,13 +31,11 @@ export const App: React.FC = () => {
           <span>•</span>
           <span>MULTI-SPECIALIST CASE CONFERENCE ENGINE ONLINE</span>
           <span>•</span>
-          <span>EVIDENCE RAG & SAFETY VALIDATOR: 100% OK</span>
+          <span>SWARM INTELLIGENCE (PSO) CONSENSUS: CONVERGED</span>
           <span>•</span>
           <span>PATIENT ID: ELEANOR VANCE (68Y/F)</span>
           <span>•</span>
           <span>⚡ HEAL ENGINE ACTIVE</span>
-          <span>•</span>
-          <span>REAL-TIME DIGITAL TWIN TELEMETRY STREAM</span>
         </div>
       </div>
 
@@ -83,6 +82,7 @@ export const App: React.FC = () => {
         {/* Tab Routing */}
         {activeTab === 'command' && <CommandCenter onNavigateTab={setActiveTab} />}
         {activeTab === 'conference' && <CaseConferenceWorkspace engine={conferenceEngine} />}
+        {activeTab === 'swarm' && <SwarmIntelligenceWorkspace />}
         {activeTab === 'timeline' && <HealthTimeline />}
         {activeTab === 'reports' && <ReportIntelligence />}
         {activeTab === 'meds' && <MedicationIntelligence />}

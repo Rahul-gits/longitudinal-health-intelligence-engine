@@ -10,7 +10,8 @@ import {
   Layers, 
   ArrowRight,
   Stethoscope,
-  Sparkles
+  Sparkles,
+  Cpu
 } from 'lucide-react';
 
 interface CommandCenterProps {
@@ -36,7 +37,7 @@ export const CommandCenter: React.FC<CommandCenterProps> = ({ onNavigateTab }) =
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-4">
+          <div className="flex flex-wrap items-center gap-3">
             <div className="px-4 py-2 bg-[#FFFFFF] border-2 border-black shadow-[3px_3px_0px_0px_#000] text-right">
               <span className="text-[10px] text-black/70 font-black uppercase tracking-wider block">CURRENT STATUS</span>
               <span className="text-sm font-black text-black flex items-center gap-1.5 justify-end">
@@ -47,10 +48,18 @@ export const CommandCenter: React.FC<CommandCenterProps> = ({ onNavigateTab }) =
 
             <button
               onClick={() => onNavigateTab('conference')}
-              className="px-5 py-3 bg-[#FF70A6] hover:bg-[#FF4D8D] text-black font-black font-display text-xs flex items-center space-x-2 border-3 border-black shadow-[4px_4px_0px_0px_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[2px_2px_0px_0px_#000] transition-all cursor-pointer uppercase tracking-wider"
+              className="px-4 py-2.5 bg-[#FF70A6] hover:bg-[#FF4D8D] text-black font-black font-display text-xs flex items-center space-x-1.5 border-3 border-black shadow-[4px_4px_0px_0px_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[2px_2px_0px_0px_#000] transition-all cursor-pointer uppercase tracking-wider"
             >
               <Layers className="w-4 h-4 stroke-[2.5]" />
-              <span>LAUNCH CASE CONFERENCE</span>
+              <span>CASE CONFERENCE</span>
+            </button>
+
+            <button
+              onClick={() => onNavigateTab('swarm')}
+              className="px-4 py-2.5 bg-[#00F5D4] hover:bg-[#00D8BB] text-black font-black font-display text-xs flex items-center space-x-1.5 border-3 border-black shadow-[4px_4px_0px_0px_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[2px_2px_0px_0px_#000] transition-all cursor-pointer uppercase tracking-wider"
+            >
+              <Cpu className="w-4 h-4 stroke-[2.5]" />
+              <span>SWARM ENGINE (13+)</span>
             </button>
           </div>
         </div>

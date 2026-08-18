@@ -11,7 +11,8 @@ import {
   Stethoscope, 
   User, 
   Users,
-  Sparkles
+  Sparkles,
+  Cpu
 } from 'lucide-react';
 import { PATIENT_INFO } from '../data/mockPatientData';
 
@@ -33,6 +34,7 @@ export const Navigation: React.FC<NavigationProps> = ({
   const tabs = [
     { id: 'command', label: 'Command Center', icon: Activity },
     { id: 'conference', label: 'Case Conference (3-Panel)', icon: Layers, badge: 'Live AI' },
+    { id: 'swarm', label: 'Swarm Engine', icon: Cpu, badge: 'PSO 13+' },
     { id: 'timeline', label: 'Health Timeline', icon: Clock },
     { id: 'reports', label: 'Report Intelligence', icon: FileText },
     { id: 'meds', label: 'Medication Safety', icon: Pill },

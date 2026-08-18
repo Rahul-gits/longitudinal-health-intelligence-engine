@@ -89,6 +89,60 @@ export const PERSONA_PROFILES: Record<string, PersonaProfile> = {
     color: '#10B981',
     badgeBg: 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30',
     keyQuestion: 'What is the validated action plan?'
+  },
+  genomic: {
+    id: 'genomic',
+    name: 'Genomics AI',
+    roleTitle: 'Pharmacogenomics & Variant Analysis',
+    avatarIcon: 'Dna',
+    color: '#EC4899', // Pink
+    badgeBg: 'bg-pink-500/10 text-pink-400 border-pink-500/30',
+    keyQuestion: 'Do genetic variants affect drug clearance or disease etiology?'
+  },
+  lifestyle: {
+    id: 'lifestyle',
+    name: 'Biometrics AI',
+    roleTitle: 'Wearables, Circadian & Sleep Telemetry',
+    avatarIcon: 'HeartPulse',
+    color: '#14B8A6', // Teal
+    badgeBg: 'bg-teal-500/10 text-teal-400 border-teal-500/30',
+    keyQuestion: 'What are wearable sensors and daily trends revealing?'
+  },
+  nephrology: {
+    id: 'nephrology',
+    name: 'Nephrology AI',
+    roleTitle: 'Renal Function & Fluid Homeostasis',
+    avatarIcon: 'Activity',
+    color: '#3B82F6', // Royal Blue
+    badgeBg: 'bg-blue-600/10 text-blue-400 border-blue-600/30',
+    keyQuestion: 'Is renal filtration rate (eGFR) driving fluid overload?'
+  },
+  immunology: {
+    id: 'immunology',
+    name: 'Immunology AI',
+    roleTitle: 'Inflammatory Cascade & Biomarkers',
+    avatarIcon: 'Flame',
+    color: '#FF6B35', // Warm Orange
+    badgeBg: 'bg-orange-500/10 text-orange-400 border-orange-500/30',
+    keyQuestion: 'Are systemic inflammatory markers (hs-CRP/IL-6) elevated?'
+  },
+  ethics: {
+    id: 'ethics',
+    name: 'Bioethics AI',
+    roleTitle: 'Shared Decision & Quality of Life',
+    avatarIcon: 'Scale',
+    color: '#A855F7', // Violet
+    badgeBg: 'bg-violet-500/10 text-violet-400 border-violet-500/30',
+    keyQuestion: 'Does the clinical plan honor patient autonomy & preferences?'
+  },
+  swarm_orchestrator: {
+    id: 'swarm_orchestrator',
+    name: 'Swarm Coordinator',
+    roleTitle: 'Particle Swarm & Collective Intelligence',
+    avatarIcon: 'Cpu',
+    color: '#FFE600', // Bright Yellow
+    badgeBg: 'bg-yellow-400/20 text-yellow-300 border-yellow-400/40',
+    keyQuestion: 'Has particle consensus converged across all agent sub-clusters?'
   }
 };
 
@@ -303,6 +357,78 @@ export const CASE_CONFERENCE_TURNS: PersonaTurn[] = [
     turnType: 'consensus',
     evidenceCitations: ['KDIGO 2024 & AHA/ACC Guidelines Integrated Protocol'],
     uncertaintyScore: 8
+  },
+  {
+    id: 'turn-8',
+    personaId: 'nephrology',
+    timestamp: '2026-08-13 19:46:28',
+    headline: 'Renal Hemodynamics & Electrolyte Clearance',
+    speechText: 'Nephrology Evaluation: Eleanor\'s eGFR drop from 64 to 52 represents a 18.7% loss in renal clearance rate. Combined with Lisinopril, NSAID inhibition of prostaglandin-mediated afferent vasodilatation decreases intraglomerular pressure. Serum Potassium must be monitored for hyperkalemia risk!',
+    citedClusterIds: ['reports', 'medication', 'history'],
+    citedNodeIds: ['rep-1', 'rep-2', 'med-1'],
+    turnType: 'safety_check',
+    evidenceCitations: ['American Society of Nephrology (ASN) Glomerular Hemodynamics Protocol'],
+    uncertaintyScore: 14
+  },
+  {
+    id: 'turn-9',
+    personaId: 'genomic',
+    timestamp: '2026-08-13 19:46:40',
+    headline: 'Pharmacogenomic Clearance Profile',
+    speechText: 'Genomic Variant Screening: Patient profile notes CYP2C9 *1/*3 intermediate metabolizer status. Reduced clearance rate of NSAIDs elevates systemic exposure duration by ~40%, markedly amplifying renal vessel constriction compared to normal metabolizers.',
+    citedClusterIds: ['medication', 'reports', 'risk'],
+    citedNodeIds: ['med-3', 'risk-1'],
+    turnType: 'evidence_challenge',
+    evidenceCitations: ['CPIC Pharmacogenomic Guideline for NSAIDs and CYP2C9 Variants'],
+    uncertaintyScore: 18
+  },
+  {
+    id: 'turn-10',
+    personaId: 'lifestyle',
+    timestamp: '2026-08-13 19:46:52',
+    headline: 'Continuous Sensor Telemetry Analysis',
+    speechText: 'Biometric Telemetry: Smartwatch and sleep ring telemetry over the past 14 days confirm a 12% drop in Heart Rate Variability (HRV) and nocturnal pulse elevation (68 -> 76 bpm). Sleep efficiency dropped to 72% with micro-awakenings matching mild orthopnea events.',
+    citedClusterIds: ['lifestyle', 'symptoms'],
+    citedNodeIds: ['life-1', 'life-4', 'sym-3'],
+    turnType: 'correlation',
+    evidenceCitations: ['Journal of Medical Internet Research (JMIR) Wearable Biomarker Tracking'],
+    uncertaintyScore: 15
+  },
+  {
+    id: 'turn-11',
+    personaId: 'immunology',
+    timestamp: '2026-08-13 19:47:04',
+    headline: 'Systemic Inflammatory Cascade Analysis',
+    speechText: 'Immunology Signal: Chronic low-grade inflammation (hs-CRP 3.8 mg/L) detected alongside metabolic syndrome indicators. Inflammatory cytokine activation accelerates vascular endothelial stiffness and renal microvascular fragility.',
+    citedClusterIds: ['reports', 'symptoms', 'risk'],
+    citedNodeIds: ['rep-1', 'sym-3'],
+    turnType: 'correlation',
+    evidenceCitations: ['Nature Reviews Nephrology: Inflammation in Diabetic Kidney Disease'],
+    uncertaintyScore: 20
+  },
+  {
+    id: 'turn-12',
+    personaId: 'ethics',
+    timestamp: '2026-08-13 19:47:16',
+    headline: 'Patient Preference & Shared Care Ethics',
+    speechText: 'Bioethics & Quality of Life Review: Eleanor prioritizes maintaining mobility and managing knee osteoarthritis without heavy opioid analgesics. Our recommendation must substitute safe topical treatments (e.g., topical Capsaicin or Lidocaine patches) to preserve mobility while protecting renal safety.',
+    citedClusterIds: ['recovery', 'lifestyle', 'medication'],
+    citedNodeIds: ['rec-1', 'med-3'],
+    turnType: 'plan',
+    evidenceCitations: ['AMA Journal of Ethics: Shared Decision Making in Multimorbid Chronic Care'],
+    uncertaintyScore: 10
+  },
+  {
+    id: 'turn-13',
+    personaId: 'swarm_orchestrator',
+    timestamp: '2026-08-13 19:47:30',
+    headline: 'Swarm Intelligence Global Convergence',
+    speechText: 'SWARM CONVERGENCE ACHIEVED: 12 persona particle nodes have converged on g_best coordinate (X: 84.5, Y: 92.1) in the clinical outcome space. Swarm Cohesion: 94.8%, Entropy: 0.12. Unified Consensus: Cessation of OTC NSAID, initiate topical analgesic alternative, prompt eGFR & K+ re-check in 7 days, and cardiology echocardiogram referral.',
+    citedClusterIds: ['symptoms', 'history', 'reports', 'medication', 'lifestyle', 'risk', 'recovery'],
+    citedNodeIds: ['med-3', 'rep-2', 'risk-1', 'rec-3'],
+    turnType: 'consensus',
+    evidenceCitations: ['Swarm Intelligence Multi-Agent Consensus Algorithm v2.4'],
+    uncertaintyScore: 4
   }
 ];
 

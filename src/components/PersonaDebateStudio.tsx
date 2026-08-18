@@ -16,7 +16,11 @@ import {
   CheckCircle2, 
   Send,
   MessageSquare,
-  Sparkles
+  Sparkles,
+  Dna,
+  HeartPulse,
+  Flame,
+  Cpu
 } from 'lucide-react';
 
 interface PersonaDebateStudioProps {
@@ -67,6 +71,12 @@ export const PersonaDebateStudio: React.FC<PersonaDebateStudioProps> = ({
       case 'recovery': return Activity;
       case 'conflict': return Scale;
       case 'planner': return CheckCircle2;
+      case 'genomic': return Dna;
+      case 'lifestyle': return HeartPulse;
+      case 'nephrology': return Activity;
+      case 'immunology': return Flame;
+      case 'ethics': return Scale;
+      case 'swarm_orchestrator': return Cpu;
       default: return MessageSquare;
     }
   };

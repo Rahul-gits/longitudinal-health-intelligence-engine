@@ -57,7 +57,14 @@ export type PersonaId =
   | 'evidence'
   | 'recovery'
   | 'conflict'
-  | 'planner';
+  | 'planner'
+  | 'genomic'
+  | 'lifestyle'
+  | 'nephrology'
+  | 'immunology'
+  | 'ethics'
+  | 'swarm_orchestrator'
+  | (string & {});
 
 export interface PersonaProfile {
   id: PersonaId;
@@ -182,4 +189,72 @@ export interface PatientConsentSetting {
   doctorAccess: boolean;
   caregiverAccess: boolean;
   longTermStorage: boolean;
+}
+
+export interface SwarmParticle {
+  id: string;
+  personaId: PersonaId;
+  name: string;
+  x: number; // 0..100
+  y: number; // 0..100
+  vx: number;
+  vy: number;
+  pBestX: number;
+  pBestY: number;
+  pBestScore: number;
+  currentScore: number;
+  hypothesis: string;
+  beliefWeight: number;
+  confidence: number;
+  color: string;
+  specialization: string;
+}
+
+export interface SwarmGlobalBest {
+  x: number;
+  y: number;
+  fitness: number;
+  hypothesis: string;
+  confidence: number;
+  dominantPersonas: PersonaId[];
+}
+
+export interface SwarmMetrics {
+  cohesion: number; // 0..100%
+  entropy: number; // 0..100%
+  divergenceIndex: number; // 0..1
+  iterationCount: number;
+  convergenceStatus: 'exploring' | 'converging' | 'hyper_converged' | 'disputed';
+  activeParticlesCount: number;
+}
+
+export interface SwarmMessage {
+  id: string;
+  senderId: PersonaId;
+  senderName: string;
+  receiverId: PersonaId | 'all';
+  timestamp: string;
+  topic: string;
+  signalContent: string;
+  weight: number;
+  type: 'proposal' | 'critique' | 'validation' | 'consensus_signal';
+}
+
+export interface CrossExamExchange {
+  personaId: PersonaId;
+  personaName: string;
+  argument: string;
+  evidenceRef: string;
+  tensionScore: number; // 0..100
+  counterToId?: string;
+}
+
+export interface CrossExaminationDebate {
+  id: string;
+  topic: string;
+  personaA: PersonaId;
+  personaB: PersonaId;
+  exchanges: CrossExamExchange[];
+  consensusVerdict: string;
+  agreementPercentage: number;
 }
