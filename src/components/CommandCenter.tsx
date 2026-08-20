@@ -1,5 +1,8 @@
-import React from 'react';
-import { PATIENT_INFO, INITIAL_DATA_CLUSTERS } from '../data/mockPatientData';
+import React, { useState } from 'react';
+import { PATIENT_INFO } from '../data/mockPatientData';
+import { clinicalOrchestrator } from '../engine/clinicalOrchestrator';
+import { ClinicianReviewWorkflow } from './ClinicianReviewWorkflow';
+import { BaselineBenchmarkModal } from './BaselineBenchmarkModal';
 import { 
   Activity, 
   TrendingDown, 
@@ -11,7 +14,13 @@ import {
   ArrowRight,
   Stethoscope,
   Sparkles,
-  Cpu
+  Cpu,
+  ShieldAlert,
+  BarChart3,
+  Target,
+  BookOpen,
+  Scale,
+  AlertTriangle
 } from 'lucide-react';
 
 interface CommandCenterProps {
@@ -19,212 +28,175 @@ interface CommandCenterProps {
 }
 
 export const CommandCenter: React.FC<CommandCenterProps> = ({ onNavigateTab }) => {
+  const orchestratorData = clinicalOrchestrator.runPipeline();
+  const [synthesis, setSynthesis] = useState(orchestratorData.synthesisResult);
+  const [showBenchmarkModal, setShowBenchmarkModal] = useState<boolean>(false);
+
+  const handleApprove = (notes: string) => {
+    setSynthesis(prev => ({
+      ...prev,
+      clinicianActionStatus: 'APPROVED',
+      clinicianNotes: notes
+    }));
+  };
+
+  const handleModify = (modifiedRec: string, notes: string) => {
+    setSynthesis(prev => ({
+      ...prev,
+      primaryRecommendation: modifiedRec,
+      clinicianActionStatus: 'MODIFIED',
+      clinicianNotes: notes
+    }));
+  };
+
+  const handleReject = (reason: string) => {
+    setSynthesis(prev => ({
+      ...prev,
+      clinicianActionStatus: 'REJECTED',
+      clinicianNotes: reason
+    }));
+  };
+
   return (
     <div className="space-y-6">
       {/* Main OS Command Header */}
-      <div className="p-6 bg-[#FFE600] border-3 border-black shadow-[6px_6px_0px_0px_#000] relative overflow-hidden">
+      <div className="p-6 bg-[#FFE600] border-3 border-black shadow-[6px_6px_0px_0px_#000] relative overflow-hidden font-mono">
         <div className="flex flex-wrap items-center justify-between gap-6 relative z-10">
           <div>
-            <div className="flex items-center space-x-2 text-xs font-black text-black uppercase tracking-wider mb-1 bg-black text-[#FFE600] px-2 py-0.5 w-fit border border-black -rotate-1">
+            <div className="flex items-center space-x-2 text-xs font-black text-black uppercase tracking-wider mb-1 bg-black text-[#FFE600] px-2.5 py-0.5 w-fit border border-black -rotate-1">
               <Sparkles className="w-4 h-4 stroke-[2.5]" />
-              <span>DIGITAL TWIN COMMAND CENTER</span>
+              <span>CLINICAL INTELLIGENCE COMMAND CENTER</span>
             </div>
             <h1 className="text-3xl font-black font-display text-black tracking-tight mt-1">
-              PATIENT: {PATIENT_INFO.name.toUpperCase()}
+              PATIENT: {PATIENT_INFO.name.toUpperCase()} (68Y/F)
             </h1>
             <p className="text-xs font-bold text-black/90 mt-1.5 max-w-2xl font-mono leading-relaxed">
-              Continuous longitudinal health monitoring, dynamic 7-cluster telemetry, multi-agent clinical case conference, and safety governance.
+              Unified Patient Clinical State, Deterministic Safety Constraint Verification, Goal Conflict Resolution, and Human-in-the-Loop Decision Support.
             </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
-            <div className="px-4 py-2 bg-[#FFFFFF] border-2 border-black shadow-[3px_3px_0px_0px_#000] text-right">
-              <span className="text-[10px] text-black/70 font-black uppercase tracking-wider block">CURRENT STATUS</span>
-              <span className="text-sm font-black text-black flex items-center gap-1.5 justify-end">
-                <span className="w-2.5 h-2.5 rounded-full bg-[#FF6B35] border border-black animate-ping"></span>
-                {PATIENT_INFO.status.toUpperCase()}
+            {/* Risk Badge */}
+            <div className="px-4 py-2 bg-[#F43F5E] text-white border-2 border-black shadow-[3px_3px_0px_0px_#000] text-right">
+              <span className="text-[10px] font-black uppercase tracking-wider block text-white/90">PATIENT RISK LEVEL</span>
+              <span className="text-base font-black flex items-center gap-1.5 justify-end">
+                <span className="w-2.5 h-2.5 rounded-full bg-white border border-black animate-ping"></span>
+                HIGH RISK HAZARD
               </span>
             </div>
 
+            {/* Killer Demo Benchmark Button */}
             <button
-              onClick={() => onNavigateTab('conference')}
-              className="px-4 py-2.5 bg-[#FF70A6] hover:bg-[#FF4D8D] text-black font-black font-display text-xs flex items-center space-x-1.5 border-3 border-black shadow-[4px_4px_0px_0px_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[2px_2px_0px_0px_#000] transition-all cursor-pointer uppercase tracking-wider"
+              onClick={() => setShowBenchmarkModal(true)}
+              className="px-4 py-2.5 bg-[#A855F7] text-white font-black font-display text-xs flex items-center space-x-1.5 border-3 border-black shadow-[4px_4px_0px_0px_#000] hover:bg-[#9333EA] transition-all cursor-pointer uppercase tracking-wider"
             >
-              <Layers className="w-4 h-4 stroke-[2.5]" />
-              <span>CASE CONFERENCE</span>
+              <BarChart3 className="w-4 h-4 stroke-[2.5]" />
+              <span>Killer Demo Benchmark</span>
             </button>
 
             <button
-              onClick={() => onNavigateTab('swarm')}
-              className="px-4 py-2.5 bg-[#00F5D4] hover:bg-[#00D8BB] text-black font-black font-display text-xs flex items-center space-x-1.5 border-3 border-black shadow-[4px_4px_0px_0px_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[2px_2px_0px_0px_#000] transition-all cursor-pointer uppercase tracking-wider"
+              onClick={() => onNavigateTab('conference')}
+              className="px-4 py-2.5 bg-[#FF70A6] hover:bg-[#FF4D8D] text-black font-black font-display text-xs flex items-center space-x-1.5 border-3 border-black shadow-[4px_4px_0px_0px_#000] transition-all cursor-pointer uppercase tracking-wider"
             >
-              <Cpu className="w-4 h-4 stroke-[2.5]" />
-              <span>SWARM ENGINE (13+)</span>
+              <Layers className="w-4 h-4 stroke-[2.5]" />
+              <span>View AI Reasoning Trace</span>
             </button>
           </div>
         </div>
       </div>
 
-      {/* Grid Layout: Health OS Widgets */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-        {/* Widget 1: Biomarker Changes */}
-        <div className="p-5 bg-[#FFFFFF] border-3 border-black shadow-[5px_5px_0px_0px_#000] space-y-4">
+      {/* Simplified High-Level Dashboard Grid (Priority 19) */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 font-mono">
+        {/* Card 1: Critical Findings */}
+        <div className="p-5 bg-white border-3 border-black shadow-[5px_5px_0px_0px_#000] space-y-3">
           <div className="flex items-center justify-between border-b-2 border-black pb-2">
             <span className="text-xs font-black font-display uppercase tracking-wider flex items-center gap-1.5 text-black">
-              <Activity className="w-4 h-4 text-black stroke-[2.5]" /> Biomarker Deltas
+              <ShieldAlert className="w-4 h-4 text-[#F43F5E] stroke-[2.5]" /> CRITICAL FINDINGS
             </span>
-            <span className="text-[10px] font-mono font-bold bg-[#FFE600] border border-black px-1.5 py-0.5">2025 vs 2026</span>
+            <span className="text-[10px] font-black bg-[#FF70A6] border border-black px-1.5 py-0.5 text-black">3 ALERTS</span>
           </div>
 
-          <div className="space-y-2.5">
-            <div className="p-3 bg-[#FAF8F5] border-2 border-black shadow-[2px_2px_0px_0px_#000] flex items-center justify-between text-xs">
-              <div>
-                <span className="font-extrabold text-black block">eGFR (Glomerular)</span>
-                <span className="text-[10px] font-mono text-black/70">64 → 52 mL/min</span>
-              </div>
-              <span className="px-2 py-1 font-black bg-[#FF70A6] text-black border border-black text-[10px] flex items-center gap-1 shadow-[1px_1px_0px_0px_#000]">
-                <TrendingDown className="w-3.5 h-3.5 stroke-[2.5]" /> ↓ 12
-              </span>
-            </div>
+          <ul className="space-y-2 text-xs font-bold">
+            <li className="p-2.5 bg-[#FAF8F5] border-2 border-black shadow-[2px_2px_0px_0px_#000]">
+              <span className="font-black text-[#F43F5E] block">18.7% eGFR DECLINE:</span>
+              <span className="text-black/90 font-sans">eGFR dropped from 64 to 52 mL/min over 3 weeks.</span>
+            </li>
+            <li className="p-2.5 bg-[#FAF8F5] border-2 border-black shadow-[2px_2px_0px_0px_#000]">
+              <span className="font-black text-[#F59E0B] block">TRIPLE WHAMMY HAZARD:</span>
+              <span className="text-black/90 font-sans">Self-administered OTC Ibuprofen + active Lisinopril therapy.</span>
+            </li>
+            <li className="p-2.5 bg-[#FAF8F5] border-2 border-black shadow-[2px_2px_0px_0px_#000]">
+              <span className="font-black text-[#3A86FF] block">BIOMARKER ELEVATION:</span>
+              <span className="text-black/90 font-sans">NT-proBNP rose to 480 pg/mL with 2+ pitting leg edema.</span>
+            </li>
+          </ul>
+        </div>
 
-            <div className="p-3 bg-[#FAF8F5] border-2 border-black shadow-[2px_2px_0px_0px_#000] flex items-center justify-between text-xs">
-              <div>
-                <span className="font-extrabold text-black block">NT-proBNP (Cardiac)</span>
-                <span className="text-[10px] font-mono text-black/70">110 → 480 pg/mL</span>
-              </div>
-              <span className="px-2 py-1 font-black bg-[#FF6B35] text-white border border-black text-[10px] flex items-center gap-1 shadow-[1px_1px_0px_0px_#000]">
-                <TrendingUp className="w-3.5 h-3.5 stroke-[2.5]" /> ↑ 370
-              </span>
-            </div>
+        {/* Card 2: Recommended Actions & Safety Block */}
+        <div className="p-5 bg-white border-3 border-black shadow-[5px_5px_0px_0px_#000] space-y-3">
+          <div className="flex items-center justify-between border-b-2 border-black pb-2">
+            <span className="text-xs font-black font-display uppercase tracking-wider flex items-center gap-1.5 text-black">
+              <Target className="w-4 h-4 text-[#00F5D4] stroke-[2.5]" /> RECOMMENDED ACTIONS
+            </span>
+            <span className="text-[10px] font-black bg-[#CCFF00] border border-black px-1.5 py-0.5 text-black">SAFE ALTERNATIVE</span>
+          </div>
 
-            <div className="p-3 bg-[#FAF8F5] border-2 border-black shadow-[2px_2px_0px_0px_#000] flex items-center justify-between text-xs">
-              <div>
-                <span className="font-extrabold text-black block">HbA1c (Glycemic)</span>
-                <span className="text-[10px] font-mono text-black/70">6.8% → 6.7%</span>
-              </div>
-              <span className="px-2 py-1 font-black bg-[#CCFF00] text-black border border-black text-[10px] flex items-center gap-1 shadow-[1px_1px_0px_0px_#000]">
-                <CheckCircle className="w-3.5 h-3.5 stroke-[2.5]" /> OK
-              </span>
+          <div className="p-3 bg-[#CCFF00]/40 border-2 border-black shadow-[2px_2px_0px_0px_#000]">
+            <span className="text-[10px] font-black uppercase text-black block mb-1">PRIMARY ACTION ITEM:</span>
+            <p className="text-xs font-extrabold text-black font-sans">"{synthesis.primaryRecommendation}"</p>
+          </div>
+
+          <div className="space-y-1 text-xs">
+            <span className="text-[10px] font-black uppercase text-black/70 block">BLOCKED UNSAFE ACTION:</span>
+            <div className="bg-[#FF70A6] text-black p-2 border border-black font-bold">
+              ⛔ {synthesis.safetyResult.blockedAction || 'Oral NSAID continuation in CKD'}
             </div>
           </div>
         </div>
 
-        {/* Widget 2: Active Care & Med Schedule */}
-        <div className="p-5 bg-[#FFFFFF] border-3 border-black shadow-[5px_5px_0px_0px_#000] space-y-4">
+        {/* Card 3: Active Goal Conflicts & Evidence */}
+        <div className="p-5 bg-white border-3 border-black shadow-[5px_5px_0px_0px_#000] space-y-3">
           <div className="flex items-center justify-between border-b-2 border-black pb-2">
             <span className="text-xs font-black font-display uppercase tracking-wider flex items-center gap-1.5 text-black">
-              <Pill className="w-4 h-4 text-black stroke-[2.5]" /> Prescriptions
+              <Scale className="w-4 h-4 text-[#A855F7] stroke-[2.5]" /> ACTIVE GOAL CONFLICTS
             </span>
-            <span className="text-[10px] font-mono font-extrabold bg-[#CCFF00] border border-black px-1.5 py-0.5 text-black">98% ADHERENT</span>
+            <span className="text-[10px] font-black bg-[#A855F7] text-white border border-black px-1.5 py-0.5">HIGH FRICTION</span>
           </div>
 
-          <div className="space-y-2.5">
-            <div className="p-3 bg-[#FAF8F5] border-2 border-black shadow-[2px_2px_0px_0px_#000] flex items-center justify-between text-xs">
-              <div>
-                <span className="font-extrabold text-black block">Lisinopril 20mg</span>
-                <span className="text-[10px] font-mono text-black/70">Daily (Morning)</span>
-              </div>
-              <span className="px-2 py-0.5 font-extrabold bg-[#CCFF00] text-black border border-black text-[10px]">Active</span>
+          <div className="p-3 bg-[#FAF8F5] border-2 border-black shadow-[2px_2px_0px_0px_#000] space-y-1.5">
+            <div className="flex justify-between text-[11px] font-black">
+              <span className="text-[#F43F5E]">PAIN RELIEF</span>
+              <span>VS</span>
+              <span className="text-[#3A86FF]">RENAL PROTECTION</span>
             </div>
-
-            <div className="p-3 bg-[#FF70A6] border-2 border-black shadow-[2px_2px_0px_0px_#000] flex items-center justify-between text-xs">
-              <div>
-                <span className="font-black text-black block">OTC Ibuprofen 400mg</span>
-                <span className="text-[10px] font-mono font-bold text-black">NSAID Interaction</span>
-              </div>
-              <span className="px-2 py-0.5 font-black bg-black text-[#FFE600] border border-black text-[10px] uppercase">STOP</span>
-            </div>
-
-            <div className="p-3 bg-[#FAF8F5] border-2 border-black shadow-[2px_2px_0px_0px_#000] flex items-center justify-between text-xs">
-              <div>
-                <span className="font-extrabold text-black block">Furosemide 20mg</span>
-                <span className="text-[10px] font-mono text-black/70">Daily (Morning)</span>
-              </div>
-              <span className="px-2 py-0.5 font-extrabold bg-[#CCFF00] text-black border border-black text-[10px]">Active</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Widget 3: 14-Day Recovery Progress */}
-        <div className="p-5 bg-[#FFFFFF] border-3 border-black shadow-[5px_5px_0px_0px_#000] space-y-4">
-          <div className="flex items-center justify-between border-b-2 border-black pb-2">
-            <span className="text-xs font-black font-display uppercase tracking-wider flex items-center gap-1.5 text-black">
-              <Clock className="w-4 h-4 text-black stroke-[2.5]" /> Recovery Journey
-            </span>
-            <span className="text-[10px] font-mono font-extrabold bg-[#00F5D4] border border-black px-1.5 py-0.5">DAY 5 / 14</span>
-          </div>
-
-          <div className="space-y-3">
-            <div className="flex items-center justify-between text-xs font-bold">
-              <span className="text-black font-display">Assessment Progress</span>
-              <span className="font-mono text-black font-black bg-[#CCFF00] border border-black px-1">78%</span>
-            </div>
-            <div className="w-full h-4 bg-[#FAF8F5] border-2 border-black overflow-hidden p-0.5">
-              <div className="h-full bg-[#3A86FF] border border-black w-[78%]"></div>
-            </div>
-
-            <div className="p-3 bg-[#FAF8F5] border-2 border-black text-xs space-y-1">
-              <span className="text-[10px] font-black text-black uppercase block font-mono bg-[#FFE600] border border-black px-1 w-fit">Daily Log</span>
-              <p className="text-black text-[11px] font-semibold leading-snug">
-                Fatigue improved (6/10 → 4/10). OTC NSAID stopped per AI consensus. Leg edema tracked.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Widget 4: Next Action Box */}
-        <div className="p-5 bg-[#00F5D4] border-3 border-black shadow-[5px_5px_0px_0px_#000] space-y-3 flex flex-col justify-between">
-          <div className="space-y-2">
-            <span className="text-xs font-black font-display uppercase tracking-wider flex items-center gap-1.5 text-black bg-black text-[#00F5D4] px-2 py-0.5 w-fit border border-black">
-              <Stethoscope className="w-4 h-4 stroke-[2.5]" /> NEXT ACTION ITEM
-            </span>
-            <h4 className="text-sm font-extrabold font-display text-black">Review eGFR & NSAID with Dr. Thorne</h4>
-            <p className="text-xs font-semibold text-black/90 leading-relaxed">
-              Consensus engine flagged eGFR shift (64 → 52). Discontinue OTC Ibuprofen and request a 48h renal re-check.
+            <p className="text-xs font-sans text-black/90">
+              Analgesia demand vs eGFR preservation. Resolved via topical non-systemic 5% Lidocaine patch.
             </p>
           </div>
 
-          <button
-            onClick={() => onNavigateTab('clinician')}
-            className="w-full py-2.5 bg-black hover:bg-black/90 text-[#00F5D4] border-2 border-black shadow-[2px_2px_0px_0px_#000] text-xs font-black font-display uppercase tracking-wider flex items-center justify-center space-x-1.5 transition-all cursor-pointer"
-          >
-            <span>CLINICIAN HANDOFF</span>
-            <ArrowRight className="w-4 h-4 stroke-[2.5]" />
-          </button>
+          <div className="p-3 bg-white border-2 border-black shadow-[2px_2px_0px_0px_#000]">
+            <span className="text-[10px] font-black uppercase text-black/70 flex items-center gap-1 mb-1">
+              <BookOpen className="w-3 h-3 stroke-[2.5]" /> SUPPORTING EVIDENCE (4 SOURCES):
+            </span>
+            <span className="text-xs font-bold text-black block truncate">
+              {synthesis.evidenceChain.guidelineCitation}
+            </span>
+          </div>
         </div>
       </div>
 
-      {/* 7 Data Clusters Quick Telemetry Cards */}
-      <div className="bg-[#FFFFFF] p-5 border-3 border-black shadow-[6px_6px_0px_0px_#000]">
-        <h3 className="text-sm font-black font-display text-black uppercase tracking-wider mb-4 flex items-center gap-2">
-          <Layers className="w-5 h-5 text-black stroke-[2.5]" /> 7 DYNAMIC DATA CLUSTER TELEMETRY
-        </h3>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3.5">
-          {INITIAL_DATA_CLUSTERS.map(cluster => (
-            <button
-              key={cluster.id}
-              onClick={() => onNavigateTab('conference')}
-              className="p-3.5 bg-[#FAF8F5] hover:bg-[#FFE600] border-2 border-black shadow-[3px_3px_0px_0px_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0px_0px_#000] text-left transition-all group cursor-pointer"
-            >
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-[10px] font-mono font-black uppercase text-black truncate">
-                  {cluster.title.split('—')[1]?.trim()}
-                </span>
-                <span
-                  className="w-3 h-3 border border-black shadow-[1px_1px_0px_0px_#000]"
-                  style={{ backgroundColor: cluster.color }}
-                ></span>
-              </div>
-              <div className="text-xl font-black text-black font-mono">
-                {cluster.items.length} <span className="text-[10px] font-sans text-black/70 font-bold">items</span>
-              </div>
-              <span className="text-[10px] font-black text-black group-hover:underline mt-2 block font-mono">
-                GRAPH VIEW →
-              </span>
-            </button>
-          ))}
-        </div>
-      </div>
+      {/* Mandatory Clinician Review & Human-in-the-Loop Component */}
+      <ClinicianReviewWorkflow
+        synthesis={synthesis}
+        onApprove={handleApprove}
+        onModify={handleModify}
+        onReject={handleReject}
+      />
+
+      {/* Benchmark Comparison Modal */}
+      {showBenchmarkModal && (
+        <BaselineBenchmarkModal onClose={() => setShowBenchmarkModal(false)} />
+      )}
     </div>
   );
 };

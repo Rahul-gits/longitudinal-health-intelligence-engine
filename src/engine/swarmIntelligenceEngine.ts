@@ -6,7 +6,9 @@ import {
   PersonaId, 
   PersonaProfile,
   CrossExaminationDebate,
-  CrossExamExchange
+  CrossExamExchange,
+  PersonaCoalition,
+  GoalFrictionCell
 } from '../types/health';
 import { PERSONA_PROFILES } from '../data/mockPatientData';
 
@@ -324,6 +326,73 @@ export class SwarmIntelligenceEngine {
 
   public getMessages(): SwarmMessage[] {
     return this.messages;
+  }
+
+  public getPersonaCoalitions(): PersonaCoalition[] {
+    return [
+      {
+        id: 'coalition-safety',
+        name: 'Renal & Safety Guardrails Coalition',
+        description: 'Prioritizes organ clearance, eliminating nephrotoxins, and preventing acute decompensation.',
+        color: '#F43F5E',
+        memberIds: ['nephrology', 'medication', 'triage', 'genomic'],
+        sharedGoalFocus: 'Protect Renal Filtration (eGFR > 60 mL/min) & Stop NSAID Toxicity',
+        consensusScore: 94
+      },
+      {
+        id: 'coalition-qol',
+        name: 'Pain Management & QoL Coalition',
+        description: 'Focuses on pain relief, functional mobility, sleep quality, and patient autonomy.',
+        color: '#A855F7',
+        memberIds: ['ethics', 'lifestyle', 'recovery'],
+        sharedGoalFocus: 'Sustain Knee Mobility (6000 steps/day) & Provide Topical Analgesia',
+        consensusScore: 88
+      },
+      {
+        id: 'coalition-diagnostic',
+        name: 'Diagnostic & Evidence RAG Coalition',
+        description: 'Evaluates multi-system correlation, lab biomarker trends, and peer-reviewed guidelines.',
+        color: '#06B6D4',
+        memberIds: ['clinical', 'evidence', 'immunology'],
+        sharedGoalFocus: 'KDIGO 2024 Guideline Provenance & Causal Etiology Mapping',
+        consensusScore: 92
+      },
+      {
+        id: 'coalition-consensus',
+        name: 'Swarm Optimization & Synthesis Coalition',
+        description: 'Resolves goal friction and synthesizes unified action plan.',
+        color: '#FFE600',
+        memberIds: ['conflict', 'planner', 'swarm_orchestrator'],
+        sharedGoalFocus: 'Global Swarm Fitness Optimization & Clinician Review Readiness',
+        consensusScore: 96
+      }
+    ];
+  }
+
+  public getGoalFrictionMatrix(): GoalFrictionCell[] {
+    return [
+      {
+        personaA: 'nephrology',
+        personaB: 'ethics',
+        frictionScore: 68,
+        tensionReason: 'Nephrology demands immediate NSAID withdrawal to protect eGFR; Bioethics demands effective pain relief so mobility does not decline.',
+        resolutionStrategy: 'Substitute oral NSAID with Topical 5% Lidocaine Patch PRN + 7-day renal panel re-check.'
+      },
+      {
+        personaA: 'medication',
+        personaB: 'clinical',
+        frictionScore: 42,
+        tensionReason: 'Medication AI attributes eGFR drop solely to Ibuprofen; Clinical AI questions if early CHF decompensation is also contributing.',
+        resolutionStrategy: 'Order baseline Echocardiogram to evaluate ventricular function alongside NSAID cessation.'
+      },
+      {
+        personaA: 'genomic',
+        personaB: 'lifestyle',
+        frictionScore: 35,
+        tensionReason: 'Genomics AI flags CYP2C9 slow clearance requiring strict drug bans; Biometrics AI notes patient reluctance to add new prescription meds.',
+        resolutionStrategy: 'Utilize localized non-systemic OTC topical therapy aligned with genetic clearance profile.'
+      }
+    ];
   }
 
   private updateSwarmMetrics(): void {

@@ -29,120 +29,276 @@ export const PATIENT_INFO = {
 export const PERSONA_PROFILES: Record<string, PersonaProfile> = {
   triage: {
     id: 'triage',
-    name: 'Triage AI',
+    name: 'Triage Safety Module',
     roleTitle: 'Acute Urgency & Safety Protocol',
     avatarIcon: 'ShieldAlert',
     color: '#F43F5E', // Rose
     badgeBg: 'bg-rose-500/10 text-rose-400 border-rose-500/30',
-    keyQuestion: 'What is the immediate risk?'
+    keyQuestion: 'What is the immediate risk?',
+    deepGoals: {
+      primaryGoal: 'Minimize acute clinical crisis & prevent decompensation',
+      secondaryGoals: ['Rapid risk stratification', 'Continuous vitals threshold monitoring', 'Early warning escalation'],
+      constraints: ['Zero tolerance for unacknowledged critical red flags', 'Response latency < 2 seconds'],
+      targetMetrics: [
+        { id: 'm-triage-1', name: 'Acute Risk Index', unit: '%', current: 32, baseline: 15, target: 10, isLowerBetter: true },
+        { id: 'm-triage-2', name: 'Time to Escalation', unit: 'min', current: 4, baseline: 15, target: 5, isLowerBetter: true }
+      ],
+      utilityWeights: { safety: 0.70, efficacy: 0.15, speed: 0.10, qualityOfLife: 0.05 },
+      goalAttainment: 82,
+      coalitionId: 'coalition-safety'
+    }
   },
   clinical: {
     id: 'clinical',
-    name: 'Clinical AI',
+    name: 'Clinical Diagnostic Module',
     roleTitle: 'Diagnostic Reasoning & Correlation',
     avatarIcon: 'Stethoscope',
     color: '#3B82F6', // Blue
     badgeBg: 'bg-blue-500/10 text-blue-400 border-blue-500/30',
-    keyQuestion: 'How do current symptoms correlate with history?'
+    keyQuestion: 'How do current symptoms correlate with history?',
+    deepGoals: {
+      primaryGoal: 'Establish high-fidelity differential diagnosis & causal etiology',
+      secondaryGoals: ['Correlate multi-system biomarkers', 'Map disease trajectory', 'Rule out mimics'],
+      constraints: ['Must cite at least 2 longitudinal telemetry markers per diagnostic hypothesis'],
+      targetMetrics: [
+        { id: 'm-clin-1', name: 'Diagnostic Accuracy', unit: '%', current: 94, baseline: 75, target: 98, isLowerBetter: false },
+        { id: 'm-clin-2', name: 'Causal Network Completeness', unit: '%', current: 88, baseline: 60, target: 95, isLowerBetter: false }
+      ],
+      utilityWeights: { safety: 0.35, efficacy: 0.45, speed: 0.10, qualityOfLife: 0.10 },
+      goalAttainment: 89,
+      coalitionId: 'coalition-diagnostic'
+    }
   },
   medication: {
     id: 'medication',
-    name: 'Medication AI',
+    name: 'Medication Safety Module',
     roleTitle: 'Pharmacovigilance & Reconciliation',
     avatarIcon: 'Pill',
     color: '#8B5CF6', // Purple
     badgeBg: 'bg-purple-500/10 text-purple-400 border-purple-500/30',
-    keyQuestion: 'Are there interaction or prescription risks?'
+    keyQuestion: 'Are there interaction or prescription risks?',
+    deepGoals: {
+      primaryGoal: 'Eliminate nephrotoxic drug interactions & optimize pharmacotherapy',
+      secondaryGoals: ['Deprescribe high-risk OTC NSAIDs', 'Substitute safe topical analgesics', 'Verify organ clearance rates'],
+      constraints: ['Zero active nephrotoxic co-prescriptions', 'Strict clearance dosing adjustments'],
+      targetMetrics: [
+        { id: 'm-med-1', name: 'Nephrotoxic Burden', unit: 'pts', current: 4, baseline: 0, target: 0, isLowerBetter: true },
+        { id: 'm-med-2', name: 'Regimen Safety Rating', unit: '%', current: 96, baseline: 70, target: 100, isLowerBetter: false }
+      ],
+      utilityWeights: { safety: 0.60, efficacy: 0.25, speed: 0.05, qualityOfLife: 0.10 },
+      goalAttainment: 91,
+      coalitionId: 'coalition-safety'
+    }
   },
   evidence: {
     id: 'evidence',
-    name: 'Evidence AI',
+    name: 'Evidence Intelligence Module',
     roleTitle: 'Clinical Guidelines & RAG Verification',
     avatarIcon: 'BookOpen',
     color: '#06B6D4', // Cyan
     badgeBg: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/30',
-    keyQuestion: 'What does authoritative evidence support?'
+    keyQuestion: 'What does authoritative evidence support?',
+    deepGoals: {
+      primaryGoal: 'Validate clinical recommendations against peer-reviewed KDIGO/ACC/AHA guidelines',
+      secondaryGoals: ['Calculate RAG confidence scores', 'Highlight evidence gaps', 'Provide PubMed citations'],
+      constraints: ['All treatment proposals must have Level A/B guideline provenance'],
+      targetMetrics: [
+        { id: 'm-ev-1', name: 'Guideline Alignment Score', unit: '%', current: 96, baseline: 80, target: 98, isLowerBetter: false },
+        { id: 'm-ev-2', name: 'Uncertainty Index', unit: '%', current: 12, baseline: 40, target: 10, isLowerBetter: true }
+      ],
+      utilityWeights: { safety: 0.40, efficacy: 0.45, speed: 0.05, qualityOfLife: 0.10 },
+      goalAttainment: 94,
+      coalitionId: 'coalition-diagnostic'
+    }
   },
   recovery: {
     id: 'recovery',
-    name: 'Recovery AI',
+    name: 'Recovery Pathway Module',
     roleTitle: 'Care Pathway & Longitudinal Monitoring',
     avatarIcon: 'Activity',
     color: '#10B981', // Emerald
     badgeBg: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30',
-    keyQuestion: 'What can be safely monitored vs. escalated?'
+    keyQuestion: 'What can be safely monitored vs. escalated?',
+    deepGoals: {
+      primaryGoal: 'Guide longitudinal recovery trajectory & prevent 30-day readmissions',
+      secondaryGoals: ['Set post-intervention milestones', 'Track 14-day symptom recovery curve', 'Automate patient check-in prompts'],
+      constraints: ['Must flag plan deviations exceeding 48 hours'],
+      targetMetrics: [
+        { id: 'm-rec-1', name: 'Trajectory Attainment', unit: '%', current: 84, baseline: 50, target: 95, isLowerBetter: false },
+        { id: 'm-rec-2', name: 'Readmission Risk', unit: '%', current: 14, baseline: 35, target: 8, isLowerBetter: true }
+      ],
+      utilityWeights: { safety: 0.30, efficacy: 0.30, speed: 0.15, qualityOfLife: 0.25 },
+      goalAttainment: 86,
+      coalitionId: 'coalition-qol'
+    }
   },
   conflict: {
     id: 'conflict',
-    name: 'Conflict Checker',
+    name: 'Goal Conflict Engine Module',
     roleTitle: 'Disagreement Resolution Engine',
     avatarIcon: 'Scale',
     color: '#F59E0B', // Amber
     badgeBg: 'bg-amber-500/10 text-amber-400 border-amber-500/30',
-    keyQuestion: 'Where do personas disagree?'
+    keyQuestion: 'Where do personas disagree?',
+    deepGoals: {
+      primaryGoal: 'Identify & reconcile friction between competing specialist agent recommendations',
+      secondaryGoals: ['Calculate tension scores', 'Formulate compromise proposals', 'Highlight trade-off boundaries'],
+      constraints: ['Ensure zero unresolved critical safety conflicts prior to final consensus'],
+      targetMetrics: [
+        { id: 'm-conf-1', name: 'Swarm Disagreement Index', unit: 'idx', current: 0.18, baseline: 0.65, target: 0.10, isLowerBetter: true },
+        { id: 'm-conf-2', name: 'Friction Resolution Rate', unit: '%', current: 92, baseline: 60, target: 98, isLowerBetter: false }
+      ],
+      utilityWeights: { safety: 0.35, efficacy: 0.35, speed: 0.15, qualityOfLife: 0.15 },
+      goalAttainment: 90,
+      coalitionId: 'coalition-consensus'
+    }
   },
   planner: {
     id: 'planner',
-    name: 'Final Planner',
+    name: 'Plan Synthesis Module',
     roleTitle: 'Synthesized Consensus Engine',
     avatarIcon: 'CheckCircle2',
     color: '#10B981',
     badgeBg: 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30',
-    keyQuestion: 'What is the validated action plan?'
+    keyQuestion: 'What is the validated action plan?',
+    deepGoals: {
+      primaryGoal: 'Synthesize multi-agent swarm outputs into an actionable, prioritized clinical plan',
+      secondaryGoals: ['Generate step-by-step order recommendations', 'Format EHR-ready clinical summary', 'Assign clinician task items'],
+      constraints: ['Plan must satisfy 100% of hard safety constraints from Nephrology and Medication AI'],
+      targetMetrics: [
+        { id: 'm-plan-1', name: 'Plan Cohesion Score', unit: '%', current: 95, baseline: 60, target: 98, isLowerBetter: false },
+        { id: 'm-plan-2', name: 'Clinician Review Readiness', unit: '%', current: 98, baseline: 50, target: 100, isLowerBetter: false }
+      ],
+      utilityWeights: { safety: 0.40, efficacy: 0.30, speed: 0.15, qualityOfLife: 0.15 },
+      goalAttainment: 95,
+      coalitionId: 'coalition-consensus'
+    }
   },
   genomic: {
     id: 'genomic',
-    name: 'Genomics AI',
+    name: 'Pharmacogenomics Module',
     roleTitle: 'Pharmacogenomics & Variant Analysis',
     avatarIcon: 'Dna',
     color: '#EC4899', // Pink
     badgeBg: 'bg-pink-500/10 text-pink-400 border-pink-500/30',
-    keyQuestion: 'Do genetic variants affect drug clearance or disease etiology?'
+    keyQuestion: 'Do genetic variants affect drug clearance or disease etiology?',
+    deepGoals: {
+      primaryGoal: 'Personalize drug selection based on CYP enzymatic variants & genetic risk loci',
+      secondaryGoals: ['Identify slow metabolizer genotypes (CYP2C9*3)', 'Predict drug half-life extension', 'Screen hereditary cardiorenal variants'],
+      constraints: ['Flag any substrate drug prescribed to intermediate/poor metabolizer phenotypes'],
+      targetMetrics: [
+        { id: 'm-gen-1', name: 'Pharmacogenomic Clearance Alignment', unit: '%', current: 92, baseline: 70, target: 99, isLowerBetter: false },
+        { id: 'm-gen-2', name: 'Variant Exposure Index', unit: 'pts', current: 2, baseline: 5, target: 0, isLowerBetter: true }
+      ],
+      utilityWeights: { safety: 0.50, efficacy: 0.35, speed: 0.05, qualityOfLife: 0.10 },
+      goalAttainment: 88,
+      coalitionId: 'coalition-safety'
+    }
   },
   lifestyle: {
     id: 'lifestyle',
-    name: 'Biometrics AI',
+    name: 'Biometrics Telemetry Module',
     roleTitle: 'Wearables, Circadian & Sleep Telemetry',
     avatarIcon: 'HeartPulse',
     color: '#14B8A6', // Teal
     badgeBg: 'bg-teal-500/10 text-teal-400 border-teal-500/30',
-    keyQuestion: 'What are wearable sensors and daily trends revealing?'
+    keyQuestion: 'What are wearable sensors and daily trends revealing?',
+    deepGoals: {
+      primaryGoal: 'Extract continuous physiological signals from wearable telemetry & daily logs',
+      secondaryGoals: ['Monitor step count trends', 'Detect nocturnal resting HR anomalies', 'Analyze sleep fragmentation'],
+      constraints: ['Filter sensor noise & artifacts before updating health score'],
+      targetMetrics: [
+        { id: 'm-life-1', name: 'Daily Activity Recovery', unit: 'steps', current: 4200, baseline: 6500, target: 6000, isLowerBetter: false },
+        { id: 'm-life-2', name: 'Resting Heart Rate Delta', unit: 'bpm', current: 4, baseline: 12, target: 2, isLowerBetter: true }
+      ],
+      utilityWeights: { safety: 0.20, efficacy: 0.30, speed: 0.10, qualityOfLife: 0.40 },
+      goalAttainment: 81,
+      coalitionId: 'coalition-qol'
+    }
   },
   nephrology: {
     id: 'nephrology',
-    name: 'Nephrology AI',
+    name: 'Nephrology Specialty Module',
     roleTitle: 'Renal Function & Fluid Homeostasis',
     avatarIcon: 'Activity',
     color: '#3B82F6', // Royal Blue
     badgeBg: 'bg-blue-600/10 text-blue-400 border-blue-600/30',
-    keyQuestion: 'Is renal filtration rate (eGFR) driving fluid overload?'
+    keyQuestion: 'Is renal filtration rate (eGFR) driving fluid overload?',
+    deepGoals: {
+      primaryGoal: 'Halt eGFR decline & maintain glomerular hemodynamic equilibrium',
+      secondaryGoals: ['Eliminate renal vasoconstrictors (NSAIDs)', 'Monitor serum creatinine & K+', 'Optimize ACEi/ARB renal protection balance'],
+      constraints: ['Immediate alert if eGFR drops > 15% from baseline', 'Discontinue systemic NSAIDs'],
+      targetMetrics: [
+        { id: 'm-neph-1', name: 'Estimated GFR', unit: 'mL/min', current: 52, baseline: 68, target: 65, isLowerBetter: false },
+        { id: 'm-neph-2', name: 'Renal Hemodynamic Risk', unit: '%', current: 28, baseline: 65, target: 10, isLowerBetter: true }
+      ],
+      utilityWeights: { safety: 0.65, efficacy: 0.25, speed: 0.05, qualityOfLife: 0.05 },
+      goalAttainment: 85,
+      coalitionId: 'coalition-safety'
+    }
   },
   immunology: {
     id: 'immunology',
-    name: 'Immunology AI',
+    name: 'Immunology Cascade Module',
     roleTitle: 'Inflammatory Cascade & Biomarkers',
     avatarIcon: 'Flame',
     color: '#FF6B35', // Warm Orange
     badgeBg: 'bg-orange-500/10 text-orange-400 border-orange-500/30',
-    keyQuestion: 'Are systemic inflammatory markers (hs-CRP/IL-6) elevated?'
+    keyQuestion: 'Are systemic inflammatory markers (hs-CRP/IL-6) elevated?',
+    deepGoals: {
+      primaryGoal: 'Suppress chronic low-grade systemic inflammation & joint tissue destruction',
+      secondaryGoals: ['Track hs-CRP & ESR biomarkers', 'Evaluate anti-inflammatory pathways', 'Prevent flare-ups'],
+      constraints: ['Prefer non-systemic anti-inflammatory modalities in renal impairment'],
+      targetMetrics: [
+        { id: 'm-imm-1', name: 'hs-CRP Level', unit: 'mg/L', current: 4.8, baseline: 1.2, target: 2.0, isLowerBetter: true },
+        { id: 'm-imm-2', name: 'Inflammatory Index', unit: 'pts', current: 62, baseline: 30, target: 25, isLowerBetter: true }
+      ],
+      utilityWeights: { safety: 0.40, efficacy: 0.35, speed: 0.05, qualityOfLife: 0.20 },
+      goalAttainment: 83,
+      coalitionId: 'coalition-diagnostic'
+    }
   },
   ethics: {
     id: 'ethics',
-    name: 'Bioethics AI',
+    name: 'Bioethics & QoL Module',
     roleTitle: 'Shared Decision & Quality of Life',
     avatarIcon: 'Scale',
     color: '#A855F7', // Violet
     badgeBg: 'bg-violet-500/10 text-violet-400 border-violet-500/30',
-    keyQuestion: 'Does the clinical plan honor patient autonomy & preferences?'
+    keyQuestion: 'Does the clinical plan honor patient autonomy & preferences?',
+    deepGoals: {
+      primaryGoal: 'Maximize patient pain relief, mobility, and shared decision satisfaction',
+      secondaryGoals: ['Ensure non-opioid, non-systemic analgesia alternatives', 'Honor patient functional goals (gardening, mobility)', 'Prevent polypharmacy burden'],
+      constraints: ['Do not compromise pain management without providing an effective non-toxic alternative'],
+      targetMetrics: [
+        { id: 'm-eth-1', name: 'Pain Relief Attainment', unit: '%', current: 85, baseline: 40, target: 90, isLowerBetter: false },
+        { id: 'm-eth-2', name: 'Patient Autonomy Index', unit: '%', current: 95, baseline: 70, target: 98, isLowerBetter: false }
+      ],
+      utilityWeights: { safety: 0.20, efficacy: 0.20, speed: 0.10, qualityOfLife: 0.50 },
+      goalAttainment: 92,
+      coalitionId: 'coalition-qol'
+    }
   },
   swarm_orchestrator: {
     id: 'swarm_orchestrator',
-    name: 'Swarm Coordinator',
+    name: 'Orchestration Visualizer Module',
     roleTitle: 'Particle Swarm & Collective Intelligence',
     avatarIcon: 'Cpu',
     color: '#FFE600', // Bright Yellow
     badgeBg: 'bg-yellow-400/20 text-yellow-300 border-yellow-400/40',
-    keyQuestion: 'Has particle consensus converged across all agent sub-clusters?'
+    keyQuestion: 'Has particle consensus converged across all agent sub-clusters?',
+    deepGoals: {
+      primaryGoal: 'Orchestrate particle swarm optimization to find global clinical consensus g_best',
+      secondaryGoals: ['Balance cognitive vs social weights', 'Monitor swarm cohesion & entropy', 'Inject stress-test perturbations'],
+      constraints: ['Maintain particle diversity until cohesion threshold > 80%'],
+      targetMetrics: [
+        { id: 'm-swarm-1', name: 'Global Best Fitness', unit: 'pts', current: 94.6, baseline: 60, target: 96, isLowerBetter: false },
+        { id: 'm-swarm-2', name: 'Swarm Cohesion', unit: '%', current: 88.4, baseline: 30, target: 90, isLowerBetter: false }
+      ],
+      utilityWeights: { safety: 0.35, efficacy: 0.35, speed: 0.15, qualityOfLife: 0.15 },
+      goalAttainment: 96,
+      coalitionId: 'coalition-consensus'
+    }
   }
 };
 
@@ -253,16 +409,16 @@ export const INITIAL_DATA_CLUSTERS: DataClusterGroup[] = [
 ];
 
 export const KNOWLEDGE_GRAPH_NODES: ClusterNode[] = [
-  { id: 'sym-1', clusterId: 'symptoms', label: 'Exertional Dyspnea', type: 'Symptom', x: 120, y: 100, status: 'abnormal', value: 'Grade II', details: 'Breathlessness climbing stairs' },
-  { id: 'sym-2', clusterId: 'symptoms', label: 'Leg Edema', type: 'Symptom', x: 140, y: 220, status: 'abnormal', value: '2+ Pitting', details: 'Bilateral ankle edema' },
-  { id: 'hist-2', clusterId: 'history', label: 'Stage 2 CKD', type: 'Condition', x: 300, y: 80, status: 'warning', value: 'Baseline eGFR ~68', details: 'Chronic Kidney Disease history' },
-  { id: 'hist-1', clusterId: 'history', label: 'Hypertension', type: 'Condition', x: 320, y: 240, status: 'normal', value: '138/86', details: 'Essential hypertension' },
-  { id: 'rep-2', clusterId: 'reports', label: 'eGFR Drop (52)', type: 'LabResult', x: 500, y: 90, status: 'critical', value: '52 mL/min', details: 'Down from 64 mL/min in 2025' },
-  { id: 'rep-3', clusterId: 'reports', label: 'NT-proBNP (480)', type: 'LabResult', x: 520, y: 210, status: 'abnormal', value: '480 pg/mL', details: 'Ventricular stretch biomarker' },
-  { id: 'med-1', clusterId: 'medication', label: 'Lisinopril 20mg', type: 'Medication', x: 700, y: 120, status: 'normal', value: 'Daily', details: 'ACE Inhibitor therapy' },
-  { id: 'med-3', clusterId: 'medication', label: 'OTC Ibuprofen', type: 'Medication', x: 720, y: 260, status: 'critical', value: '400mg PRN', details: 'NSAID intake 3x weekly' },
-  { id: 'risk-1', clusterId: 'risk', label: 'NSAID-ACEi Toxicity', type: 'RiskFactor', x: 420, y: 340, status: 'critical', value: 'High Concern', details: 'Renal hemodynamics impairment' },
-  { id: 'rec-3', clusterId: 'recovery', label: 'Clinician Escalation', type: 'ActionItem', x: 260, y: 360, status: 'abnormal', value: 'Pending', details: 'Requires nephrology/cardiology consult' }
+  { id: 'sym-1', clusterId: 'symptoms', label: 'Exertional Dyspnea', type: 'Symptom', x: 120, y: 100, status: 'abnormal', value: 'Grade II', details: 'Breathlessness climbing stairs', vector: { riskScore: 72, temporalRecency: 90, genomicRelevance: 30, affectedPersonaGoalId: 'clinical' }, affectedPersonaId: 'clinical' },
+  { id: 'sym-2', clusterId: 'symptoms', label: 'Leg Edema', type: 'Symptom', x: 140, y: 220, status: 'abnormal', value: '2+ Pitting', details: 'Bilateral ankle edema', vector: { riskScore: 68, temporalRecency: 85, genomicRelevance: 20, affectedPersonaGoalId: 'lifestyle' }, affectedPersonaId: 'lifestyle' },
+  { id: 'hist-2', clusterId: 'history', label: 'Stage 2 CKD', type: 'Condition', x: 300, y: 80, status: 'warning', value: 'Baseline eGFR ~68', details: 'Chronic Kidney Disease history', vector: { riskScore: 82, temporalRecency: 40, genomicRelevance: 60, affectedPersonaGoalId: 'nephrology' }, affectedPersonaId: 'nephrology' },
+  { id: 'hist-1', clusterId: 'history', label: 'Hypertension', type: 'Condition', x: 320, y: 240, status: 'normal', value: '138/86', details: 'Essential hypertension', vector: { riskScore: 45, temporalRecency: 30, genomicRelevance: 50, affectedPersonaGoalId: 'clinical' }, affectedPersonaId: 'clinical' },
+  { id: 'rep-2', clusterId: 'reports', label: 'eGFR Drop (52)', type: 'LabResult', x: 500, y: 90, status: 'critical', value: '52 mL/min', details: 'Down from 64 mL/min in 2025', vector: { riskScore: 95, temporalRecency: 95, genomicRelevance: 85, affectedPersonaGoalId: 'nephrology' }, affectedPersonaId: 'nephrology' },
+  { id: 'rep-3', clusterId: 'reports', label: 'NT-proBNP (480)', type: 'LabResult', x: 520, y: 210, status: 'abnormal', value: '480 pg/mL', details: 'Ventricular stretch biomarker', vector: { riskScore: 78, temporalRecency: 88, genomicRelevance: 40, affectedPersonaGoalId: 'immunology' }, affectedPersonaId: 'immunology' },
+  { id: 'med-1', clusterId: 'medication', label: 'Lisinopril 20mg', type: 'Medication', x: 700, y: 120, status: 'normal', value: 'Daily', details: 'ACE Inhibitor therapy', vector: { riskScore: 40, temporalRecency: 98, genomicRelevance: 75, affectedPersonaGoalId: 'medication' }, affectedPersonaId: 'medication' },
+  { id: 'med-3', clusterId: 'medication', label: 'OTC Ibuprofen', type: 'Medication', x: 720, y: 260, status: 'critical', value: '400mg PRN', details: 'NSAID intake 3x weekly', vector: { riskScore: 98, temporalRecency: 99, genomicRelevance: 90, affectedPersonaGoalId: 'genomic' }, affectedPersonaId: 'genomic' },
+  { id: 'risk-1', clusterId: 'risk', label: 'NSAID-ACEi Toxicity', type: 'RiskFactor', x: 420, y: 340, status: 'critical', value: 'High Concern', details: 'Renal hemodynamics impairment', vector: { riskScore: 96, temporalRecency: 95, genomicRelevance: 80, affectedPersonaGoalId: 'triage' }, affectedPersonaId: 'triage' },
+  { id: 'rec-3', clusterId: 'recovery', label: 'Clinician Escalation', type: 'ActionItem', x: 260, y: 360, status: 'abnormal', value: 'Pending', details: 'Requires nephrology/cardiology consult', vector: { riskScore: 65, temporalRecency: 90, genomicRelevance: 10, affectedPersonaGoalId: 'ethics' }, affectedPersonaId: 'ethics' }
 ];
 
 export const KNOWLEDGE_GRAPH_EDGES: ClusterEdge[] = [

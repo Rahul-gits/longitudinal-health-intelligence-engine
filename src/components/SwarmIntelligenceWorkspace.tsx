@@ -47,7 +47,7 @@ export const SwarmIntelligenceWorkspace: React.FC<SwarmIntelligenceWorkspaceProp
   
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [selectedParticle, setSelectedParticle] = useState<SwarmParticle | null>(null);
-  const [activeTabMode, setActiveTabMode] = useState<'visualizer' | 'crossexam' | 'customizer'>('visualizer');
+  const [activeTabMode, setActiveTabMode] = useState<'visualizer' | 'coalitions' | 'crossexam' | 'customizer'>('visualizer');
 
   // Swarm Parameters
   const [inertia, setInertia] = useState<number>(0.72);
@@ -214,6 +214,17 @@ export const SwarmIntelligenceWorkspace: React.FC<SwarmIntelligenceWorkspaceProp
           >
             <Cpu className="w-4 h-4 stroke-[2.5]" />
             <span>2D Swarm Canvas & Telemetry</span>
+          </button>
+          <button
+            onClick={() => setActiveTabMode('coalitions')}
+            className={`flex items-center space-x-1.5 px-4 py-2 text-xs font-black font-display uppercase border-2 border-black transition-all cursor-pointer ${
+              activeTabMode === 'coalitions'
+                ? 'bg-[#A855F7] text-white shadow-[2px_2px_0px_0px_#000]'
+                : 'bg-[#FAF8F5] text-black/70 hover:bg-black/5'
+            }`}
+          >
+            <Target className="w-4 h-4 stroke-[2.5]" />
+            <span>Goal Coalitions & Friction</span>
           </button>
           <button
             onClick={() => setActiveTabMode('crossexam')}
@@ -484,6 +495,113 @@ export const SwarmIntelligenceWorkspace: React.FC<SwarmIntelligenceWorkspaceProp
                   </div>
                 ))}
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Mode 1.5: Persona Coalitions & Goal Friction Matrix */}
+      {activeTabMode === 'coalitions' && (
+        <div className="space-y-6 font-mono">
+          {/* Section Header */}
+          <div className="p-4 bg-[#A855F7] text-white border-3 border-black shadow-[5px_5px_0px_0px_#000] flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h3 className="text-sm font-black font-display uppercase tracking-wider flex items-center gap-2">
+                <Target className="w-5 h-5 stroke-[2.5]" />
+                PERSONA GOAL COALITIONS & FRICTION MATRIX
+              </h3>
+              <p className="text-xs text-white/90">Multi-Agent Vector Goal Clustering & Tension Resolution</p>
+            </div>
+            <span className="bg-black text-[#FFE600] px-3 py-1 text-xs font-black border border-black shadow-[2px_2px_0px_0px_#000]">
+              4 FUNCTIONAL COALITIONS ACTIVE
+            </span>
+          </div>
+
+          {/* Coalitions Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {engineRef.current.getPersonaCoalitions().map(coalition => (
+              <div key={coalition.id} className="p-5 bg-white border-3 border-black shadow-[4px_4px_0px_0px_#000]">
+                <div className="flex items-center justify-between border-b-2 border-black pb-2 mb-3">
+                  <div className="flex items-center space-x-2">
+                    <span className="w-4 h-4 border border-black shadow-[1px_1px_0px_0px_#000]" style={{ backgroundColor: coalition.color }}></span>
+                    <h4 className="font-black font-display text-sm text-black">{coalition.name}</h4>
+                  </div>
+                  <span className="px-2 py-0.5 text-[10px] font-black uppercase bg-black text-[#FFE600] border border-black">
+                    {coalition.consensusScore}% ALIGNED
+                  </span>
+                </div>
+
+                <p className="text-xs text-black/80 font-sans mb-3">{coalition.description}</p>
+
+                <div className="bg-[#FAF8F5] p-2.5 border border-black mb-3">
+                  <span className="text-[10px] font-black uppercase text-black/70 block">SHARED GOAL FOCUS:</span>
+                  <span className="text-xs font-extrabold text-black block mt-0.5">"{coalition.sharedGoalFocus}"</span>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-black/20">
+                  <span className="text-[10px] font-black uppercase text-black/60">MEMBER PERSONAS:</span>
+                  {coalition.memberIds.map(mId => {
+                    const p = PERSONA_PROFILES[mId];
+                    return (
+                      <span key={mId} className="px-2 py-0.5 text-[10px] font-black uppercase bg-[#FAF8F5] text-black border border-black shadow-[1px_1px_0px_0px_#000]">
+                        {p?.name || mId}
+                      </span>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Pairwise Goal Friction Resolution Matrix */}
+          <div className="p-5 bg-white border-3 border-black shadow-[5px_5px_0px_0px_#000]">
+            <div className="flex items-center space-x-2 border-b-2 border-black pb-3 mb-4">
+              <Scale className="w-5 h-5 text-[#F59E0B] stroke-[2.5]" />
+              <div>
+                <h4 className="font-black font-display text-sm text-black uppercase">PAIRWISE PERSONA GOAL FRICTION MATRIX</h4>
+                <p className="text-[10px] text-black/70">Quantified goal tension and consensus resolution pathways</p>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              {engineRef.current.getGoalFrictionMatrix().map((cell, idx) => {
+                const pA = PERSONA_PROFILES[cell.personaA];
+                const pB = PERSONA_PROFILES[cell.personaB];
+
+                return (
+                  <div key={idx} className="p-4 bg-[#FAF8F5] border-2 border-black shadow-[3px_3px_0px_0px_#000]">
+                    <div className="flex flex-wrap items-center justify-between gap-2 border-b border-black/30 pb-2 mb-2">
+                      <div className="flex items-center space-x-2">
+                        <span className="px-2.5 py-0.5 text-xs font-black uppercase border border-black" style={{ backgroundColor: pA?.color || '#3B82F6', color: '#FFF' }}>
+                          {pA?.name || cell.personaA}
+                        </span>
+                        <span className="font-black font-display text-xs">VS</span>
+                        <span className="px-2.5 py-0.5 text-xs font-black uppercase border border-black" style={{ backgroundColor: pB?.color || '#A855F7', color: '#FFF' }}>
+                          {pB?.name || cell.personaB}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <span className="text-[10px] font-black uppercase">FRICTION SCORE:</span>
+                        <span className="bg-[#FF6B35] text-black px-2 py-0.5 font-black border border-black text-xs">
+                          {cell.frictionScore} / 100
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                      <div className="bg-white p-2.5 border border-black">
+                        <span className="text-[10px] font-black uppercase text-[#F43F5E] block mb-1">TENSION REASON:</span>
+                        <p className="text-black/90 font-sans">{cell.tensionReason}</p>
+                      </div>
+                      <div className="bg-[#CCFF00] p-2.5 border border-black">
+                        <span className="text-[10px] font-black uppercase text-black block mb-1">SWARM RESOLUTION STRATEGY:</span>
+                        <p className="text-black font-bold font-sans">{cell.resolutionStrategy}</p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>

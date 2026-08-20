@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { PersonaTurn, PersonaId } from '../types/health';
+import { PersonaTurn, PersonaId, PersonaProfile } from '../types/health';
 import { PERSONA_PROFILES } from '../data/mockPatientData';
 import { 
   Play, 
@@ -20,7 +20,11 @@ import {
   Dna,
   HeartPulse,
   Flame,
-  Cpu
+  Cpu,
+  Target,
+  AlertCircle,
+  BarChart3,
+  X
 } from 'lucide-react';
 
 interface PersonaDebateStudioProps {
@@ -46,6 +50,7 @@ export const PersonaDebateStudio: React.FC<PersonaDebateStudioProps> = ({
 }) => {
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [customInput, setCustomInput] = useState<string>('');
+  const [inspectingPersona, setInspectingPersona] = useState<PersonaProfile | null>(null);
 
   // Auto-play timer for live case conference simulation
   useEffect(() => {
@@ -90,7 +95,7 @@ export const PersonaDebateStudio: React.FC<PersonaDebateStudioProps> = ({
   };
 
   return (
-    <div className="flex flex-col h-full bg-[#FFFFFF] border-3 border-black shadow-[5px_5px_0px_0px_#000] overflow-hidden">
+    <div className="flex flex-col h-full bg-[#FFFFFF] border-3 border-black shadow-[5px_5px_0px_0px_#000] overflow-hidden relative">
       {/* Panel Header & Controls Bar */}
       <div className="px-4 py-3 border-b-3 border-black bg-[#FF70A6] flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center space-x-2">
@@ -101,7 +106,7 @@ export const PersonaDebateStudio: React.FC<PersonaDebateStudioProps> = ({
             <h3 className="text-sm font-black font-display text-black uppercase tracking-wider">
               PANEL 1: DEBATE STUDIO
             </h3>
-            <p className="text-[10px] font-mono font-bold text-black/90">Multi-Agent Case Conference</p>
+            <p className="text-[10px] font-mono font-bold text-black/90">Deep Goal-Based Multi-Agent Case Conference</p>
           </div>
         </div>
 
@@ -173,6 +178,7 @@ export const PersonaDebateStudio: React.FC<PersonaDebateStudioProps> = ({
           const profile = PERSONA_PROFILES[turn.personaId];
           const Icon = getPersonaIcon(turn.personaId);
           const isLatest = index === currentTurnIndex;
+          const deepGoal = profile?.deepGoals;
 
           return (
             <div
@@ -204,15 +210,40 @@ export const PersonaDebateStudio: React.FC<PersonaDebateStudioProps> = ({
                   </div>
                 </div>
 
-                <button
-                  onClick={(e) => { e.stopPropagation(); onOpenExplainabilityModal(turn); }}
-                  className="flex items-center space-x-1 px-2 py-1 bg-[#FFE600] text-black font-black text-[10px] border border-black shadow-[1px_1px_0px_0px_#000] hover:bg-[#CCFF00] transition-all cursor-pointer uppercase"
-                  title="View Evidence & Reasoning Trace"
-                >
-                  <Sparkles className="w-3 h-3 text-black stroke-[2.5]" />
-                  <span>Trace</span>
-                </button>
+                <div className="flex items-center space-x-1.5">
+                  {/* Goal Inspect Button */}
+                  <button
+                    onClick={(e) => { e.stopPropagation(); setInspectingPersona(profile); }}
+                    className="flex items-center space-x-1 px-2 py-1 bg-[#A855F7] text-white font-black text-[10px] border border-black shadow-[1px_1px_0px_0px_#000] hover:bg-[#9333EA] transition-all cursor-pointer uppercase"
+                    title="Inspect Deep Goal Hierarchy"
+                  >
+                    <Target className="w-3 h-3 text-white stroke-[2.5]" />
+                    <span>Goal ({deepGoal?.goalAttainment || 90}%)</span>
+                  </button>
+
+                  <button
+                    onClick={(e) => { e.stopPropagation(); onOpenExplainabilityModal(turn); }}
+                    className="flex items-center space-x-1 px-2 py-1 bg-[#FFE600] text-black font-black text-[10px] border border-black shadow-[1px_1px_0px_0px_#000] hover:bg-[#CCFF00] transition-all cursor-pointer uppercase"
+                    title="View Evidence & Reasoning Trace"
+                  >
+                    <Sparkles className="w-3 h-3 text-black stroke-[2.5]" />
+                    <span>Trace</span>
+                  </button>
+                </div>
               </div>
+
+              {/* Primary Goal Highlight Pill */}
+              {deepGoal && (
+                <div className="mb-2 px-2.5 py-1 bg-[#FAF8F5] border border-black flex items-center justify-between text-[10px] font-mono font-bold">
+                  <div className="flex items-center space-x-1 text-black/80 truncate">
+                    <span className="text-black font-black uppercase">PRIMARY GOAL:</span>
+                    <span className="text-black truncate">"{deepGoal.primaryGoal}"</span>
+                  </div>
+                  <span className="bg-[#CCFF00] text-black px-1.5 border border-black font-black">
+                    {deepGoal.goalAttainment}% ATTAINED
+                  </span>
+                </div>
+              )}
 
               {/* Persona Headline & Speech Text */}
               <h4 className="text-xs font-black font-display text-black mb-1">{turn.headline}</h4>
@@ -264,6 +295,133 @@ export const PersonaDebateStudio: React.FC<PersonaDebateStudioProps> = ({
           <span>Discuss</span>
         </button>
       </form>
+
+      {/* Deep Goal Hierarchy Drawer / Modal */}
+      {inspectingPersona && inspectingPersona.deepGoals && (
+        <div className="absolute inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+          <div className="bg-[#FFFFFF] border-4 border-black shadow-[8px_8px_0px_0px_#000] w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95">
+            {/* Modal Header */}
+            <div className="p-4 border-b-3 border-black flex items-center justify-between" style={{ backgroundColor: inspectingPersona.color }}>
+              <div className="flex items-center space-x-2.5">
+                <div className="w-8 h-8 bg-black text-white border-2 border-black flex items-center justify-center font-black">
+                  <Target className="w-4 h-4 stroke-[2.5]" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-black font-display text-black uppercase">{inspectingPersona.name} — DEEP GOAL ARCHITECTURE</h3>
+                  <p className="text-[10px] font-mono font-bold text-black/90">{inspectingPersona.roleTitle}</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setInspectingPersona(null)}
+                className="w-7 h-7 bg-white text-black border-2 border-black shadow-[2px_2px_0px_0px_#000] flex items-center justify-center font-black cursor-pointer hover:bg-[#FF5722] hover:text-white transition-all"
+              >
+                <X className="w-4 h-4 stroke-[3]" />
+              </button>
+            </div>
+
+            {/* Modal Content Scroll Area */}
+            <div className="p-4 overflow-y-auto space-y-4 font-mono text-xs text-black">
+              {/* Primary Goal Card */}
+              <div className="p-3 bg-[#FFE600] border-2 border-black shadow-[3px_3px_0px_0px_#000]">
+                <span className="text-[10px] font-black uppercase block text-black/80">PRIMARY CLINICAL OBJECTIVE</span>
+                <p className="font-extrabold text-sm text-black mt-0.5">"{inspectingPersona.deepGoals.primaryGoal}"</p>
+                <div className="mt-2 flex items-center justify-between text-[11px] font-black border-t border-black/40 pt-1.5">
+                  <span>GOAL ATTAINMENT:</span>
+                  <span className="bg-black text-[#FFE600] px-2 py-0.5 border border-black">{inspectingPersona.deepGoals.goalAttainment}%</span>
+                </div>
+              </div>
+
+              {/* Secondary Goals */}
+              <div className="p-3 bg-[#FAF8F5] border-2 border-black shadow-[3px_3px_0px_0px_#000]">
+                <span className="text-[10px] font-black uppercase text-black block mb-2">SECONDARY TARGET OBJECTIVES</span>
+                <ul className="space-y-1 text-[11px] font-bold">
+                  {inspectingPersona.deepGoals.secondaryGoals.map((sg, i) => (
+                    <li key={i} className="flex items-center space-x-2">
+                      <span className="w-2 h-2 bg-[#00F5D4] border border-black"></span>
+                      <span>{sg}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Hard Safety Guardrails / Constraints */}
+              <div className="p-3 bg-[#FF70A6] text-black border-2 border-black shadow-[3px_3px_0px_0px_#000]">
+                <span className="text-[10px] font-black uppercase flex items-center gap-1 mb-1">
+                  <AlertCircle className="w-3.5 h-3.5 stroke-[2.5]" />
+                  HARD SAFETY GUARDRAILS (CONSTRAINTS)
+                </span>
+                <ul className="space-y-1 text-[11px] font-bold">
+                  {inspectingPersona.deepGoals.constraints.map((c, i) => (
+                    <li key={i} className="bg-white/80 p-1.5 border border-black">
+                      ⛔ {c}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Target Metrics */}
+              <div className="p-3 bg-[#FFFFFF] border-2 border-black shadow-[3px_3px_0px_0px_#000]">
+                <span className="text-[10px] font-black uppercase text-black flex items-center gap-1 mb-2">
+                  <BarChart3 className="w-3.5 h-3.5 stroke-[2.5]" />
+                  TARGET METRIC GAUGES
+                </span>
+                <div className="space-y-2">
+                  {inspectingPersona.deepGoals.targetMetrics.map(m => {
+                    const pct = Math.min(100, Math.round((m.current / m.target) * 100));
+                    return (
+                      <div key={m.id} className="bg-[#FAF8F5] p-2 border border-black">
+                        <div className="flex items-center justify-between text-[11px] font-black">
+                          <span>{m.name}</span>
+                          <span>{m.current} / {m.target} {m.unit}</span>
+                        </div>
+                        <div className="w-full bg-white h-2.5 border border-black mt-1">
+                          <div
+                            className="bg-[#3A86FF] h-full transition-all"
+                            style={{ width: `${pct}%` }}
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Utility Function Weights */}
+              <div className="p-3 bg-[#CCFF00] border-2 border-black shadow-[3px_3px_0px_0px_#000]">
+                <span className="text-[10px] font-black uppercase block text-black mb-1">GOAL UTILITY FUNCTION WEIGHTS</span>
+                <div className="grid grid-cols-4 gap-1 text-[10px] font-black text-center">
+                  <div className="bg-white p-1 border border-black">
+                    <div>SAFETY</div>
+                    <div className="text-xs text-[#F43F5E]">{Math.round(inspectingPersona.deepGoals.utilityWeights.safety * 100)}%</div>
+                  </div>
+                  <div className="bg-white p-1 border border-black">
+                    <div>EFFICACY</div>
+                    <div className="text-xs text-[#3B82F6]">{Math.round(inspectingPersona.deepGoals.utilityWeights.efficacy * 100)}%</div>
+                  </div>
+                  <div className="bg-white p-1 border border-black">
+                    <div>SPEED</div>
+                    <div className="text-xs text-[#F59E0B]">{Math.round(inspectingPersona.deepGoals.utilityWeights.speed * 100)}%</div>
+                  </div>
+                  <div className="bg-white p-1 border border-black">
+                    <div>QOL</div>
+                    <div className="text-xs text-[#A855F7]">{Math.round(inspectingPersona.deepGoals.utilityWeights.qualityOfLife * 100)}%</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-3 bg-[#FAF8F5] border-t-2 border-black flex justify-end">
+              <button
+                onClick={() => setInspectingPersona(null)}
+                className="px-4 py-1.5 bg-black text-[#FFE600] font-black text-xs border border-black shadow-[2px_2px_0px_0px_#000] cursor-pointer hover:bg-[#FFE600] hover:text-black uppercase"
+              >
+                Close Inspector
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
