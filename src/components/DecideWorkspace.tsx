@@ -59,13 +59,13 @@ export const DecideWorkspace: React.FC = () => {
       <div className="p-5 bg-[#00F5D4] text-black border-3 border-black shadow-[6px_6px_0px_0px_#000]">
         <div className="flex items-center space-x-2 bg-black text-[#00F5D4] px-2.5 py-0.5 w-fit border border-black -rotate-1 text-xs font-black uppercase mb-1">
           <Stethoscope className="w-4 h-4 stroke-[2.5]" />
-          <span>STEP 5: DECIDE (CARE OPTIONS & CLINICIAN REVIEW)</span>
+          <span>STEP 5: DECIDE</span>
         </div>
         <h2 className="text-2xl font-black font-display text-black uppercase tracking-tight">
-          What Should We Do? (Human-in-the-Loop Decision Support)
+          What Should We Do? (Evidence-Informed Decision Support)
         </h2>
         <p className="text-xs font-bold text-black/90 mt-1 max-w-3xl font-mono leading-relaxed">
-          Heal Engine provides safe, evidence-supported care options and What-If impact simulations, giving clinicians full authority to approve, modify, or reject recommendations.
+          Heal Engine provides evidence-informed Care Options, "Why NOT?" rejection forensics, and "What-If" simulations for mandatory clinician review.
         </p>
       </div>
 
@@ -73,9 +73,9 @@ export const DecideWorkspace: React.FC = () => {
       <div className="p-5 bg-white border-3 border-black shadow-[4px_4px_0px_0px_#000] space-y-3">
         <div className="flex items-center justify-between border-b-2 border-black pb-2">
           <h3 className="text-sm font-black font-display uppercase flex items-center gap-2 text-black">
-            <Target className="w-4 h-4 text-[#00F5D4] stroke-[2.5]" /> Prioritized Care Options
+            <Target className="w-4 h-4 text-[#00F5D4] stroke-[2.5]" /> Evidence-Informed Care Options for Clinician Review
           </h3>
-          <span className="text-[10px] font-black bg-[#CCFF00] text-black border border-black px-2 py-0.5">3 SAFE ALTERNATIVES</span>
+          <span className="text-[10px] font-black bg-[#CCFF00] text-black border border-black px-2 py-0.5">3 CANDIDATE OPTIONS</span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 font-sans text-xs">
@@ -88,7 +88,7 @@ export const DecideWorkspace: React.FC = () => {
               <h4 className="font-extrabold text-sm text-black">{alt.title}</h4>
               <p className="text-black/80 font-medium">{alt.description}</p>
               <div className="pt-2 border-t border-black/20 font-mono text-[10px] space-y-1">
-                <span className="font-bold text-black block">Why Selected:</span>
+                <span className="font-bold text-black block">Applicability Criteria:</span>
                 <p className="text-black/70">{alt.selectionCriteria}</p>
                 <span className="inline-block bg-[#00F5D4] border border-black px-1.5 py-0.2 text-[9px] font-bold">
                   {alt.evidenceGrade}
@@ -99,13 +99,13 @@ export const DecideWorkspace: React.FC = () => {
         </div>
       </div>
 
-      {/* Why NOT? & Re-Evaluation Triggers Grid */}
+      {/* Why NOT? & What-If Panels Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         {/* Why NOT? Panel */}
         <div className="p-5 bg-white border-3 border-black shadow-[4px_4px_0px_0px_#000] space-y-3">
           <div className="flex items-center justify-between border-b-2 border-black pb-2">
             <span className="font-black font-display uppercase tracking-wider flex items-center gap-1.5 text-black">
-              <HelpCircle className="w-4 h-4 text-[#FF70A6] stroke-[2.5]" /> Why NOT? Excluded Options
+              <HelpCircle className="w-4 h-4 text-[#FF70A6] stroke-[2.5]" /> Why NOT? Excluded Candidates
             </span>
             <span className="text-[10px] font-black bg-[#FF70A6] text-black border border-black px-1.5 py-0.5">3 EXCLUDED</span>
           </div>
@@ -127,7 +127,7 @@ export const DecideWorkspace: React.FC = () => {
         <div className="p-5 bg-[#CCFF00]/20 border-3 border-black shadow-[4px_4px_0px_0px_#000] space-y-3">
           <div className="flex items-center justify-between border-b-2 border-black pb-2">
             <span className="font-black font-display uppercase tracking-wider flex items-center gap-1.5 text-black">
-              <Sliders className="w-4 h-4 text-black stroke-[2.5]" /> Re-run Impact / What-If Simulator
+              <Sliders className="w-4 h-4 text-black stroke-[2.5]" /> What If? Clinical Simulator
             </span>
             <span className="text-[10px] font-black bg-[#CCFF00] text-black border border-black px-1.5 py-0.5">INTERACTIVE</span>
           </div>

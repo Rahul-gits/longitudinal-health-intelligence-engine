@@ -508,11 +508,28 @@ export interface DecisionSynthesisResult {
   timestamp: string;
 }
 
+export type InformationCompletenessState = 'SUFFICIENT' | 'INCOMPLETE' | 'INSUFFICIENT';
+
+export interface MissingDataRequirement {
+  id: string;
+  item: string;
+  status: 'PENDING' | 'MISSING' | 'COLLECTED';
+  importance: string;
+  clinicalImpact: string;
+}
+
 export interface BenchmarkScenario {
   id: string;
   scenarioName: string;
-  domainCategory: 'Renal/Cardio' | 'Diabetes/Polypharmacy' | 'Hepatic/Dosing' | 'Elderly/Fall Risk' | 'Missing Data' | 'Temporal Decline';
+  domainCategory: 'Medication Safety' | 'Renal / Cardiac' | 'Polypharmacy' | 'Missing / Conflicting Data' | 'Longitudinal Trajectory';
   patientCaseSummary: string;
+  availableData: string[];
+  missingData: string[];
+  expectedSafetyFindings: string;
+  expectedEvidence: string;
+  expectedAcceptableActions: string[];
+  unacceptableActions: string[];
+  evaluationCriteria: string;
   baselineA_LLM: {
     recommendation: string;
     safetyPassed: boolean;
@@ -543,6 +560,7 @@ export interface BenchmarkScenario {
 
 export interface BenchmarkSuiteMetrics {
   totalScenarios: number;
+  syntheticDisclaimer: string;
   safety: {
     baselineA_UnsafeRate: number;
     baselineB_UnsafeRate: number;

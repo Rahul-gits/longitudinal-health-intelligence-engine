@@ -11,7 +11,8 @@ import {
   FileText, 
   ShieldCheck,
   CheckCircle2,
-  Calendar
+  Calendar,
+  Layers
 } from 'lucide-react';
 
 export const UnderstandWorkspace: React.FC = () => {
@@ -23,14 +24,34 @@ export const UnderstandWorkspace: React.FC = () => {
       <div className="p-5 bg-[#FFE600] border-3 border-black shadow-[6px_6px_0px_0px_#000]">
         <div className="flex items-center space-x-2 bg-black text-[#FFE600] px-2.5 py-0.5 w-fit border border-black -rotate-1 text-xs font-black uppercase mb-1">
           <Heart className="w-4 h-4 text-[#FF70A6] stroke-[2.5]" />
-          <span>STEP 1: UNDERSTAND ME</span>
+          <span>STEP 1: UNDERSTAND</span>
         </div>
         <h2 className="text-2xl font-black font-display text-black uppercase tracking-tight">
           What Do We Know About Eleanor Vance?
         </h2>
         <p className="text-xs font-bold text-black/90 mt-1 max-w-3xl font-mono leading-relaxed">
-          Heal Engine unifies fragmented EHR records, continuous wearable telemetry, active medications, lab history, and pharmacogenomics into a single trusted Patient Health Picture (State Version: {patientState.versionId}).
+          Heal Engine unifies fragmented EHR records, continuous wearable telemetry, active medications, lab history, and pharmacogenomics into a single trusted Patient Health Picture.
         </p>
+
+        {/* Separated Version Metadata Grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-4 bg-white p-3 border-2 border-black text-[10px]">
+          <div>
+            <span className="font-bold text-black/60 block uppercase">Patient Health State:</span>
+            <span className="font-black text-black text-xs">v1.4</span>
+          </div>
+          <div>
+            <span className="font-bold text-black/60 block uppercase">Engine Model:</span>
+            <span className="font-black text-[#3A86FF] text-xs">v2.1</span>
+          </div>
+          <div>
+            <span className="font-bold text-black/60 block uppercase">Safety Policy:</span>
+            <span className="font-black text-[#F43F5E] text-xs">v3.0</span>
+          </div>
+          <div>
+            <span className="font-bold text-black/60 block uppercase">Evidence Base:</span>
+            <span className="font-black text-[#00F5D4] bg-black px-1 text-xs">v2024.2</span>
+          </div>
+        </div>
       </div>
 
       {/* Grid of Unified Patient Data */}
@@ -93,7 +114,7 @@ export const UnderstandWorkspace: React.FC = () => {
             <div className="p-2.5 bg-[#FAF8F5] border-2 border-black">
               <span className="font-mono font-bold text-[10px] text-[#A855F7] block uppercase">Pharmacogenomics:</span>
               <span className="font-extrabold text-xs text-black">CYP2C9*3 (rs1057910)</span>
-              <p className="font-mono text-[10px] text-black/70 mt-0.5">Intermediate / Slow Metabolizer: ~50% delayed clearance of systemic NSAIDs.</p>
+              <p className="font-mono text-[10px] text-black/70 mt-0.5">Intermediate / Slow Metabolizer: potential influence on NSAID clearance.</p>
             </div>
 
             <div className="p-2.5 bg-[#FAF8F5] border-2 border-black">

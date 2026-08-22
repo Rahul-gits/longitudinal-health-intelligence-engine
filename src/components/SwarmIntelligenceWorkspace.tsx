@@ -174,14 +174,14 @@ export const SwarmIntelligenceWorkspace: React.FC<SwarmIntelligenceWorkspaceProp
         <div>
           <div className="flex items-center space-x-2">
             <span className="bg-black text-[#FFE600] px-2.5 py-0.5 text-xs font-black uppercase font-mono border border-black -rotate-1">
-              MULTI-AGENT CONVERGENCE
+              REASONING TRACE (EXPERIMENTAL)
             </span>
             <h2 className="text-xl font-black font-display text-black uppercase tracking-tight flex items-center gap-2">
-              <Cpu className="w-6 h-6 stroke-[2.5]" /> SWARM INTELLIGENCE ENGINE
+              <Cpu className="w-6 h-6 stroke-[2.5]" /> REASONING TRACE VISUALIZER
             </h2>
           </div>
-          <p className="text-xs font-bold text-black/90 font-mono mt-1">
-            Particle Swarm Optimization (PSO) for 13+ Micro-Agent Clinical Consensus, Emergence Telemetry, & Signal Passing.
+          <p className="text-xs font-bold text-black/90 font-mono mt-1 max-w-2xl">
+            Experimental visualization of how candidate solutions move through the multi-objective optimization space. Clinical decisions are derived from validated guidelines, deterministic safety policies, and clinician review.
           </p>
         </div>
 

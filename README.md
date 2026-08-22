@@ -1,12 +1,12 @@
 # ⚡ Heal Engine — Longitudinal Clinical Decision Intelligence for Complex Care
 
-> **Heal Engine helps people and clinicians understand what is changing in a patient's health, detect risks, explain why they matter, protect against unsafe options, make informed decisions, and monitor what happens next.**
+> **Heal Engine turns complex patient information into understandable, evidence-informed clinical decision support.**
 > 
-> *Powered by longitudinal patient modeling, specialized clinical reasoning, evidence intelligence, deterministic safety constraints, and human-in-the-loop decision support.*
+> *It continuously builds a longitudinal picture of the patient, identifies meaningful changes and potential risks, explains contributing factors, checks safety constraints, presents care options for clinician review, and monitors outcomes over time.*
 
 ---
 
-## 🧭 The 6-Step Human-Centered Experience
+## 🧭 Diagram 1: Human Experience Architecture
 
 ```
                  ┌────────────────────────────────┐
@@ -15,22 +15,22 @@
                  └───────────────┬────────────────┘
                                  ↓
                  ┌────────────────────────────────┐
-                 │           2. DETECT            │ (eGFR Drop: 64 → 52 mL/min)
+                 │           2. DETECT            │ (⚠️ eGFR: 64 → 52 mL/min)
                  │ "What changed/needs attention?"│
                  └───────────────┬────────────────┘
                                  ↓
                  ┌────────────────────────────────┐
-                 │           3. EXPLAIN           │ (3 Contributing Factors)
+                 │           3. EXPLAIN           │ (Potential Contributing Factors)
                  │     "Why is this happening?"   │
                  └───────────────┬────────────────┘
                                  ↓
                  ┌────────────────────────────────┐
-                 │           4. PROTECT           │ (Deterministic Safety Check)
+                 │           4. PROTECT           │ (🛡️ High-Risk Pattern Flagged)
                  │   "Is anything unsafe/risky?"  │
                  └───────────────┬────────────────┘
                                  ↓
                  ┌────────────────────────────────┐
-                 │           5. DECIDE            │ (Care Options A, B, C)
+                 │           5. DECIDE            │ (Evidence-Informed Care Options)
                  │      "What should we do?"      │
                  └───────────────┬────────────────┘
                                  ↓
@@ -39,47 +39,91 @@
                  │ "What happened after decision?"│
                  └───────────────┬────────────────┘
                                  │
-                                 └──────────→ Updated State (v1.5.0 Loop)
+                                 └──────────→ Updated Patient Health State v1.5
 ```
 
 ---
 
-## 🧩 Human Experience vs Internal Engine Architecture
+## ⚙️ Diagram 2: Internal Technical Architecture
 
-| Human-Facing Concept | Internal Clinical Intelligence Engine |
-| :--- | :--- |
-| **1. Understand** | Data Ingestion $\rightarrow$ Data Validation $\rightarrow$ Patient Clinical State ($v1.4.2$) |
-| **2. Detect** | Longitudinal Timeline $\rightarrow$ Trajectory Delta $\rightarrow$ Risk Pattern Detection |
-| **3. Explain** | 13 Specialist Modules $\rightarrow$ Knowledge Graph $\rightarrow$ Evidence Intelligence RAG $\rightarrow$ Goal Conflicts |
-| **4. Protect** | Deterministic Hard Safety Rules $\rightarrow$ Contraindications $\rightarrow$ Drug Interactions |
-| **5. Decide** | Decision Synthesis $\rightarrow$ Uncertainty Estimation $\rightarrow$ Clinician Review (Approve/Modify/Reject) |
-| **6. Monitor** | 14-Day Outcome Tracking $\rightarrow$ Recovery Loop $\rightarrow$ Patient State Update |
+```
+                           DATA INGESTION
+             (EHR Records, Telemetry Streams, Lab Panels)
+                                  ↓
+                        DATA INTEGRITY LAYER
+             (Schema Verification, Time-Decay Weights)
+                                  ↓
+                      PATIENT HEALTH STATE (v1.4)
+             (Longitudinal Baseline, Active Meds, Genetics)
+                                  ↓
+                      CLINICAL ORCHESTRATOR
+             (State Delta Evaluation, Trigger Detection)
+                                  ↓
+                   13 SPECIALIZED CLINICAL MODULES
+             (Nephrology, Cardiology, Pharmacogenomics, etc.)
+                                  ↓
+                   KNOWLEDGE GRAPH & EVIDENCE RAG
+             (KDIGO 2024, CPIC, FDA Blackbox, Semantic Graph)
+                                  ↓
+                     GOAL CONFLICT ENGINE
+             (Analgesia vs Renal Preservation Tradeoffs)
+                                  ↓
+                 DETERMINISTIC SAFETY POLICIES (v3.0)
+             (Hard Contraindication Gate: Action Blocked)
+                                  ↓
+                     DECISION SYNTHESIS ENGINE
+             (Care Options, Why NOT? Forensics, What-If Simulator)
+                                  ↓
+                 MANDATORY CLINICIAN REVIEW (HITL)
+             (Approve / Modify / Reject with Clinical Notes)
+                                  ↓
+                   11-ATTRIBUTE AUDIT LOGGING
+             (Cryptographic Hash, FHIR R4 Order Bundles)
+                                  ↓
+                     OUTCOME MONITORING LOOP
+             (14-Day Trajectory Feedback → State v1.5)
+```
 
 ---
 
-## 👤 5-Level Progressive Disclosure
+## 👤 Four Levels of Documentation
 
-1. **Level 1 (Simple Answer)**: ⚠️ Kidney risk detected.
-2. **Level 2 (Explanation)**: Why? Pain medication + existing CKD + ACE inhibitor.
-3. **Level 3 (Evidence)**: KDIGO 2023 Guidelines & CPIC pharmacogenomic citations.
-4. **Level 4 (Reasoning)**: Specialist module outputs & goal conflict matrix.
-5. **Level 5 (Engineering)**: Full pipeline forensic trace, Knowledge Graph, 2D PSO swarm consensus canvas, and 11-attribute cryptographic audit logs.
+### 👤 Level 1 — Everyone (What is Heal Engine?)
+Heal Engine is an intelligent health operating system that helps patients, caregivers, and clinicians stay on top of complex health conditions. Instead of bombarding people with incomprehensible medical data, it clearly shows:
+- **What is happening?** (Patient Health Picture)
+- **What changed?** (Longitudinal trends & shifts)
+- **Why?** (Understandable contributing factors)
+- **Is it safe?** (Automatic safety protection)
+- **What should we do?** (Clear care options for doctor sign-off)
+- **What happens next?** (Recovery and ongoing monitoring)
+
+### 🩺 Level 2 — Clinician (How Does It Support Decisions?)
+Heal Engine acts as an explainable, non-intrusive clinical copilot:
+- **Longitudinal Trend Detection**: Evaluates percentage changes ($eGFR \downarrow 18.7\%$) rather than isolated laboratory values.
+- **Evidence Verification**: Directly anchors recommendations to **KDIGO 2024**, **CPIC Guidelines**, and **FDA Drug Communications**.
+- **Ask When It Doesn't Know**: Explicitly highlights incomplete data (*Spot UACR Pending*, *Echo Pending*) rather than hallucinating clinical certainty.
+- **Interactive What-If Simulator**: Allows physicians to simulate the impact of dosage or medication modifications before finalizing orders.
+
+### 🔬 Level 3 — Researcher (Reasoning, Benchmark, and Evidence)
+- **50-Scenario Scientific Benchmark Suite**: Evaluated across 5 clinical categories (10 Medication Safety, 10 Renal/Cardiac, 10 Polypharmacy, 10 Missing/Conflicting Data, 10 Longitudinal Trajectory Cases) against predefined clinical target criteria.
+- **Demonstration Metrics**:
+  - *Unsafe Recommendation Rate*: **0.0%** (vs. 64% Simple LLM, 28% LLM + RAG).
+  - *Hard Safety Block Accuracy*: **100%** (Deterministic Gate).
+  - *Guideline Adherence*: **98%** (Grade A/B Evidence citations).
+- **Reasoning Trace Visualizer**: Experimental particle swarm optimization visualization demonstrating multi-objective exploration.
+
+### 💻 Level 4 — Engineer (Services, Data Models, and Workflows)
+- **Clean Version Separation**:
+  - `Patient Health State`: `v1.4`
+  - `Engine Model`: `v2.1`
+  - `Safety Policy`: `v3.0`
+  - `Evidence Base`: `v2024.2`
+- **FHIR R4 Interoperability**: Generates standard JSON resource bundles for `MedicationRequest`, `CarePlan`, and `Observation`.
+- **Immutable Forensic Audit Trail**: 11-attribute cryptographic event logs with SHA-256 state hashes.
 
 ---
 
-## 💥 Demonstration Benchmark Suite (50 Synthetic Scenarios)
-
-| Metric Dimension | Baseline A: Simple LLM | Baseline B: LLM + RAG | Structured State + LLM | Heal Engine (Closed-Loop) |
-| :--- | :--- | :--- | :--- | :--- |
-| **Unsafe Recommendation Rate** | 64% (32/50) | 28% (14/50) | 12% (6/50) | **0.0% (0/50 - Guaranteed Block)** |
-| **Hard Safety Block Accuracy** | 0% | 45% (Warnings Only) | 78% | **100% (Deterministic Block)** |
-| **Guideline Adherence Score** | 35% | 70% | 85% | **98%** |
-| **Evidence Citation Correctness**| 48% | 82% | 89% | **96%** |
-| **Hallucination Rate** | 18.5% | 6.2% | 3.1% | **0.1%** |
-
----
-
-## 🛠️ Quickstart
+## 🛠️ Quickstart & Local Setup
 
 ```bash
 git clone https://github.com/Rahul-gits/longitudinal-health-intelligence-engine.git
