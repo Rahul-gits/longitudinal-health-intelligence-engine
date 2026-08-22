@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
 import { Navigation } from './components/Navigation';
 import { CommandCenter } from './components/CommandCenter';
+import { UnderstandWorkspace } from './components/UnderstandWorkspace';
+import { DetectWorkspace } from './components/DetectWorkspace';
+import { ExplainWorkspace } from './components/ExplainWorkspace';
+import { ProtectWorkspace } from './components/ProtectWorkspace';
+import { DecideWorkspace } from './components/DecideWorkspace';
+import { RecoveryJourney } from './components/RecoveryJourney';
 import { CaseConferenceWorkspace } from './components/CaseConferenceWorkspace';
 import { SwarmIntelligenceWorkspace } from './components/SwarmIntelligenceWorkspace';
 import { HealthTimeline } from './components/HealthTimeline';
 import { ReportIntelligence } from './components/ReportIntelligence';
-import { MedicationIntelligence } from './components/MedicationIntelligence';
-import { RecoveryJourney } from './components/RecoveryJourney';
 import { ClinicianPortal } from './components/ClinicianPortal';
 import { ConsentAndAudit } from './components/ConsentAndAudit';
 import { EmergencyScreen } from './components/EmergencyScreen';
@@ -27,11 +31,7 @@ export const App: React.FC = () => {
         <div className="inline-block animate-marquee space-x-8">
           <span>⚡ HEAL ENGINE ACTIVE</span>
           <span>•</span>
-          <span>CLOSED-LOOP CLINICAL DECISION INTELLIGENCE</span>
-          <span>•</span>
-          <span>KNOWLEDGE GRAPH CONNECTED</span>
-          <span>•</span>
-          <span>DETERMINISTIC SAFETY CONSTRAINTS ACTIVE</span>
+          <span>6-STEP HUMAN CARE LOOP: UNDERSTAND → DETECT → EXPLAIN → PROTECT → DECIDE → MONITOR</span>
           <span>•</span>
           <span>PATIENT ID: ELEANOR VANCE (68Y/F) • STATE v1.4.2</span>
           <span>•</span>
@@ -95,14 +95,20 @@ export const App: React.FC = () => {
 
         {/* Tab Routing */}
         {activeTab === 'command' && <CommandCenter onNavigateTab={setActiveTab} />}
+        {activeTab === 'health' && <UnderstandWorkspace />}
+        {activeTab === 'changes' && <DetectWorkspace />}
+        {activeTab === 'insights' && <ExplainWorkspace />}
+        {activeTab === 'safety' && <ProtectWorkspace />}
+        {activeTab === 'decide' && <DecideWorkspace />}
+        {activeTab === 'recovery' && <RecoveryJourney />}
+
+        {/* Advanced Technical Views */}
+        {activeTab === 'conference' && <CaseConferenceWorkspace engine={conferenceEngine} />}
+        {activeTab === 'swarm' && <SwarmIntelligenceWorkspace />}
         {activeTab === 'timeline' && <HealthTimeline />}
-        {activeTab === 'meds' && <MedicationIntelligence />}
         {activeTab === 'reports' && <ReportIntelligence />}
         {activeTab === 'clinician' && <ClinicianPortal />}
         {activeTab === 'governance' && <ConsentAndAudit />}
-        {activeTab === 'conference' && <CaseConferenceWorkspace engine={conferenceEngine} />}
-        {activeTab === 'swarm' && <SwarmIntelligenceWorkspace />}
-        {activeTab === 'recovery' && <RecoveryJourney />}
       </main>
 
       {/* Neubrutalist Footer */}
@@ -115,7 +121,7 @@ export const App: React.FC = () => {
             <span className="text-black font-mono">Longitudinal Clinical Decision Intelligence for Complex Care</span>
           </div>
           <div className="flex items-center space-x-3 text-[11px] font-mono">
-            <span className="bg-[#00F5D4] border border-black px-2 py-0.5 text-black font-extrabold shadow-[2px_2px_0px_0px_#000]">5 HUMAN PILLARS</span>
+            <span className="bg-[#00F5D4] border border-black px-2 py-0.5 text-black font-extrabold shadow-[2px_2px_0px_0px_#000]">6-STEP CARE LOOP</span>
             <span>•</span>
             <span className="bg-[#FF70A6] border border-black px-2 py-0.5 text-black font-extrabold shadow-[2px_2px_0px_0px_#000]">KNOWLEDGE GRAPH</span>
             <span>•</span>
