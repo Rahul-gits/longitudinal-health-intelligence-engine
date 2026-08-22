@@ -54,9 +54,9 @@ export class SafetyConstraintEngine {
       return {
         status: 'BLOCKED',
         violatedConstraints: violated,
-        rationale: `CRITICAL SAFETY BLOCK: Systemic NSAID (Ibuprofen) cannot be continued in a Stage 2 CKD patient (eGFR = ${latestEgfr} mL/min) receiving ACEi therapy (Lisinopril 20mg). This combination induces acute renal hemodynamic collapse.`,
+        rationale: `SAFETY CONSTRAINT TRIGGERED: Systemic NSAID (Ibuprofen) cannot be continued in a Stage 2 CKD patient (eGFR = ${latestEgfr} mL/min) receiving ACEi therapy (Lisinopril 20mg). Triple-whammy exposure risk detected → Elevated AKI risk → eGFR decline observed. Requires formal clinical review and governance escalation if an exception is requested.`,
         blockedAction: 'Continue OTC Oral Ibuprofen 400mg 3x weekly',
-        suggestedSafeAlternative: 'Initiate Topical 5% Lidocaine Patch PRN for localized knee analgesia (negligible systemic clearance burden < 3%) + Re-check eGFR in 7 days.'
+        suggestedSafeAlternative: 'Topical 5% Lidocaine Patch PRN (Option A), Topical Capsaicin 0.025% Cream (Option B), or Physical Therapy & Hydrotherapy (Option C).'
       };
     }
 

@@ -347,6 +347,81 @@ export interface SafetyCheckResult {
   suggestedSafeAlternative?: string;
 }
 
+export interface StructuredModuleOutput {
+  moduleId: PersonaId;
+  moduleName: string;
+  finding: string;
+  riskLevel: 'LOW' | 'MODERATE' | 'HIGH' | 'CRITICAL';
+  primaryGoal: string;
+  candidateRecommendation: string;
+  evidenceCitation: string;
+  confidenceScore: number; // 0..100%
+  constraintsEnforced: string[];
+  goalConflictsIdentified: string[];
+}
+
+export interface KGNode {
+  id: string;
+  type: 'condition' | 'medication' | 'risk' | 'goal' | 'evidence';
+  label: string;
+  details: string;
+  status?: string;
+}
+
+export interface KGEdge {
+  id: string;
+  source: string;
+  target: string;
+  relation: 'increases_risk_of' | 'interacts_with' | 'competes_with' | 'supported_by' | 'contraindicates';
+  weight: number;
+}
+
+export interface KnowledgeGraphData {
+  nodes: KGNode[];
+  edges: KGEdge[];
+}
+
+export interface CandidateAlternative {
+  id: string;
+  title: string;
+  description: string;
+  category: 'Topical Analgesic' | 'Physical Therapy' | 'Non-Pharmacological' | 'Interventional' | 'Dose Modification';
+  selectionCriteria: string;
+  evidenceGrade: 'High (Level A)' | 'Moderate (Level B)' | 'Expert Consensus (Level C)';
+  riskProfile: string;
+}
+
+export interface WhyNotAlternative {
+  id: string;
+  title: string;
+  category: string;
+  whyRejectedReason: string;
+  safetyRiskLevel: 'HIGH' | 'CRITICAL' | 'MODERATE';
+  competingGoalFriction: string;
+}
+
+export interface DecisionChangeTrigger {
+  id: string;
+  metricOrCondition: string;
+  currentStatus: string;
+  targetThreshold: string;
+  triggerAction: string;
+}
+
+export interface WhatIfSimInput {
+  modifiedDrug?: string;
+  modifiedEgfr?: number;
+  modifiedSystolicBp?: number;
+  modifiedPainLevel?: number;
+}
+
+export interface WhatIfSimResult {
+  simulatedRecommendation: string;
+  simulatedSafetyStatus: 'SAFE' | 'BLOCKED';
+  deltaRiskLevel: 'DECREASED' | 'UNCHANGED' | 'ELEVATED';
+  explanation: string;
+}
+
 export interface DataIntegrityAlert {
   id: string;
   type: 'conflict' | 'stale' | 'missing' | 'impossible';
@@ -383,6 +458,9 @@ export interface ModuleContract {
 }
 
 export interface PatientClinicalState {
+  versionId: string;
+  versionTimestamp: string;
+  stateDelta?: string;
   demographics: {
     id: string;
     name: string;
@@ -418,16 +496,22 @@ export interface EvidenceChain {
 export interface DecisionSynthesisResult {
   overallRiskLevel: 'LOW' | 'MODERATE' | 'HIGH' | 'CRITICAL';
   primaryRecommendation: string;
-  safeAlternatives: string[];
+  candidateAlternatives: CandidateAlternative[];
+  whyNotAlternatives: WhyNotAlternative[];
+  decisionChangeTriggers: DecisionChangeTrigger[];
+  missingDataAlerts: string[];
   evidenceChain: EvidenceChain;
   safetyResult: SafetyCheckResult;
   clinicianActionStatus: 'PENDING_REVIEW' | 'APPROVED' | 'MODIFIED' | 'REJECTED';
   clinicianNotes?: string;
+  stateVersionId: string;
   timestamp: string;
 }
 
-export interface BenchmarkComparison {
+export interface BenchmarkScenario {
+  id: string;
   scenarioName: string;
+  domainCategory: 'Renal/Cardio' | 'Diabetes/Polypharmacy' | 'Hepatic/Dosing' | 'Elderly/Fall Risk' | 'Missing Data' | 'Temporal Decline';
   patientCaseSummary: string;
   baselineA_LLM: {
     recommendation: string;
@@ -441,12 +525,48 @@ export interface BenchmarkComparison {
     contraindicationDetected: boolean;
     guidelineAdherence: number;
   };
+  structuredLLM: {
+    recommendation: string;
+    safetyPassed: boolean;
+    contraindicationDetected: boolean;
+    guidelineAdherence: number;
+  };
   healEngine: {
     recommendation: string;
     safetyPassed: boolean;
     contraindicationDetected: boolean;
     guidelineAdherence: number;
     blockedUnsafeAction: string;
-    safeAlternative: string;
+    candidateAlternatives: string[];
   };
 }
+
+export interface BenchmarkSuiteMetrics {
+  totalScenarios: number;
+  safety: {
+    baselineA_UnsafeRate: number;
+    baselineB_UnsafeRate: number;
+    structuredLLM_UnsafeRate: number;
+    healEngine_UnsafeRate: number;
+    hardBlockAccuracy: number;
+  };
+  evidence: {
+    citationCorrectness: number;
+    guidelineAdherence: number;
+  };
+  reasoning: {
+    temporalReasoningScore: number;
+    conflictDetectionRate: number;
+    missingDataDetectionRate: number;
+  };
+  reliability: {
+    hallucinationRate: number;
+    confidenceCalibration: number;
+  };
+}
+
+export interface BenchmarkComparison {
+  scenarios: BenchmarkScenario[];
+  metrics: BenchmarkSuiteMetrics;
+}
+

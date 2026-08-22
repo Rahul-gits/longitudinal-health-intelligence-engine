@@ -27,13 +27,13 @@ export const App: React.FC = () => {
         <div className="inline-block animate-marquee space-x-8">
           <span>⚡ HEAL ENGINE ACTIVE</span>
           <span>•</span>
-          <span>REAL-TIME DIGITAL TWIN TELEMETRY STREAM</span>
+          <span>CLOSED-LOOP CLINICAL DECISION INTELLIGENCE</span>
           <span>•</span>
-          <span>MULTI-SPECIALIST CASE CONFERENCE ENGINE ONLINE</span>
+          <span>KNOWLEDGE GRAPH CONNECTED</span>
           <span>•</span>
-          <span>SWARM INTELLIGENCE (PSO) CONSENSUS: CONVERGED</span>
+          <span>DETERMINISTIC SAFETY CONSTRAINTS ACTIVE</span>
           <span>•</span>
-          <span>PATIENT ID: ELEANOR VANCE (68Y/F)</span>
+          <span>PATIENT ID: ELEANOR VANCE (68Y/F) • STATE v1.4.2</span>
           <span>•</span>
           <span>⚡ HEAL ENGINE ACTIVE</span>
         </div>

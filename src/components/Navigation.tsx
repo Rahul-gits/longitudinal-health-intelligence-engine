@@ -56,10 +56,10 @@ export const Navigation: React.FC<NavigationProps> = ({
             <div className="flex items-center space-x-2">
               <h1 className="text-xl font-extrabold font-display tracking-tight text-black">HEAL ENGINE</h1>
               <span className="px-2 py-0.5 text-[10px] font-black uppercase tracking-wider bg-[#FF70A6] text-black border-2 border-black shadow-[2px_2px_0px_0px_#000] flex items-center gap-1 -rotate-1">
-                <Sparkles className="w-3 h-3 text-black" /> DIGITAL TWIN OS
+                <Sparkles className="w-3 h-3 text-black" /> CLOSED-LOOP DECISION INTEL
               </span>
             </div>
-            <p className="text-xs font-semibold text-black/80 font-mono">Longitudinal Patient Health Intelligence</p>
+            <p className="text-xs font-semibold text-black/80 font-mono">Longitudinal Clinical Decision Intelligence for Complex Care</p>
           </div>
         </div>
 

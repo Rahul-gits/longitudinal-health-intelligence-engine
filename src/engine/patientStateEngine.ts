@@ -2,6 +2,9 @@ import { PatientClinicalState } from '../types/health';
 
 export class PatientStateEngine {
   private currentState: PatientClinicalState = {
+    versionId: 'v1.4.2',
+    versionTimestamp: '2026-08-13 19:45:00 IST',
+    stateDelta: 'Delta vs v1.4.1: Laboratory renal panel update attached; eGFR decreased by 18.7% (64 → 52 mL/min).',
     demographics: {
       id: 'PT-884920',
       name: 'Eleanor Vance',
