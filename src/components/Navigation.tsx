@@ -12,15 +12,16 @@ import {
   User, 
   Users,
   Sparkles,
-  Cpu
+  Cpu,
+  FlaskConical
 } from 'lucide-react';
 import { PATIENT_INFO } from '../data/mockPatientData';
 
 interface NavigationProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
-  activeRole: 'patient' | 'clinician' | 'caregiver';
-  setActiveRole: (role: 'patient' | 'clinician' | 'caregiver') => void;
+  activeRole: 'patient' | 'clinician' | 'research';
+  setActiveRole: (role: 'patient' | 'clinician' | 'research') => void;
   onTriggerEmergency: () => void;
 }
 
@@ -32,15 +33,15 @@ export const Navigation: React.FC<NavigationProps> = ({
   onTriggerEmergency
 }) => {
   const tabs = [
-    { id: 'command', label: 'Command Center', icon: Activity },
-    { id: 'conference', label: 'Case Conference (3-Panel)', icon: Layers, badge: 'Live AI' },
-    { id: 'swarm', label: 'Swarm Engine', icon: Cpu, badge: 'PSO 13+' },
-    { id: 'timeline', label: 'Health Timeline', icon: Clock },
-    { id: 'reports', label: 'Report Intelligence', icon: FileText },
-    { id: 'meds', label: 'Medication Safety', icon: Pill },
-    { id: 'recovery', label: 'Recovery & Diary', icon: UserCheck },
-    { id: 'clinician', label: 'Clinician Portal', icon: Stethoscope },
-    { id: 'governance', label: 'Consent & Audit', icon: Lock }
+    { id: 'command', label: 'Overview & Actions', icon: Activity },
+    { id: 'timeline', label: 'Care Timeline', icon: Clock },
+    { id: 'meds', label: 'Safety & Meds', icon: Pill },
+    { id: 'reports', label: 'Diagnostic Findings', icon: FileText },
+    { id: 'clinician', label: 'Clinician Orders', icon: Stethoscope },
+    { id: 'governance', label: 'Consent & Audit', icon: Lock },
+    { id: 'conference', label: 'Specialist Debates', icon: Layers, badge: 'AI Team' },
+    { id: 'swarm', label: 'Reasoning Trace', icon: Cpu, badge: 'PSO 13+' },
+    { id: 'recovery', label: 'Progress & Diary', icon: UserCheck }
   ];
 
   return (
@@ -56,14 +57,14 @@ export const Navigation: React.FC<NavigationProps> = ({
             <div className="flex items-center space-x-2">
               <h1 className="text-xl font-extrabold font-display tracking-tight text-black">HEAL ENGINE</h1>
               <span className="px-2 py-0.5 text-[10px] font-black uppercase tracking-wider bg-[#FF70A6] text-black border-2 border-black shadow-[2px_2px_0px_0px_#000] flex items-center gap-1 -rotate-1">
-                <Sparkles className="w-3 h-3 text-black" /> CLOSED-LOOP DECISION INTEL
+                <Sparkles className="w-3 h-3 text-black" /> DECISION INTELLIGENCE
               </span>
             </div>
             <p className="text-xs font-semibold text-black/80 font-mono">Longitudinal Clinical Decision Intelligence for Complex Care</p>
           </div>
         </div>
 
-        {/* Patient Status & Role Switcher */}
+        {/* Patient Status & Audience Complexity Level Switcher */}
         <div className="flex flex-wrap items-center gap-3">
           {/* Patient Quick Info Card */}
           <div className="hidden lg:flex items-center space-x-3 px-3 py-1.5 bg-[#CCFF00] border-2 border-black shadow-[2px_2px_0px_0px_#000] text-xs font-bold">
@@ -77,11 +78,11 @@ export const Navigation: React.FC<NavigationProps> = ({
             </span>
           </div>
 
-          {/* Role Switcher Buttons */}
-          <div className="flex items-center bg-[#FAF8F5] p-1 border-2 border-black shadow-[2px_2px_0px_0px_#000] text-xs font-bold">
+          {/* 3 Audience Complexity Levels Switcher */}
+          <div className="flex items-center bg-[#FAF8F5] p-1 border-2 border-black shadow-[2px_2px_0px_0px_#000] text-xs font-bold font-mono">
             <button
               onClick={() => setActiveRole('patient')}
-              className={`flex items-center space-x-1.5 px-3 py-1 border transition-all ${
+              className={`flex items-center space-x-1.5 px-3 py-1 border transition-all cursor-pointer ${
                 activeRole === 'patient'
                   ? 'bg-[#FFE600] text-black font-black border-2 border-black shadow-[2px_2px_0px_0px_#000]'
                   : 'border-transparent text-black/70 hover:text-black hover:bg-black/5'
@@ -92,7 +93,7 @@ export const Navigation: React.FC<NavigationProps> = ({
             </button>
             <button
               onClick={() => setActiveRole('clinician')}
-              className={`flex items-center space-x-1.5 px-3 py-1 border transition-all ${
+              className={`flex items-center space-x-1.5 px-3 py-1 border transition-all cursor-pointer ${
                 activeRole === 'clinician'
                   ? 'bg-[#3A86FF] text-white font-black border-2 border-black shadow-[2px_2px_0px_0px_#000]'
                   : 'border-transparent text-black/70 hover:text-black hover:bg-black/5'
@@ -102,22 +103,22 @@ export const Navigation: React.FC<NavigationProps> = ({
               <span>Clinician</span>
             </button>
             <button
-              onClick={() => setActiveRole('caregiver')}
-              className={`flex items-center space-x-1.5 px-3 py-1 border transition-all ${
-                activeRole === 'caregiver'
-                  ? 'bg-[#CCFF00] text-black font-black border-2 border-black shadow-[2px_2px_0px_0px_#000]'
+              onClick={() => setActiveRole('research')}
+              className={`flex items-center space-x-1.5 px-3 py-1 border transition-all cursor-pointer ${
+                activeRole === 'research'
+                  ? 'bg-[#A855F7] text-white font-black border-2 border-black shadow-[2px_2px_0px_0px_#000]'
                   : 'border-transparent text-black/70 hover:text-black hover:bg-black/5'
               }`}
             >
-              <Users className="w-3.5 h-3.5 stroke-[2.5]" />
-              <span>Caregiver</span>
+              <FlaskConical className="w-3.5 h-3.5 stroke-[2.5]" />
+              <span>Research / Eng</span>
             </button>
           </div>
 
           {/* Emergency Screening Button */}
           <button
             onClick={onTriggerEmergency}
-            className="flex items-center space-x-1.5 px-3.5 py-1.5 bg-[#FF5722] hover:bg-[#FF3D00] text-white border-2 border-black shadow-[3px_3px_0px_0px_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[5px_5px_0px_0px_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[1px_1px_0px_0px_#000] text-xs font-black transition-all cursor-pointer"
+            className="flex items-center space-x-1.5 px-3.5 py-1.5 bg-[#FF5722] hover:bg-[#FF3D00] text-white border-2 border-black shadow-[3px_3px_0px_0px_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[5px_5px_0px_0px_#000] text-xs font-black transition-all cursor-pointer"
           >
             <ShieldAlert className="w-4 h-4 text-white stroke-[2.5] animate-bounce" />
             <span className="hidden sm:inline font-display uppercase tracking-wider">Emergency</span>

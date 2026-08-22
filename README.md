@@ -1,60 +1,74 @@
 # ⚡ Heal Engine — Longitudinal Clinical Decision Intelligence for Complex Care
 
-> **Unifies fragmented patient data, detects competing clinical risks, verifies evidence, enforces deterministic safety constraints, and gives clinicians an explainable decision-support workflow.**
+> **Simple outside → Sophisticated inside.**
+> *Unifies fragmented patient data, detects competing clinical risks, verifies evidence, enforces deterministic safety constraints, and gives clinicians an explainable decision-support workflow.*
 
 ---
 
-## 🎯 System Overview & Problem Solved
+## 🧠 The Heal Engine Philosophy
 
-In complex multi-morbidity patient care (e.g. **Stage 2 CKD + Essential Hypertension + Knee Osteoarthritis + Heart Failure biomarkers**):
-- **Adverse Drug-Disease Interactions**: Self-prescribed over-the-counter NSAIDs (Ibuprofen) combined with ACE inhibitors (Lisinopril) create acute hemodynamic renal strain ("Triple-Whammy" exposure risk).
-- **Siloed Specialist Perspectives**: Nephrology prioritizes eGFR; Orthopedics prioritizes pain relief; Cardiology prioritizes NT-proBNP fluid overload.
-- **Unverified AI Hazards**: Standard unconstrained LLMs routinely suggest increasing oral NSAID dosages for symptomatic pain, ignoring underlying organ failure risks.
+Think about driving a modern car: you don't need to understand fuel injection algorithms, ECU timing, or transmission hydraulic pressures to drive safely. You see a clear dashboard: **Speed | Fuel | Warnings | Navigation**.
+
+Heal Engine works the same way:
+
+| User Sees (5 Human Concepts) | Heal Engine Internally Handles |
+| :--- | :--- |
+| **1. Understand Me** | Data ingestion + validation + longitudinal patient state |
+| **2. Find What Changed** | Trajectory delta engine + multi-year biomarker tracking |
+| **3. Understand Why** | 13 specialized clinical modules + Knowledge Graph risk traversal |
+| **4. Decide Safely** | Deterministic hard safety rules + KDIGO/CPIC evidence + Care options |
+| **5. Follow What Happens Next**| 14-day outcome monitoring loop + state update ($v_{1.4.2} \rightarrow v_{1.5.0}$) |
 
 ---
 
-## 📐 Closed-Loop Clinical Orchestration Architecture
+## 🧭 The 5 Human Pillars
 
-Heal Engine resolves multi-specialty friction through a **Closed-Loop Conceptual Flow**:
-
-```mermaid
-graph TD
-    A["Raw Patient Data (EHR, Wearables, Labs, Patient Logs)"] --> B["Data Integrity & Sanity Engine"]
-    
-    subgraph S1["1. State & Goal Model"]
-        B --> C["Versioned Patient State Model (v1.4.2)"]
-        C --> D["Clinical Goal Engine"]
-    end
-    
-    subgraph S2["2. Intelligence & Candidates"]
-        D --> E["Specialized Clinical Modules (Structured Output)"]
-        E --> F["Candidate Interventions ('What could we do?')"]
-    end
-    
-    subgraph S3["3. Safety & Conflict Resolution"]
-        F --> G{"Safety Constraints Engine ('What is safe?')"}
-        G -- "TRIGGERED (Oral NSAID)" --> H["SAFETY CONSTRAINT TRIGGERED (BLOCK)"]
-        G -- "SAFE" --> I["Safe Candidate Options"]
-        H --> I
-        I --> J["Knowledge Graph & Goal Conflict Engine"]
-        J --> K["Evidence Verification (KDIGO / CPIC / FDA RAG)"]
-    end
-    
-    subgraph S4["4. Decision & Human-in-the-Loop"]
-        K --> L["Decision Synthesis (Why NOT? + Re-evaluation Triggers)"]
-        L --> M["Uncertainty & Missing Data Engine"]
-        M --> N["Clinician Review Portal (Approve / Modify / Reject)"]
-        N --> O["FHIR R4 EHR Action & 11-Attribute Audit Log"]
-        O --> P["Outcome Monitoring (Recovery Loop)"]
-        P --> C
-    end
+```
+                     HEAL ENGINE
+             ┌─────────────────────────┐
+             │      UNDERSTAND ME      │ (Patient Health Picture)
+             └────────────┬────────────┘
+                          ↓
+             ┌─────────────────────────┐
+             │    FIND WHAT CHANGED    │ (Longitudinal eGFR Drop: 64 → 52)
+             └────────────┬────────────┘
+                          ↓
+             ┌─────────────────────────┐
+             │     UNDERSTAND WHY      │ (3 Contributing Factors)
+             └────────────┬────────────┘
+                          ↓
+             ┌─────────────────────────┐
+             │      DECIDE SAFELY      │ (Safety Check + 3 Care Options)
+             └────────────┬────────────┘
+                          ↓
+             ┌─────────────────────────┐
+             │  FOLLOW PROGRESS NEXT   │ (14-Day Recovery Monitoring)
+             └────────────┬────────────┘
+                          │
+                          └──────→ State Update (v1.5.0 Closed Loop)
 ```
 
 ---
 
-## 💥 Demonstration Benchmark Suite (50 Synthetic Scenarios)
+## 👤 3 Audience Complexity Levels
 
-Heal Engine includes a **Demonstration Benchmark Suite** evaluated across 50 multi-morbidity scenarios:
+Heal Engine adapts its interface for 3 distinct audiences without confusing any of them:
+
+1. 👤 **Level 1 — Patient Mode**: Simple, non-jargon language (*"What happened?", "What should I watch?", "What should I discuss with my doctor?"*).
+2. 🩺 **Level 2 — Clinician Mode**: Decision support (*Trends, drug-drug/disease interactions, KDIGO evidence, care options, FHIR R4 order sync, sign-off*).
+3. 🔬 **Level 3 — Research / Engineering Mode**: Full engine transparency (*13 specialist agent debate traces, Knowledge Graph, 2D PSO swarm consensus canvas, 11-attribute forensic audit logs, 50-scenario benchmark suite*).
+
+---
+
+## 🔬 Progressive Disclosure
+
+For clinicians, judges, and technical evaluators who want to inspect the inner workings, the main screen provides one-click deep forensic access:
+- **`Show how Heal Engine reached this conclusion →`**: Opens an 8-stage step-by-step pipeline trace (*Ingestion $\rightarrow$ State Delta $\rightarrow$ Modules $\rightarrow$ Knowledge Graph $\rightarrow$ Safety Block $\rightarrow$ Conflict Resolution $\rightarrow$ Evidence RAG $\rightarrow$ Care Options*).
+- **`Benchmark Suite (50 Cases)`**: Interactive evaluation suite across 50 multi-morbidity clinical scenarios.
+
+---
+
+## 💥 Demonstration Benchmark Suite (50 Synthetic Scenarios)
 
 | Metric Dimension | Baseline A: Simple LLM | Baseline B: LLM + RAG | Structured State + LLM | Heal Engine (Closed-Loop) |
 | :--- | :--- | :--- | :--- | :--- |
@@ -66,30 +80,8 @@ Heal Engine includes a **Demonstration Benchmark Suite** evaluated across 50 mul
 
 ---
 
-## 🕹️ Application Workspaces (Hierarchy of Surfaces)
-
-### Tier 1 — Primary Decision & Safety Surfaces
-1. **⚡ Command Center (`/command`)**: High-level clinical cockpit summarizing Patient Risk (`HIGH RISK HAZARD`), Critical Findings, Candidate Alternatives (3 options), "Why NOT?" panel, and Re-evaluation triggers.
-2. **📈 Longitudinal Health Timeline (`/timeline`)**: Multi-year laboratory trajectory charts ($eGFR$, $NT-proBNP$) and causal event linking.
-3. **💊 Medication Intelligence (`/meds`)**: Pharmacovigilance matrix, deprescribing safety alerts, and $CYP2C9*3$ pharmacogenomic screening.
-4. **📄 Diagnostic Report Intelligence (`/reports`)**: Lab blood panel and imaging report parser with confidence scores.
-5. **🩺 Clinician Portal (`/clinician`)**: High-density decision support for physicians, EHR order validation, and FHIR R4 sync.
-6. **🛡️ Governance & Audit Trail (`/governance`)**: 11-attribute immutable logging of AI reasoning steps, patient consent matrix, and safety compliance checks.
-
-### Tier 2 — Deep Reasoning, Explainability & Longitudinal Feedback
-7. **💬 Multi-Agent Case Conference (`/conference`)**: Collaborative debate studio featuring Deep Goal Inspector drawers and RAG evidence trace buttons.
-8. **🐝 Swarm Intelligence Workspace (`/swarm`)**: 2D Particle Swarm Optimization spatial reasoning visualizer, stress-test perturbations, and cross-examination duels.
-9. **🏃 Recovery Journey (`/recovery`)**: 14-day post-intervention trajectory monitoring and patient check-in closed-loop feedback.
-
----
-
 ## 🛠️ Installation & Setup Guide
 
-### Prerequisites
-- **Node.js**: v18.0.0 or higher
-- **npm**: v9.0.0 or higher
-
-### 1. Clone & Run
 ```bash
 git clone https://github.com/Rahul-gits/longitudinal-health-intelligence-engine.git
 cd longitudinal-health-intelligence-engine
@@ -97,20 +89,3 @@ npm install
 npm run dev
 ```
 Open [`http://localhost:3000/`](http://localhost:3000/) in your browser.
-
----
-
-## 📜 Tech Stack
-
-- **Frontend**: React 18, TypeScript, TailwindCSS (Neubrutalist Aesthetic), Lucide Icons
-- **Build System**: Vite
-- **Intelligence Engines**:
-  - `DataIntegrityEngine`
-  - `PatientStateEngine` (Versioned v1.4.2)
-  - `KnowledgeGraphEngine`
-  - `ClinicalGoalEngine`
-  - `GoalConflictEngine`
-  - `EvidenceIntelligenceEngine`
-  - `SafetyConstraintEngine` (Deterministic Guardrails)
-  - `ClinicalOrchestrator` (Closed-Loop Master Pipeline)
-  - `BaselineBenchmarkEngine` (50 Synthetic Scenarios)
