@@ -14,6 +14,7 @@ import { ReportIntelligence } from './components/ReportIntelligence';
 import { ClinicianPortal } from './components/ClinicianPortal';
 import { ConsentAndAudit } from './components/ConsentAndAudit';
 import { EmergencyScreen } from './components/EmergencyScreen';
+import { VirtualDoctorScreeningWorkspace } from './components/VirtualDoctorScreeningWorkspace';
 import { ClinicalConferenceEngine } from './engine/clinicalConferenceEngine';
 import { Activity, ShieldAlert, Sparkles } from 'lucide-react';
 
@@ -95,6 +96,7 @@ export const App: React.FC = () => {
 
         {/* Tab Routing */}
         {activeTab === 'command' && <CommandCenter onNavigateTab={setActiveTab} />}
+        {activeTab === 'virtual-doctor' && <VirtualDoctorScreeningWorkspace />}
         {activeTab === 'health' && <UnderstandWorkspace />}
         {activeTab === 'changes' && <DetectWorkspace />}
         {activeTab === 'insights' && <ExplainWorkspace />}

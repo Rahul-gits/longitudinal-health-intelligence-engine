@@ -1,10 +1,37 @@
-import { CASE_CONFERENCE_TURNS, INITIAL_CONSENSUS_STATE, PERSONA_PROFILES } from '../data/mockPatientData';
-import { PersonaTurn, ConsensusState, ClusterType, PersonaId } from '../types/health';
+import { 
+  CASE_CONFERENCE_TURNS, 
+  INITIAL_CONSENSUS_STATE, 
+  PERSONA_PROFILES,
+  STATIC_CLINICAL_CASES 
+} from '../data/mockPatientData';
+import { PersonaTurn, ConsensusState, ClusterType, PersonaId, StaticClinicalCase } from '../types/health';
 
 export class ClinicalConferenceEngine {
+  private activeCaseId: string = 'case_eleanor_vance';
   private turns: PersonaTurn[] = [...CASE_CONFERENCE_TURNS];
   private currentTurnIndex: number = 0;
   private consensus: ConsensusState = { ...INITIAL_CONSENSUS_STATE };
+
+  public getAvailableStaticCases(): StaticClinicalCase[] {
+    return Object.values(STATIC_CLINICAL_CASES);
+  }
+
+  public getActiveCaseId(): string {
+    return this.activeCaseId;
+  }
+
+  public getActiveCase(): StaticClinicalCase {
+    return STATIC_CLINICAL_CASES[this.activeCaseId] || STATIC_CLINICAL_CASES['case_eleanor_vance'];
+  }
+
+  public loadStaticCase(caseId: string): StaticClinicalCase {
+    const selectedCase = STATIC_CLINICAL_CASES[caseId] || STATIC_CLINICAL_CASES['case_eleanor_vance'];
+    this.activeCaseId = selectedCase.id;
+    this.turns = [...selectedCase.turns];
+    this.consensus = { ...selectedCase.consensus };
+    this.currentTurnIndex = 0;
+    return selectedCase;
+  }
 
   public getAllTurns(): PersonaTurn[] {
     return this.turns;

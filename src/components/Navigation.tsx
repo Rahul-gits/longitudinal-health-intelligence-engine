@@ -17,6 +17,7 @@ import {
   Heart,
   TrendingDown,
   ChevronDown,
+  Video,
   ShieldCheck,
   Target
 } from 'lucide-react';
@@ -39,9 +40,10 @@ export const Navigation: React.FC<NavigationProps> = ({
 }) => {
   const [showAdvancedMenu, setShowAdvancedMenu] = useState<boolean>(false);
 
-  // The 6 Primary Human Pillars
+  // The 6 Primary Human Pillars + Virtual Doctor Screening
   const primaryTabs = [
     { id: 'command', label: '⚡ Cockpit', icon: Activity },
+    { id: 'virtual-doctor', label: '🩺 Virtual Doctor', icon: Video, badge: 'Live Call' },
     { id: 'health', label: '🧠 1. Health', icon: Heart, badge: 'Understand' },
     { id: 'changes', label: '🔎 2. Changes', icon: TrendingDown, badge: 'Detect' },
     { id: 'insights', label: '💡 3. Insights', icon: Sparkles, badge: 'Explain' },
@@ -52,6 +54,7 @@ export const Navigation: React.FC<NavigationProps> = ({
 
   // Advanced Technical Workspaces
   const advancedTabs = [
+    { id: 'virtual-doctor', label: 'Virtual Doctor Video Screening', icon: Video },
     { id: 'conference', label: 'Specialist Debates', icon: Layers },
     { id: 'swarm', label: 'Reasoning Trace (PSO)', icon: Cpu },
     { id: 'timeline', label: 'Care Timeline', icon: Clock },

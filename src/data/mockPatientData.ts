@@ -10,7 +10,8 @@ import {
   MedicationItem, 
   SymptomLogEntry, 
   AuditLogEntry, 
-  PatientConsentSetting 
+  PatientConsentSetting,
+  StaticClinicalCase
 } from '../types/health';
 
 export const PATIENT_INFO = {
@@ -650,6 +651,343 @@ export const INITIAL_CONSENSUS_STATE: ConsensusState = {
   recommendedNextAction: 'Discontinue OTC Ibuprofen immediately; notify Dr. Aris Thorne for priority appointment within 48h; log daily weights.',
   requiresClinicianEscalation: true,
   escalationReason: 'eGFR drop >10% with concurrent NSAID use and elevated BNP biomarker.'
+};
+
+export const STATIC_CLINICAL_CASES: Record<string, StaticClinicalCase> = {
+  case_eleanor_vance: {
+    id: 'case_eleanor_vance',
+    title: 'Eleanor Vance (68F) — NSAID + ACEi Cardiorenal Collision',
+    patientName: 'Eleanor Vance',
+    age: 68,
+    gender: 'Female',
+    domainCategory: 'Medication Safety & Cardiorenal',
+    summary: '68yo female with CKD Stage 2 and HTN on Lisinopril + HCTZ, presenting with acute eGFR decline (64 → 52 mL/min) and bilateral pedal edema following 3-week OTC Ibuprofen use.',
+    keyBiomarkerChange: 'eGFR: 64 → 52 mL/min (-18.7%), BNP: 480 pg/mL, Serum Creatinine: 1.4 mg/dL',
+    primaryRisk: 'Triple-whammy prerenal hemodynamic collapse (ACEi + Diuretic + OTC NSAID)',
+    turns: CASE_CONFERENCE_TURNS,
+    consensus: INITIAL_CONSENSUS_STATE
+  },
+  case_arthur_pendelton: {
+    id: 'case_arthur_pendelton',
+    title: 'Arthur Pendelton (72M) — Warfarin Polypharmacy + CYP2C9 CPIC Alert',
+    patientName: 'Arthur Pendelton',
+    age: 72,
+    gender: 'Male',
+    domainCategory: 'Pharmacogenomics & Anticoagulation',
+    summary: '72yo male with Non-Valvular Atrial Fibrillation on Warfarin 5mg daily. Recently prescribed Bactrim DS for UTI and Amiodarone for arrhythmia. Genomic profile reveals CYP2C9*1/*3 intermediate metabolizer, causing acute supratherapeutic INR elevation to 3.8 and hematuria.',
+    keyBiomarkerChange: 'INR: 2.2 → 3.8 (High Bleed Risk), Hemoglobin: 13.5 → 11.8 g/dL, Platelets: 210 k/uL',
+    primaryRisk: 'High-risk intracranial and gastrointestinal hemorrhage due to potent CYP2C9 enzymatic inhibition and protein-binding displacement.',
+    turns: [
+      {
+        id: 'ap-1',
+        personaId: 'triage',
+        timestamp: '2026-08-20 09:15:00',
+        headline: 'Acute Bleeding Risk Alert',
+        speechText: 'Critical Coagulation Warning: Arthur\'s INR has surged from baseline 2.2 to 3.8. Urinalysis confirms microscopic hematuria. High vulnerability for major spontaneous hemorrhage.',
+        citedClusterIds: ['reports', 'risk', 'symptoms'],
+        citedNodeIds: ['rep-1', 'risk-1', 'sym-1'],
+        turnType: 'safety_check',
+        uncertaintyScore: 5
+      },
+      {
+        id: 'ap-2',
+        personaId: 'genomic',
+        timestamp: '2026-08-20 09:15:20',
+        headline: 'Pharmacogenomic Variant Analysis',
+        speechText: 'CYP2C9*1/*3 and VKORC1-1639G>A status verified. S-warfarin clearance is reduced by >45%. Co-administration of Sulfamethoxazole/Trimethoprim blocks residual CYP2C9 metabolic pathway completely.',
+        citedClusterIds: ['reports', 'medication'],
+        citedNodeIds: ['rep-2', 'med-1'],
+        turnType: 'evidence_challenge',
+        evidenceCitations: ['CPIC Guideline for Pharmacogenetics-Guided Warfarin Dosing (2024 Update)'],
+        uncertaintyScore: 8
+      },
+      {
+        id: 'ap-3',
+        personaId: 'medication',
+        timestamp: '2026-08-20 09:15:40',
+        headline: 'Immediate Antimicrobial & Anticoagulant Deprescribing',
+        speechText: 'Hold Warfarin dose today. Switch Bactrim DS to Nitrofurantoin or Cefpodoxime to remove CYP2C9 inhibition. Administer oral Vitamin K1 (1-2.5 mg) if mucosal bleeding develops.',
+        citedClusterIds: ['medication', 'recovery', 'risk'],
+        citedNodeIds: ['med-2', 'rec-1', 'risk-1'],
+        turnType: 'plan',
+        evidenceCitations: ['Chest Antithrombotic Therapy Guidelines: Management of Supratherapeutic INR'],
+        uncertaintyScore: 10
+      },
+      {
+        id: 'ap-4',
+        personaId: 'clinical',
+        timestamp: '2026-08-20 09:16:00',
+        headline: 'Thromboembolic vs Bleeding Tradeoff Evaluation',
+        speechText: 'CHA2DS2-VASc score is 4 (High Stroke Risk), HAS-BLED score is 3. Once stabilized and INR normalizes to 2.0-2.5, strongly recommend evaluating switch to Apixaban (DOAC) with renal dosing.',
+        citedClusterIds: ['history', 'reports', 'recovery'],
+        citedNodeIds: ['hist-1', 'rep-1', 'rec-2'],
+        turnType: 'correlation',
+        evidenceCitations: ['AHA/ACC/HRS Atrial Fibrillation Anticoagulation Guidelines'],
+        uncertaintyScore: 12
+      },
+      {
+        id: 'ap-5',
+        personaId: 'planner',
+        timestamp: '2026-08-20 09:16:30',
+        headline: 'Case Conference Consensus Action Plan',
+        speechText: 'UNIFIED ACTION PLAN: 1. Hold Warfarin x 24h. 2. Substitute Nitrofurantoin for Bactrim. 3. Recheck INR in 24 hours. 4. Patient education on bruising/melena screening. 5. DOAC transition scheduled for day 7.',
+        citedClusterIds: ['medication', 'recovery', 'reports'],
+        citedNodeIds: ['med-1', 'rec-1', 'rep-1'],
+        turnType: 'consensus',
+        evidenceCitations: ['Anticoagulation Forum Clinical Guidance for Inpatient & Outpatient Safety'],
+        uncertaintyScore: 6
+      }
+    ],
+    consensus: {
+      agreedFindings: [
+        {
+          id: 'ap-c1',
+          topic: 'Drug-Drug-Gene Supratherapeutic Anticoagulation',
+          status: 'agreed',
+          description: 'Warfarin interaction with Bactrim in CYP2C9*1/*3 patient caused rapid INR jump to 3.8.',
+          supportingPersonas: ['triage', 'genomic', 'medication', 'clinical', 'planner'],
+          clusterReferences: ['medication', 'reports', 'risk'],
+          evidenceRef: 'CPIC Warfarin Guidelines & FDA Boxed Warnings'
+        },
+        {
+          id: 'ap-c2',
+          topic: 'Urgent Antimicrobial Substitution',
+          status: 'agreed',
+          description: 'Switch Bactrim to non-CYP2C9 inhibiting antibiotic immediately.',
+          supportingPersonas: ['medication', 'clinical', 'planner'],
+          clusterReferences: ['medication', 'recovery']
+        }
+      ],
+      disputedFindings: [],
+      missingInformation: ['Stool occult blood test (FIT)', 'Baseline hepatic function panel (LFT)'],
+      overallConfidence: 94,
+      evidenceStrength: 'Strong',
+      safetyAlerts: [
+        {
+          level: 'critical',
+          title: 'Hemorrhagic Crisis Risk (INR 3.8)',
+          description: 'Supratherapeutic INR with active microhematuria requires prompt dose adjustment.'
+        }
+      ],
+      recommendedNextAction: 'Hold Warfarin dose, replace Bactrim with Nitrofurantoin, repeat INR in 24 hours.',
+      requiresClinicianEscalation: true,
+      escalationReason: 'INR > 3.5 with drug-gene interaction and early bleeding signs.'
+    }
+  },
+  case_marcus_wright: {
+    id: 'case_marcus_wright',
+    title: 'Marcus Wright (59M) — Heart Failure HFrEF + SGLT2i + Diuretic Shift',
+    patientName: 'Marcus Wright',
+    age: 59,
+    gender: 'Male',
+    domainCategory: 'Heart Failure & Electrolyte Balance',
+    summary: '59yo male with Heart Failure with reduced Ejection Fraction (EF 32%), recently initiated on Empagliflozin 10mg daily while on Furosemide 40mg BID. Reports lightheadedness upon standing, dry mouth, and fatigue. Serum Potassium dropped to 3.2 mEq/L and Creatinine bumped from 1.1 to 1.5 mg/dL.',
+    keyBiomarkerChange: 'Potassium: 4.2 → 3.2 mEq/L (Hypokalemia), S.Cr: 1.1 → 1.5 mg/dL, Systolic BP: 122 → 98 mmHg',
+    primaryRisk: 'Ventricular arrhythmia risk secondary to hypokalemia, plus prerenal azotemia from excessive synergistic volume depletion.',
+    turns: [
+      {
+        id: 'mw-1',
+        personaId: 'triage',
+        timestamp: '2026-08-21 11:00:00',
+        headline: 'Orthostatic Hypotension & Hypokalemia Triage',
+        speechText: 'Orthostatic vitals show 24 mmHg postural systolic drop (122 → 98 mmHg). Serum Potassium 3.2 mEq/L is below safe cardiac threshold, raising ventricular arrhythmogenic potential.',
+        citedClusterIds: ['reports', 'symptoms', 'risk'],
+        citedNodeIds: ['rep-1', 'sym-1', 'risk-1'],
+        turnType: 'safety_check',
+        uncertaintyScore: 6
+      },
+      {
+        id: 'mw-2',
+        personaId: 'medication',
+        timestamp: '2026-08-21 11:00:25',
+        headline: 'Dual Osmotic & Loop Diuresis Interaction',
+        speechText: 'Empagliflozin induces osmotic natriuresis and glucosuria. In combination with Furosemide 80mg daily, total urinary volume has expanded by >1.2L/day, washing out potassium and inducing intravascular volume depletion.',
+        citedClusterIds: ['medication', 'reports'],
+        citedNodeIds: ['med-1', 'rep-2'],
+        turnType: 'correlation',
+        evidenceCitations: ['EMPEROR-Reduced Clinical Trial Electrolyte Dynamics & FDA Labeling'],
+        uncertaintyScore: 8
+      },
+      {
+        id: 'mw-3',
+        personaId: 'nephrology',
+        timestamp: '2026-08-21 11:00:50',
+        headline: 'Prerenal Azotemia vs True AKI Differentiation',
+        speechText: 'The BUN/Creatinine ratio of 24:1 and Fractional Excretion of Sodium (FeNa < 1%) indicates hemodynamic prerenal azotemia rather than acute tubular necrosis. Reduce Furosemide by 50% rather than stopping SGLT2i.',
+        citedClusterIds: ['reports', 'medication', 'history'],
+        citedNodeIds: ['rep-1', 'med-1', 'hist-1'],
+        turnType: 'evidence_challenge',
+        evidenceCitations: ['KDIGO 2024 & HFSA Guidelines on SGLT2i Management in Cardiorenal Syndrome'],
+        uncertaintyScore: 10
+      },
+      {
+        id: 'mw-4',
+        personaId: 'recovery',
+        timestamp: '2026-08-21 11:01:15',
+        headline: 'Oral Potassium Repletion & Hydration Plan',
+        speechText: 'Prescribe oral Potassium Chloride 20 mEq daily x 5 days. Instruct patient on logging daily sitting and standing blood pressure and taking morning weights.',
+        citedClusterIds: ['recovery', 'medication', 'lifestyle'],
+        citedNodeIds: ['rec-1', 'med-2', 'life-1'],
+        turnType: 'plan',
+        evidenceCitations: ['ACC Expert Consensus Decision Pathway for Heart Failure Management'],
+        uncertaintyScore: 8
+      },
+      {
+        id: 'mw-5',
+        personaId: 'planner',
+        timestamp: '2026-08-21 11:01:45',
+        headline: 'Cardiorenal Consensus Synthesis',
+        speechText: 'FINAL CONSENSUS: 1. Reduce Furosemide to 20mg BID. 2. Maintain Empagliflozin 10mg daily for long-term cardioprotection. 3. Initiate oral KCl 20 mEq daily. 4. Re-check BMP (Electrolytes + Renal Panel) in 72 hours.',
+        citedClusterIds: ['medication', 'reports', 'recovery'],
+        citedNodeIds: ['med-1', 'rep-1', 'rec-1'],
+        turnType: 'consensus',
+        evidenceCitations: ['2022 AHA/ACC/HFSA Guideline for the Management of Heart Failure'],
+        uncertaintyScore: 5
+      }
+    ],
+    consensus: {
+      agreedFindings: [
+        {
+          id: 'mw-c1',
+          topic: 'Synergistic Diuretic Volume Depletion',
+          status: 'agreed',
+          description: 'SGLT2i + Loop diuretic co-therapy caused hypovolemia, orthostasis, and hypokalemia (3.2 mEq/L).',
+          supportingPersonas: ['triage', 'medication', 'nephrology', 'recovery', 'planner'],
+          clusterReferences: ['medication', 'reports', 'risk'],
+          evidenceRef: '2022 AHA/ACC/HFSA Heart Failure Guidelines'
+        },
+        {
+          id: 'mw-c2',
+          topic: 'Diuretic Dose Down-Titration Strategy',
+          status: 'agreed',
+          description: 'Halve loop diuretic dose to maintain SGLT2 inhibitor guideline therapy.',
+          supportingPersonas: ['medication', 'nephrology', 'planner'],
+          clusterReferences: ['medication', 'recovery']
+        }
+      ],
+      disputedFindings: [],
+      missingInformation: ['Current 12-lead ECG for QTc measurement', 'Urine Osmolality'],
+      overallConfidence: 91,
+      evidenceStrength: 'Strong',
+      safetyAlerts: [
+        {
+          level: 'high',
+          title: 'Hypokalemia & Arrhythmia Risk (K+ 3.2 mEq/L)',
+          description: 'Serum potassium below 3.5 in HFrEF patient requires immediate oral repletion and diuretic adjustment.'
+        }
+      ],
+      recommendedNextAction: 'Reduce Furosemide to 20mg BID, start oral KCl 20 mEq/day, repeat BMP in 3 days.',
+      requiresClinicianEscalation: true,
+      escalationReason: 'Hypokalemia with symptomatic orthostatic hypotension.'
+    }
+  },
+  case_sarah_jenkins: {
+    id: 'case_sarah_jenkins',
+    title: 'Sarah Jenkins (65F) — Diabetic Nephropathy + RAAS-i + MRA Hyperkalemia',
+    patientName: 'Sarah Jenkins',
+    age: 65,
+    gender: 'Female',
+    domainCategory: 'Diabetic Nephropathy & Endocrine',
+    summary: '65yo female with Type 2 Diabetes (HbA1c 8.1%) and CKD Stage 3a (eGFR 44 mL/min). Coprescribed Lisinopril 20mg and Spironolactone 25mg for resistant hypertension and microalbuminuria. Routine follow-up lab shows serum potassium rose from 4.5 to 5.6 mEq/L with mild ECG peaked T waves.',
+    keyBiomarkerChange: 'Potassium: 4.5 → 5.6 mEq/L (Critical Alert), eGFR: 48 → 44 mL/min, Serum Creatinine: 1.6 mg/dL',
+    primaryRisk: 'Severe cardiotoxicity and lethal cardiac conduction block triggered by dual potassium-sparing RAAS inhibition in impaired renal clearance.',
+    turns: [
+      {
+        id: 'sj-1',
+        personaId: 'triage',
+        timestamp: '2026-08-22 14:20:00',
+        headline: 'Critical Hyperkalemia Red Flag',
+        speechText: 'EMERGENCY RED FLAG: Serum Potassium is 5.6 mEq/L. Ambulatory ECG strip indicates tall peaked T waves in precordial leads. Urgent potassium-lowering intervention and medication hold required.',
+        citedClusterIds: ['reports', 'risk', 'symptoms'],
+        citedNodeIds: ['rep-1', 'risk-1', 'sym-1'],
+        turnType: 'safety_check',
+        uncertaintyScore: 3
+      },
+      {
+        id: 'sj-2',
+        personaId: 'medication',
+        timestamp: '2026-08-22 14:20:25',
+        headline: 'Dual Potassium-Sparing Pharmacological Collision',
+        speechText: 'Lisinopril inhibits aldosterone secretion via ACE blockade while Spironolactone competitively blocks mineralocorticoid receptors in the distal tubule. In CKD Stage 3a (eGFR 44), tubular potassium excretion is severely blunted.',
+        citedClusterIds: ['medication', 'reports', 'risk'],
+        citedNodeIds: ['med-1', 'med-2', 'risk-1'],
+        turnType: 'correlation',
+        evidenceCitations: ['FDA Boxed Warning: Hyperkalemia with Potassium-Sparing Diuretics + ACEi'],
+        uncertaintyScore: 5
+      },
+      {
+        id: 'sj-3',
+        personaId: 'nephrology',
+        timestamp: '2026-08-22 14:20:50',
+        headline: 'Renal Potassium Clearance & Alternative Antihypertensive',
+        speechText: 'Hold Spironolactone immediately. Consider substituting a novel non-steroidal MRA (Finerenone) or adding a potassium binder (Sodium Zirconium Cyclosilicate) if MRA is mandatory for proteinuria control.',
+        citedClusterIds: ['medication', 'recovery', 'reports'],
+        citedNodeIds: ['med-2', 'rec-1', 'rep-1'],
+        turnType: 'plan',
+        evidenceCitations: ['KDIGO 2023 Clinical Practice Guideline for Diabetes Management in CKD'],
+        uncertaintyScore: 8
+      },
+      {
+        id: 'sj-4',
+        personaId: 'evidence',
+        timestamp: '2026-08-22 14:21:15',
+        headline: 'Clinical Guideline Thresholds for Hyperkalemia',
+        speechText: 'FIDELIO-DKD and FIGARO-DKD clinical trial evidence demonstrates non-steroidal MRAs have significantly lower hyperkalemia discontinuation rates while maintaining cardiorenal preservation.',
+        citedClusterIds: ['reports', 'recovery'],
+        citedNodeIds: ['rep-1', 'rec-2'],
+        turnType: 'evidence_challenge',
+        evidenceCitations: ['New England Journal of Medicine (NEJM): Cardiovascular & Kidney Outcomes with Finerenone'],
+        uncertaintyScore: 7
+      },
+      {
+        id: 'sj-5',
+        personaId: 'planner',
+        timestamp: '2026-08-22 14:21:45',
+        headline: 'Immediate Hyperkalemia Management Protocol',
+        speechText: 'CONSENSUS PROTOCOL: 1. Discontinue Spironolactone today. 2. Prescribe low-potassium dietary regimen. 3. Repeat stat serum potassium and 12-lead ECG in 24 hours. 4. Re-evaluate renal clinic visit in 5 days.',
+        citedClusterIds: ['medication', 'recovery', 'reports'],
+        citedNodeIds: ['med-2', 'rec-1', 'rep-1'],
+        turnType: 'consensus',
+        evidenceCitations: ['Endocrine Society Clinical Practice Guidelines on Hyperkalemia in Diabetes'],
+        uncertaintyScore: 4
+      }
+    ],
+    consensus: {
+      agreedFindings: [
+        {
+          id: 'sj-c1',
+          topic: 'Iatrogenic Hyperkalemia (5.6 mEq/L)',
+          status: 'agreed',
+          description: 'Dual RAAS blockade with ACEi and Spironolactone in CKD Stage 3a caused life-threatening hyperkalemia with peaked T-waves.',
+          supportingPersonas: ['triage', 'medication', 'nephrology', 'evidence', 'planner'],
+          clusterReferences: ['medication', 'reports', 'risk'],
+          evidenceRef: 'KDIGO 2023 CKD & Diabetes Guidelines'
+        },
+        {
+          id: 'sj-c2',
+          topic: 'Immediate Spironolactone Cessation',
+          status: 'agreed',
+          description: 'Discontinue Spironolactone and monitor ECG until K+ normalizes < 5.0 mEq/L.',
+          supportingPersonas: ['medication', 'triage', 'planner'],
+          clusterReferences: ['medication', 'recovery']
+        }
+      ],
+      disputedFindings: [],
+      missingInformation: ['Serum Sodium & Chloride Panel', 'Urinary Albumin-to-Creatinine Ratio (UACR)'],
+      overallConfidence: 96,
+      evidenceStrength: 'Strong',
+      safetyAlerts: [
+        {
+          level: 'critical',
+          title: 'Cardiac Dysrhythmia Risk (K+ 5.6 mEq/L)',
+          description: 'Peaked T-waves observed on telemetry with hyperkalemia. Immediate medication hold required.'
+        }
+      ],
+      recommendedNextAction: 'Hold Spironolactone immediately, order low-potassium diet, stat K+ check within 24h.',
+      requiresClinicianEscalation: true,
+      escalationReason: 'Potassium 5.6 mEq/L with ECG conduction abnormality.'
+    }
+  }
 };
 
 export const TIMELINE_EVENTS: TimelineEvent[] = [

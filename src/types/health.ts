@@ -588,3 +588,98 @@ export interface BenchmarkComparison {
   metrics: BenchmarkSuiteMetrics;
 }
 
+export interface StaticClinicalCase {
+  id: string;
+  title: string;
+  patientName: string;
+  age: number;
+  gender: string;
+  domainCategory: string;
+  summary: string;
+  keyBiomarkerChange: string;
+  primaryRisk: string;
+  turns: PersonaTurn[];
+  consensus: ConsensusState;
+}
+
+export type DoctorPostureMode = 
+  | 'greeting' 
+  | 'listening' 
+  | 'explaining' 
+  | 'alerting' 
+  | 'prescribing' 
+  | 'reassuring';
+
+export interface VirtualDoctorPersona {
+  id: string;
+  name: string;
+  title: string;
+  specialty: string;
+  credentials: string;
+  avatarColor: string;
+  badgeBg: string;
+  accentColor: string;
+  voicePitch: number;
+  voiceRate: number;
+  preferredVoiceName?: string;
+  clinicalFocus: string;
+  greetingScript: string;
+  explanationScript: string;
+  safetyAlertScript: string;
+  actionPlanScript: string;
+  longitudinalClustersCited: ClusterType[];
+  biomarkerFocus: {
+    name: string;
+    currentValue: string;
+    baselineValue: string;
+    trend: 'improving' | 'deteriorating' | 'stable';
+    clinicalImpact: string;
+  }[];
+}
+
+export interface PatientScreeningOption {
+  id: string;
+  label: string;
+  patientResponseText: string;
+  doctorFeedbackScript: string;
+  postureReaction: DoctorPostureMode;
+  safetyImpact: 'safe' | 'warning' | 'alert';
+  actionableNextStep: string;
+}
+
+export interface ScreeningDialogueStep {
+  id: string;
+  stepNumber: number;
+  phase: 'welcome' | 'biomarker_review' | 'medication_alert' | 'symptom_check' | 'care_plan';
+  title: string;
+  spokenScript: string;
+  posture: DoctorPostureMode;
+  suggestedActionCard?: {
+    headline: string;
+    description: string;
+    badge: string;
+    badgeColor: string;
+    category: 'Medication' | 'Lab Monitoring' | 'Lifestyle' | 'Specialist Referral';
+  };
+  patientOptions?: PatientScreeningOption[];
+  evidenceReference?: string;
+}
+
+export interface VirtualDoctorSessionState {
+  currentPersonaId: string;
+  currentStepIndex: number;
+  isPlayingAudio: boolean;
+  isAudioMuted: boolean;
+  speechRate: number; // 0.8, 1.0, 1.25, 1.5
+  currentSpokenWordIndex: number;
+  currentPosture: DoctorPostureMode;
+  hasPatientResponded: boolean;
+  patientSelectedOptionId?: string;
+  callDurationSeconds: number;
+  isCallActive: boolean;
+  isLiveCaptionsEnabled: boolean;
+  symptomNotes: string[];
+  completedChecklistIds: string[];
+}
+
+

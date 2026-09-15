@@ -31,7 +31,8 @@ import {
   Heart,
   Eye,
   CheckCircle2,
-  Calendar
+  Calendar,
+  Video
 } from 'lucide-react';
 import { WhatIfSimInput, WhatIfSimResult } from '../types/health';
 
@@ -111,6 +112,15 @@ export const CommandCenter: React.FC<CommandCenterProps> = ({ onNavigateTab }) =
                 NEEDS CLINICAL ATTENTION
               </span>
             </div>
+
+            {/* Virtual Doctor Video Screening Button */}
+            <button
+              onClick={() => onNavigateTab('virtual-doctor')}
+              className="px-4 py-2.5 bg-[#00F5D4] text-black font-black font-display text-xs flex items-center space-x-1.5 border-3 border-black shadow-[4px_4px_0px_0px_#000] hover:bg-[#00D2B4] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[5px_5px_0px_0px_#000] transition-all cursor-pointer uppercase tracking-wider"
+            >
+              <Video className="w-4 h-4 stroke-[2.5]" />
+              <span>Virtual Doctor Video Call Screening →</span>
+            </button>
 
             {/* Progressive Disclosure: Forensic Engine Button */}
             <button

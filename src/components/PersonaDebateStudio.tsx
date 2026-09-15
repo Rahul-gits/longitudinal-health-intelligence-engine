@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { PersonaTurn, PersonaId, PersonaProfile } from '../types/health';
-import { PERSONA_PROFILES } from '../data/mockPatientData';
+import { PersonaTurn, PersonaId, PersonaProfile, StaticClinicalCase } from '../types/health';
+import { PERSONA_PROFILES, STATIC_CLINICAL_CASES } from '../data/mockPatientData';
 import { 
   Play, 
   Pause, 
@@ -24,23 +24,29 @@ import {
   Target,
   AlertCircle,
   BarChart3,
-  X
+  X,
+  FileText,
+  UserCheck
 } from 'lucide-react';
 
 interface PersonaDebateStudioProps {
   turns: PersonaTurn[];
   currentTurnIndex: number;
+  activeCaseId?: string;
+  onSelectStaticCase?: (caseId: string) => void;
   onTurnSelect: (index: number) => void;
   onNextTurn: () => void;
   onPrevTurn: () => void;
   onReset: () => void;
-  onCustomQuerySubmit: (query: string) => void;
+  onCustomQuerySubmit?: (query: string) => void;
   onOpenExplainabilityModal: (turn: PersonaTurn) => void;
 }
 
 export const PersonaDebateStudio: React.FC<PersonaDebateStudioProps> = ({
   turns,
   currentTurnIndex,
+  activeCaseId = 'case_eleanor_vance',
+  onSelectStaticCase,
   onTurnSelect,
   onNextTurn,
   onPrevTurn,
@@ -49,8 +55,8 @@ export const PersonaDebateStudio: React.FC<PersonaDebateStudioProps> = ({
   onOpenExplainabilityModal
 }) => {
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
-  const [customInput, setCustomInput] = useState<string>('');
   const [inspectingPersona, setInspectingPersona] = useState<PersonaProfile | null>(null);
+  const staticCases = Object.values(STATIC_CLINICAL_CASES);
 
   // Auto-play timer for live case conference simulation
   useEffect(() => {
@@ -83,14 +89,6 @@ export const PersonaDebateStudio: React.FC<PersonaDebateStudioProps> = ({
       case 'ethics': return Scale;
       case 'swarm_orchestrator': return Cpu;
       default: return MessageSquare;
-    }
-  };
-
-  const handleCustomSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (customInput.trim()) {
-      onCustomQuerySubmit(customInput.trim());
-      setCustomInput('');
     }
   };
 
@@ -277,24 +275,38 @@ export const PersonaDebateStudio: React.FC<PersonaDebateStudioProps> = ({
         })}
       </div>
 
-      {/* Interactive Case Input Bar */}
-      <form onSubmit={handleCustomSubmit} className="p-3 bg-[#FFFFFF] border-t-3 border-black flex items-center space-x-2">
-        <input
-          type="text"
-          value={customInput}
-          onChange={(e) => setCustomInput(e.target.value)}
-          placeholder="Ask personas to evaluate a new symptom or drug..."
-          className="flex-1 bg-[#FAF8F5] border-2 border-black px-3 py-2 text-xs font-bold text-black placeholder-black/60 focus:outline-none focus:bg-[#FFE600]/20 shadow-[2px_2px_0px_0px_#000]"
-        />
-        <button
-          type="submit"
-          disabled={!customInput.trim()}
-          className="px-4 py-2 bg-[#CCFF00] hover:bg-[#A3E635] disabled:opacity-40 text-black border-2 border-black font-black font-display text-xs flex items-center space-x-1 shadow-[2px_2px_0px_0px_#000] cursor-pointer uppercase"
-        >
-          <Send className="w-3.5 h-3.5 stroke-[2.5]" />
-          <span>Discuss</span>
-        </button>
-      </form>
+      {/* Curated Static Clinical Case Quick Selector */}
+      <div className="p-3 bg-[#FAF8F5] border-t-3 border-black space-y-2">
+        <div className="flex items-center justify-between">
+          <span className="text-[10px] font-black font-mono uppercase tracking-wider text-black flex items-center gap-1.5">
+            <UserCheck className="w-3.5 h-3.5 stroke-[2.5] text-[#3A86FF]" />
+            CURATED STATIC CLINICAL CASES (BENCHMARK DATASETS)
+          </span>
+          <span className="text-[9px] font-mono font-bold bg-black text-[#00F5D4] px-1.5 py-0.5 border border-black uppercase">
+            STATIC GROUND TRUTH
+          </span>
+        </div>
+        <div className="grid grid-cols-2 gap-1.5">
+          {staticCases.map((c) => {
+            const isSelected = c.id === activeCaseId;
+            return (
+              <button
+                key={c.id}
+                type="button"
+                onClick={() => onSelectStaticCase && onSelectStaticCase(c.id)}
+                className={`p-1.5 text-left border-2 border-black transition-all cursor-pointer ${
+                  isSelected
+                    ? 'bg-[#FFE600] text-black font-black shadow-[2px_2px_0px_0px_#000] ring-1 ring-black'
+                    : 'bg-[#FFFFFF] text-black/80 hover:bg-[#FAF8F5] hover:text-black font-bold shadow-[1px_1px_0px_0px_#000]'
+                }`}
+              >
+                <div className="text-[10px] font-black truncate">{c.patientName} ({c.age}{c.gender[0]})</div>
+                <div className="text-[9px] font-mono text-black/70 truncate">{c.domainCategory}</div>
+              </button>
+            );
+          })}
+        </div>
+      </div>
 
       {/* Deep Goal Hierarchy Drawer / Modal */}
       {inspectingPersona && inspectingPersona.deepGoals && (
