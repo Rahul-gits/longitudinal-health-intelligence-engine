@@ -7,8 +7,10 @@ import {
 } from '../types/health';
 import { virtualDoctorScreeningEngine } from '../engine/virtualDoctorScreeningEngine';
 import { speechEngine } from '../engine/speechSynthesisEngine';
+import { patientStateEngine } from '../engine/patientStateEngine';
 import { DoctorAnimatedAvatar } from './DoctorAnimatedAvatar';
-import { PATIENT_INFO } from '../data/mockPatientData';
+import { PATIENT_INFO, getDynamicPatientProfile } from '../data/mockPatientData';
+import { useAuth } from '../context/AuthContext';
 import { 
   Video, 
   Mic, 
@@ -37,7 +39,9 @@ import {
 } from 'lucide-react';
 
 export const VirtualDoctorScreeningWorkspace: React.FC = () => {
-  const personas = virtualDoctorScreeningEngine.getPersonas();
+  const { user } = useAuth();
+  const currentPatient = getDynamicPatientProfile(user);
+  const personas = virtualDoctorScreeningEngine.getPersonas(user);
   const [activePersonaId, setActivePersonaId] = useState<string>(personas[0].id);
   const [currentStepIndex, setCurrentStepIndex] = useState<number>(0);
   
@@ -58,8 +62,8 @@ export const VirtualDoctorScreeningWorkspace: React.FC = () => {
   const [completedSteps, setCompletedSteps] = useState<number[]>([0]);
   const [exportNotice, setExportNotice] = useState<string | null>(null);
 
-  const activePersona: VirtualDoctorPersona = virtualDoctorScreeningEngine.getPersonaById(activePersonaId);
-  const dialogueSteps: ScreeningDialogueStep[] = virtualDoctorScreeningEngine.getScreeningDialogue(activePersonaId);
+  const activePersona: VirtualDoctorPersona = virtualDoctorScreeningEngine.getPersonaById(activePersonaId, user);
+  const dialogueSteps: ScreeningDialogueStep[] = virtualDoctorScreeningEngine.getScreeningDialogue(activePersonaId, user);
   const currentStep: ScreeningDialogueStep = dialogueSteps[currentStepIndex] || dialogueSteps[0];
 
   // Call duration counter
@@ -179,6 +183,11 @@ export const VirtualDoctorScreeningWorkspace: React.FC = () => {
     setCustomDoctorFeedback(option.doctorFeedbackScript);
     setActivePosture(option.postureReaction);
 
+    // Save reported symptom directly into longitudinal engine
+    patientStateEngine.addReportedSymptom(option.patientResponseText, `Virtual Doctor (${activePersona.name})`);
+    setExportNotice(`✓ Recorded in Longitudinal State Engine: "${option.patientResponseText.slice(0, 45)}…"`);
+    setTimeout(() => setExportNotice(null), 3500);
+
     // Auto-read doctor's feedback response
     handlePlaySpeech(option.doctorFeedbackScript);
   };
@@ -188,7 +197,7 @@ export const VirtualDoctorScreeningWorkspace: React.FC = () => {
 =========================================
 HEAL ENGINE - VIRTUAL DOCTOR SCREENING
 =========================================
-Patient: ${PATIENT_INFO.name} (${PATIENT_INFO.age}Y/${PATIENT_INFO.gender})
+Patient: ${currentPatient.name} (${currentPatient.age}Y/${currentPatient.gender})
 Consulting Physician: ${activePersona.name} (${activePersona.specialty})
 Session Timestamp: ${new Date().toLocaleString()}
 Call Duration: ${formatTimer(callDuration)}

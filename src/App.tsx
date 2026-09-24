@@ -15,12 +15,21 @@ import { ClinicianPortal } from './components/ClinicianPortal';
 import { ConsentAndAudit } from './components/ConsentAndAudit';
 import { EmergencyScreen } from './components/EmergencyScreen';
 import { VirtualDoctorScreeningWorkspace } from './components/VirtualDoctorScreeningWorkspace';
+import { EndToEndWorkflowWorkspace } from './components/EndToEndWorkflowWorkspace';
+import { ClinicalSummaryWorkspace } from './components/ClinicalSummaryWorkspace';
 import { ClinicalConferenceEngine } from './engine/clinicalConferenceEngine';
+import { AuthProvider } from './context/AuthContext';
+import { AuthGateway } from './components/auth/AuthGateway';
 import { Activity, ShieldAlert, Sparkles } from 'lucide-react';
+
+import { useAuth } from './context/AuthContext';
+import { getDynamicPatientProfile } from './data/mockPatientData';
 
 const conferenceEngine = new ClinicalConferenceEngine();
 
-export const App: React.FC = () => {
+const MainDashboard: React.FC = () => {
+  const { user } = useAuth();
+  const currentPatient = getDynamicPatientProfile(user);
   const [activeTab, setActiveTab] = useState<string>('command');
   const [activeRole, setActiveRole] = useState<'patient' | 'clinician' | 'research'>('patient');
   const [showEmergencyModal, setShowEmergencyModal] = useState<boolean>(false);
@@ -32,9 +41,9 @@ export const App: React.FC = () => {
         <div className="inline-block animate-marquee space-x-8">
           <span>⚡ HEAL ENGINE ACTIVE</span>
           <span>•</span>
-          <span>6-STEP HUMAN CARE LOOP: UNDERSTAND → DETECT → EXPLAIN → PROTECT → DECIDE → MONITOR</span>
+          <span>6-STEP CARE LOOP: MY HEALTH → WHAT CHANGED? → WHY IT MATTERS → TALK TO SPECIALIST → SAFETY CHECK → FOLLOW-UP</span>
           <span>•</span>
-          <span>PATIENT ID: ELEANOR VANCE (68Y/F) • STATE v1.4.2</span>
+          <span>PATIENT: {currentPatient.name.toUpperCase()} ({currentPatient.age}Y/{currentPatient.gender[0]})</span>
           <span>•</span>
           <span>⚡ HEAL ENGINE ACTIVE</span>
         </div>
@@ -58,10 +67,10 @@ export const App: React.FC = () => {
               <span className="bg-black text-[#FFE600] px-2 py-0.5 text-[10px] uppercase font-black border border-black -rotate-1">
                 PATIENT VIEW (LEVEL 1)
               </span>
-              <span className="font-display text-sm tracking-wide">Eleanor Vance's Clear Daily Care Plan & Guidance</span>
+              <span className="font-display text-sm tracking-wide">{currentPatient.name}'s Health Picture & Guidance</span>
             </div>
             <span className="text-[11px] font-mono bg-black text-white px-2 py-1 border border-black">
-              SIMPLE HUMAN LANGUAGE • SYMPTOM WATCH • DOCTOR QUESTIONS
+              SIMPLE HUMAN LANGUAGE • SYMPTOM WATCH • QUESTIONS TO DISCUSS
             </span>
           </div>
         )}
@@ -72,7 +81,7 @@ export const App: React.FC = () => {
               <span className="bg-black text-[#FFE600] px-2 py-0.5 text-[10px] uppercase font-black border border-black -rotate-1">
                 CLINICIAN VIEW (LEVEL 2)
               </span>
-              <span className="font-display text-sm tracking-wide">Dr. Aris Thorne (Cardiorenal Decision Support & Order Entry)</span>
+              <span className="font-display text-sm tracking-wide">Dr. Aris Thorne (Cardiorenal Decision Support for {currentPatient.name})</span>
             </div>
             <span className="text-[11px] font-mono bg-black/30 px-2 py-1 border border-black/40">
               FHIR R4 EHR SYNC • HARD SAFETY CHECKS • EVIDENCE CITATIONS
@@ -94,23 +103,27 @@ export const App: React.FC = () => {
           </div>
         )}
 
-        {/* Tab Routing */}
+        {/* Primary Tab Routing (Human + Clinical) */}
         {activeTab === 'command' && <CommandCenter onNavigateTab={setActiveTab} />}
-        {activeTab === 'virtual-doctor' && <VirtualDoctorScreeningWorkspace />}
-        {activeTab === 'health' && <UnderstandWorkspace />}
-        {activeTab === 'changes' && <DetectWorkspace />}
+        {activeTab === 'reports' && <ReportIntelligence />}
+        {activeTab === 'timeline' && <HealthTimeline />}
         {activeTab === 'insights' && <ExplainWorkspace />}
-        {activeTab === 'safety' && <ProtectWorkspace />}
-        {activeTab === 'decide' && <DecideWorkspace />}
-        {activeTab === 'recovery' && <RecoveryJourney />}
+        {activeTab === 'virtual-doctor' && <VirtualDoctorScreeningWorkspace />}
+        {activeTab === 'recovery' && <RecoveryJourney onNavigateTab={setActiveTab} />}
+        {activeTab === 'clinician-summary' && <ClinicalSummaryWorkspace onNavigateTab={setActiveTab} />}
 
-        {/* Advanced Technical Views */}
+        {/* Advanced & Forensic Engine Workspaces */}
+        {activeTab === 'workflow' && <EndToEndWorkflowWorkspace onNavigateTab={setActiveTab} />}
+        {activeTab === 'safety' && <ProtectWorkspace />}
         {activeTab === 'conference' && <CaseConferenceWorkspace engine={conferenceEngine} />}
         {activeTab === 'swarm' && <SwarmIntelligenceWorkspace />}
-        {activeTab === 'timeline' && <HealthTimeline />}
-        {activeTab === 'reports' && <ReportIntelligence />}
         {activeTab === 'clinician' && <ClinicianPortal />}
         {activeTab === 'governance' && <ConsentAndAudit />}
+
+        {/* Legacy Routing Aliases */}
+        {activeTab === 'health' && <UnderstandWorkspace />}
+        {activeTab === 'changes' && <DetectWorkspace />}
+        {activeTab === 'decide' && <DecideWorkspace />}
       </main>
 
       {/* Neubrutalist Footer */}
@@ -123,11 +136,11 @@ export const App: React.FC = () => {
             <span className="text-black font-mono">Longitudinal Clinical Decision Intelligence for Complex Care</span>
           </div>
           <div className="flex items-center space-x-3 text-[11px] font-mono">
-            <span className="bg-[#00F5D4] border border-black px-2 py-0.5 text-black font-extrabold shadow-[2px_2px_0px_0px_#000]">6-STEP CARE LOOP</span>
+            <span className="bg-[#00F5D4] border border-black px-2 py-0.5 text-black font-extrabold shadow-[2px_2px_0px_0px_#000]">6-QUESTION HUMAN UX</span>
             <span>•</span>
-            <span className="bg-[#FF70A6] border border-black px-2 py-0.5 text-black font-extrabold shadow-[2px_2px_0px_0px_#000]">KNOWLEDGE GRAPH</span>
+            <span className="bg-[#FF70A6] border border-black px-2 py-0.5 text-black font-extrabold shadow-[2px_2px_0px_0px_#000]">HEALTH CONNECTIONS</span>
             <span>•</span>
-            <span className="bg-[#CCFF00] border border-black px-2 py-0.5 text-black font-extrabold shadow-[2px_2px_0px_0px_#000]">SAFETY & RAG ENGINE</span>
+            <span className="bg-[#CCFF00] border border-black px-2 py-0.5 text-black font-extrabold shadow-[2px_2px_0px_0px_#000]">SAFETY & EVIDENCE ENGINE</span>
           </div>
         </div>
       </footer>
@@ -137,6 +150,16 @@ export const App: React.FC = () => {
         <EmergencyScreen onClose={() => setShowEmergencyModal(false)} />
       )}
     </div>
+  );
+};
+
+export const App: React.FC = () => {
+  return (
+    <AuthProvider>
+      <AuthGateway>
+        <MainDashboard />
+      </AuthGateway>
+    </AuthProvider>
   );
 };
 

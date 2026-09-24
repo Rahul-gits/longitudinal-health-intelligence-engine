@@ -2,13 +2,24 @@ import React, { useState } from 'react';
 import { RECOVERY_SYMPTOM_LOGS } from '../data/mockPatientData';
 import { SymptomLogEntry } from '../types/health';
 import { 
-  UserCheck, 
+  BellRing, 
   Calendar, 
   Plus, 
-  FileText
+  FileText,
+  CheckCircle2,
+  Clock,
+  Video,
+  Stethoscope,
+  Sparkles,
+  ArrowRight,
+  FolderOpen
 } from 'lucide-react';
 
-export const RecoveryJourney: React.FC = () => {
+interface RecoveryJourneyProps {
+  onNavigateTab?: (tab: string) => void;
+}
+
+export const RecoveryJourney: React.FC<RecoveryJourneyProps> = ({ onNavigateTab }) => {
   const [logs, setLogs] = useState<SymptomLogEntry[]>(RECOVERY_SYMPTOM_LOGS);
   const [showLogModal, setShowLogModal] = useState<boolean>(false);
   const [newPain, setNewPain] = useState<number>(3);
@@ -25,79 +36,142 @@ export const RecoveryJourney: React.FC = () => {
       fatigueLevel: newFatigue,
       temperature: 98.4,
       sleepHours: 7.5,
-      notes: newNotes || 'Routine recovery log entry.',
-      symptomsLogged: ['Mild Fatigue']
+      notes: newNotes || 'Routine symptom log entry.',
+      symptomsLogged: ['Joint relief check']
     };
-    setLogs([...logs, newEntry]);
+    setLogs([newEntry, ...logs]);
     setShowLogModal(false);
     setNewNotes('');
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header Bar */}
-      <div className="p-5 bg-[#CCFF00] border-3 border-black shadow-[6px_6px_0px_0px_#000] flex flex-wrap items-center justify-between gap-4">
+    <div className="space-y-6 font-mono text-xs">
+      {/* Human Health Banner */}
+      <div className="p-6 bg-[#CCFF00] text-black border-3 border-black shadow-[6px_6px_0px_0px_#000] flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-black font-display text-black tracking-tight flex items-center gap-2 uppercase">
-            <UserCheck className="w-6 h-6 stroke-[2.5]" /> RECOVERY JOURNEY & SYMPTOM DIARY
+          <div className="flex items-center space-x-2 bg-black text-[#CCFF00] px-2.5 py-0.5 w-fit border border-black -rotate-1 text-xs font-black uppercase mb-1">
+            <BellRing className="w-4 h-4 stroke-[2.5]" />
+            <span>CARE & FOLLOW-UP</span>
+          </div>
+          <h2 className="text-2xl font-black font-display text-black uppercase tracking-tight">
+            Your Follow-Up & Action Plan
           </h2>
-          <p className="text-xs font-mono font-bold text-black/90 mt-1">
-            14-day supportive recovery tracking, structured daily guidance, and symptom diary telemetry.
+          <p className="text-xs font-bold text-black/90 mt-1 max-w-2xl font-mono leading-relaxed">
+            Keep your health timeline current. Track symptoms daily, review upcoming appointments, and see when clinical review is scheduled.
           </p>
         </div>
 
         <button
           onClick={() => setShowLogModal(true)}
-          className="px-5 py-2.5 bg-[#FFE600] hover:bg-[#FAF8F5] text-black font-black font-display text-xs flex items-center space-x-1.5 border-2 border-black shadow-[3px_3px_0px_0px_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[5px_5px_0px_0px_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[1px_1px_0px_0px_#000] transition-all cursor-pointer uppercase"
+          className="px-5 py-2.5 bg-[#FFE600] hover:bg-white text-black font-black font-display text-xs flex items-center space-x-1.5 border-2 border-black shadow-[3px_3px_0px_0px_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] transition-all cursor-pointer uppercase"
         >
           <Plus className="w-4 h-4 stroke-[2.5]" />
-          <span>LOG TODAY'S SYMPTOMS</span>
+          <span>Log Today's Symptoms</span>
         </button>
       </div>
 
-      {/* 14-Day Trajectory Milestone Banner */}
-      <div className="p-5 bg-[#FFFFFF] border-3 border-black shadow-[6px_6px_0px_0px_#000] space-y-4">
-        <div className="flex items-center justify-between border-b-2 border-black pb-2">
+      {/* Action-Oriented Follow-Up Checklist (Requirement #13) */}
+      <div className="p-6 bg-white border-3 border-black shadow-[5px_5px_0px_0px_#000] space-y-4">
+        <div className="flex items-center justify-between border-b-2 border-black pb-3">
           <span className="text-xs font-black font-display uppercase tracking-wider flex items-center gap-2 text-black">
-            <Calendar className="w-4 h-4 text-black stroke-[2.5]" /> 14-DAY RECOVERY PATHWAY PROGRESS
+            <Calendar className="w-4 h-4 text-black stroke-[2.5]" /> Your Follow-Up Timeline
           </span>
-          <span className="text-xs font-mono bg-[#00F5D4] text-black px-2 py-0.5 border border-black font-black">DAY 5 / 14 (78% ADHERENT)</span>
+          <span className="text-xs font-mono bg-[#00F5D4] text-black px-2 py-0.5 border border-black font-black">
+            2 ITEMS PENDING
+          </span>
         </div>
 
-        {/* Milestone Steps */}
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 text-xs">
-          <div className="p-3 bg-[#CCFF00] border-2 border-black shadow-[2px_2px_0px_0px_#000] space-y-1">
-            <span className="text-[10px] font-black uppercase font-mono block bg-black text-[#CCFF00] px-1 w-fit">DAY 0</span>
-            <p className="text-[11px] font-bold text-black mt-1">Case Conference Complete</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 font-sans text-xs">
+          {/* Today */}
+          <div className="p-4 bg-[#FAF8F5] border-2 border-black space-y-3">
+            <span className="text-[10px] font-black uppercase font-mono bg-black text-[#CCFF00] px-2 py-0.5 inline-block border border-black">
+              TODAY
+            </span>
+            <div className="space-y-2">
+              <div className="p-3 bg-white border border-black flex items-start gap-2.5 shadow-[1px_1px_0px_0px_#000]">
+                <CheckCircle2 className="w-4 h-4 text-[#00F5D4] shrink-0 mt-0.5 stroke-[2.5]" />
+                <div>
+                  <span className="font-bold text-black block">Review latest health report</span>
+                  <span className="text-[11px] text-black/70">Lab panel analyzed (eGFR 52 mL/min recorded).</span>
+                </div>
+              </div>
+
+              <div className="p-3 bg-white border border-black flex items-start gap-2.5 shadow-[1px_1px_0px_0px_#000]">
+                <CheckCircle2 className="w-4 h-4 text-[#00F5D4] shrink-0 mt-0.5 stroke-[2.5]" />
+                <div>
+                  <span className="font-bold text-black block">Pause oral NSAID (Ibuprofen)</span>
+                  <span className="text-[11px] text-black/70">Protect kidney blood flow while discussing alternatives.</span>
+                </div>
+              </div>
+            </div>
           </div>
-          <div className="p-3 bg-[#CCFF00] border-2 border-black shadow-[2px_2px_0px_0px_#000] space-y-1">
-            <span className="text-[10px] font-black uppercase font-mono block bg-black text-[#CCFF00] px-1 w-fit">DAY 1</span>
-            <p className="text-[11px] font-bold text-black mt-1">Discontinue OTC NSAID</p>
+
+          {/* Coming Up */}
+          <div className="p-4 bg-[#FAF8F5] border-2 border-black space-y-3">
+            <span className="text-[10px] font-black uppercase font-mono bg-black text-[#FFE600] px-2 py-0.5 inline-block border border-black">
+              COMING UP
+            </span>
+            <div className="space-y-2">
+              <div className="p-3 bg-white border border-black flex items-start justify-between gap-2 shadow-[1px_1px_0px_0px_#000]">
+                <div className="flex items-start gap-2.5">
+                  <Clock className="w-4 h-4 text-[#F59E0B] shrink-0 mt-0.5 stroke-[2.5]" />
+                  <div>
+                    <span className="font-bold text-black block">Virtual Specialist Screening</span>
+                    <span className="text-[11px] text-black/70">Scheduled with Dr. Sarah Chen (Preventive Nephrology)</span>
+                  </div>
+                </div>
+                {onNavigateTab && (
+                  <button
+                    onClick={() => onNavigateTab('virtual-doctor')}
+                    className="px-2 py-1 bg-[#00F5D4] text-black font-black text-[10px] font-mono border border-black cursor-pointer hover:bg-[#00D2B4]"
+                  >
+                    Start →
+                  </button>
+                )}
+              </div>
+
+              <div className="p-3 bg-white border border-black flex items-start gap-2.5 shadow-[1px_1px_0px_0px_#000]">
+                <Clock className="w-4 h-4 text-[#3A86FF] shrink-0 mt-0.5 stroke-[2.5]" />
+                <div>
+                  <span className="font-bold text-black block">Clinician Review & Lab Recheck</span>
+                  <span className="text-[11px] text-black/70">Repeat metabolic blood panel recommended in 14 days.</span>
+                </div>
+              </div>
+            </div>
           </div>
-          <div className="p-3 bg-[#FFE600] border-2 border-black shadow-[3px_3px_0px_0px_#000] space-y-1">
-            <span className="text-[10px] font-black uppercase font-mono block bg-black text-[#FFE600] px-1 w-fit">DAY 3 (ACTIVE)</span>
-            <p className="text-[11px] font-black text-black mt-1">Track Vitals & Edema</p>
+        </div>
+
+        {/* Keep information updated banner */}
+        <div className="p-4 bg-[#FFE600]/30 border-2 border-black flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center space-x-2">
+            <FolderOpen className="w-5 h-5 text-black shrink-0" />
+            <div>
+              <span className="font-black font-display text-xs text-black uppercase block">Keep your information updated</span>
+              <p className="text-[11px] text-black/80 font-sans">
+                Adding new reports helps Heal Engine keep your health timeline current and detect positive recovery trends.
+              </p>
+            </div>
           </div>
-          <div className="p-3 bg-[#FAF8F5] border-2 border-black shadow-[2px_2px_0px_0px_#000] space-y-1">
-            <span className="text-[10px] font-black uppercase font-mono block bg-black text-white px-1 w-fit">DAY 7</span>
-            <p className="text-[11px] font-semibold text-black/80 mt-1">Re-check eGFR Panel</p>
-          </div>
-          <div className="p-3 bg-[#FAF8F5] border-2 border-black shadow-[2px_2px_0px_0px_#000] space-y-1">
-            <span className="text-[10px] font-black uppercase font-mono block bg-black text-white px-1 w-fit">DAY 14</span>
-            <p className="text-[11px] font-semibold text-black/80 mt-1">Clinician Evaluation</p>
-          </div>
+          {onNavigateTab && (
+            <button
+              onClick={() => onNavigateTab('reports')}
+              className="px-3 py-1.5 bg-white hover:bg-black hover:text-white text-black font-bold text-xs border border-black font-mono shadow-[2px_2px_0px_0px_#000] transition-all cursor-pointer"
+            >
+              + Upload New Report
+            </button>
+          )}
         </div>
       </div>
 
       {/* Symptom Journal Entries Stream */}
       <div className="space-y-3">
-        <h3 className="text-xs font-black font-display uppercase tracking-wider flex items-center gap-2 bg-[#FF70A6] text-black px-2 py-1 border border-black shadow-[2px_2px_0px_0px_#000] w-fit">
-          <FileText className="w-4 h-4 stroke-[2.5]" /> PATIENT SYMPTOM DIARY LOG HISTORY
+        <h3 className="text-xs font-black font-display uppercase tracking-wider flex items-center gap-2 bg-[#FF70A6] text-black px-2.5 py-1 border border-black shadow-[2px_2px_0px_0px_#000] w-fit">
+          <FileText className="w-4 h-4 stroke-[2.5]" /> RECENT SYMPTOM LOG ENTRIES
         </h3>
 
         <div className="space-y-3">
           {logs.map(log => (
-            <div key={log.id} className="p-4 bg-[#FFFFFF] border-3 border-black shadow-[4px_4px_0px_0px_#000] flex flex-wrap items-center justify-between gap-4 text-xs">
+            <div key={log.id} className="p-4 bg-[#FFFFFF] border-3 border-black shadow-[4px_4px_0px_0px_#000] flex flex-wrap items-center justify-between gap-4 text-xs font-sans">
               <div className="space-y-1">
                 <div className="flex items-center space-x-3">
                   <span className="font-black font-display text-black text-sm">Day {log.dayNumber} ({log.date})</span>
@@ -108,14 +182,14 @@ export const RecoveryJourney: React.FC = () => {
                 <p className="text-black/90 font-semibold text-[11px] mt-1">{log.notes}</p>
               </div>
 
-              <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-4 font-mono">
                 <div className="text-center bg-[#FAF8F5] p-2 border border-black shadow-[1px_1px_0px_0px_#000]">
-                  <span className="text-[9px] font-black text-black/70 block uppercase font-mono">FATIGUE</span>
-                  <span className="font-black text-black font-mono text-sm bg-[#FFE600] px-1 border border-black">{log.fatigueLevel}/10</span>
+                  <span className="text-[9px] font-black text-black/70 block uppercase">FATIGUE</span>
+                  <span className="font-black text-black text-sm bg-[#FFE600] px-1 border border-black">{log.fatigueLevel}/10</span>
                 </div>
                 <div className="text-center bg-[#FAF8F5] p-2 border border-black shadow-[1px_1px_0px_0px_#000]">
-                  <span className="text-[9px] font-black text-black/70 block uppercase font-mono">PAIN</span>
-                  <span className="font-black text-black font-mono text-sm bg-[#00F5D4] px-1 border border-black">{log.painLevel}/10</span>
+                  <span className="text-[9px] font-black text-black/70 block uppercase">PAIN</span>
+                  <span className="font-black text-black text-sm bg-[#00F5D4] px-1 border border-black">{log.painLevel}/10</span>
                 </div>
               </div>
             </div>

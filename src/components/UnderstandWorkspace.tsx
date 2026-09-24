@@ -1,5 +1,6 @@
 import React from 'react';
-import { PATIENT_INFO } from '../data/mockPatientData';
+import { PATIENT_INFO, getDynamicPatientProfile } from '../data/mockPatientData';
+import { useAuth } from '../context/AuthContext';
 import { patientStateEngine } from '../engine/patientStateEngine';
 import { 
   Heart, 
@@ -12,10 +13,13 @@ import {
   ShieldCheck,
   CheckCircle2,
   Calendar,
-  Layers
+  Layers,
+  AlertCircle
 } from 'lucide-react';
 
 export const UnderstandWorkspace: React.FC = () => {
+  const { user } = useAuth();
+  const currentPatient = getDynamicPatientProfile(user);
   const patientState = patientStateEngine.getPatientState();
 
   return (
@@ -27,10 +31,10 @@ export const UnderstandWorkspace: React.FC = () => {
           <span>STEP 1: UNDERSTAND</span>
         </div>
         <h2 className="text-2xl font-black font-display text-black uppercase tracking-tight">
-          What Do We Know About Eleanor Vance?
+          What Do We Know About {currentPatient.name}?
         </h2>
         <p className="text-xs font-bold text-black/90 mt-1 max-w-3xl font-mono leading-relaxed">
-          Heal Engine unifies fragmented EHR records, continuous wearable telemetry, active medications, lab history, and pharmacogenomics into a single trusted Patient Health Picture.
+          Heal Engine unifies your personal registration profile ({currentPatient.age}Y, {currentPatient.gender}), active diagnoses, prescribed medications, and clinical logs into a single trusted Patient Health Picture.
         </p>
 
         {/* Separated Version Metadata Grid */}
@@ -62,14 +66,16 @@ export const UnderstandWorkspace: React.FC = () => {
             <span className="font-black font-display uppercase tracking-wider flex items-center gap-1.5 text-black">
               <Activity className="w-4 h-4 text-[#F43F5E] stroke-[2.5]" /> Medical History & Conditions
             </span>
-            <span className="text-[10px] font-black bg-[#FFE600] border border-black px-1.5 py-0.5">3 ACTIVE</span>
+            <span className="text-[10px] font-black bg-[#FFE600] border border-black px-1.5 py-0.5">
+              {currentPatient.conditions.length} ACTIVE
+            </span>
           </div>
 
           <div className="space-y-2 font-sans">
-            {patientState.conditions.map((cond, i) => (
+            {currentPatient.conditions.map((cond, i) => (
               <div key={i} className="p-2.5 bg-[#FAF8F5] border-2 border-black">
-                <span className="font-extrabold text-xs text-black block">{cond.value}</span>
-                <span className="font-mono text-[10px] text-black/60">Source: {cond.source} • Verified</span>
+                <span className="font-extrabold text-xs text-black block">{cond}</span>
+                <span className="font-mono text-[10px] text-black/60">Source: User Profile Setup • Verified</span>
               </div>
             ))}
           </div>
@@ -81,21 +87,21 @@ export const UnderstandWorkspace: React.FC = () => {
             <span className="font-black font-display uppercase tracking-wider flex items-center gap-1.5 text-black">
               <Pill className="w-4 h-4 text-[#3A86FF] stroke-[2.5]" /> Current Medications
             </span>
-            <span className="text-[10px] font-black bg-[#3A86FF] text-white border border-black px-1.5 py-0.5">3 DRUGS</span>
+            <span className="text-[10px] font-black bg-[#3A86FF] text-white border border-black px-1.5 py-0.5">
+              {currentPatient.medications.length} DRUGS
+            </span>
           </div>
 
           <div className="space-y-2 font-sans">
-            {patientState.medications.map((med) => (
-              <div key={med.id} className="p-2.5 bg-[#FAF8F5] border-2 border-black space-y-0.5">
+            {currentPatient.medications.map((med, i) => (
+              <div key={i} className="p-2.5 bg-[#FAF8F5] border-2 border-black space-y-0.5">
                 <div className="flex items-center justify-between">
-                  <span className="font-extrabold text-xs text-black">{med.name} {med.dosage}</span>
-                  <span className={`text-[9px] font-mono font-black uppercase px-1 border border-black ${
-                    med.status === 'otc' ? 'bg-[#FF70A6] text-black' : 'bg-[#CCFF00] text-black'
-                  }`}>
-                    {med.status}
+                  <span className="font-extrabold text-xs text-black">{med}</span>
+                  <span className="text-[9px] font-mono font-black uppercase px-1 border border-black bg-[#CCFF00] text-black">
+                    ACTIVE
                   </span>
                 </div>
-                <p className="font-mono text-[10px] text-black/70">{med.purpose}</p>
+                <p className="font-mono text-[10px] text-black/70">Source: Onboarding Regimen</p>
               </div>
             ))}
           </div>

@@ -6,9 +6,11 @@ import {
   PatientScreeningOption
 } from '../types/health';
 import { patientStateEngine } from './patientStateEngine';
+import { AuthUser, getStoredUser } from '../services/authApi';
+import { getDynamicPatientProfile } from '../data/mockPatientData';
 
 export class VirtualDoctorScreeningEngine {
-  private personas: VirtualDoctorPersona[] = [
+  private basePersonas: VirtualDoctorPersona[] = [
     {
       id: 'doc-thorne',
       name: 'Dr. Aris Thorne, MD',
@@ -22,10 +24,10 @@ export class VirtualDoctorScreeningEngine {
       voiceRate: 1.0,
       preferredVoiceName: 'Daniel',
       clinicalFocus: 'Acute-on-Chronic Renal Perfusion & Fluid Hemodynamics',
-      greetingScript: 'Hello Eleanor. I am Dr. Aris Thorne from the Cardiorenal care team. We have been monitoring your continuous telemetry and recent lab reports. I am reaching out for a priority video screening to review your kidney markers and circulation.',
-      explanationScript: 'Looking at your 3-year longitudinal record, your baseline kidney filtration rate was steady around 64. However, your test 3 days ago showed a drop to 52, while your cardiac strain marker NT-proBNP rose to 480. We also noticed your reports of mild shortness of breath and leg swelling.',
-      safetyAlertScript: 'Our safety engine identified a critical factor: you started taking over-the-counter Ibuprofen for knee pain. When Ibuprofen is combined with your daily Lisinopril, it restricts blood flow into your kidney filters. This explains the sudden drop in your eGFR.',
-      actionPlanScript: 'Here is our clear action plan: 1. Stop taking the oral Ibuprofen immediately. 2. We will substitute a safe topical gel for your knee arthritis. 3. We will re-check your blood chemistry in 7 days to ensure your kidney function bounces back.',
+      greetingScript: 'Hello {NAME}. I am Dr. Aris Thorne from the Cardiorenal care team. We have been monitoring your continuous telemetry and recent lab reports. I am reaching out for a priority video screening to review your kidney markers and circulation.',
+      explanationScript: 'Looking at your longitudinal record, your baseline kidney filtration rate was steady. However, recent markers show an acute drop, while cardiac strain marker NT-proBNP rose. We are also monitoring your reports of shortness of breath and fluid accumulation.',
+      safetyAlertScript: 'Our safety engine identified a critical factor: concurrent analgesic intake interacting with your blood pressure regimen restricts renal arteriolar blood flow into your kidney filters.',
+      actionPlanScript: 'Here is our clear action plan: 1. Stop taking oral NSAIDs immediately. 2. We will substitute safe topical analgesia. 3. We will re-check your blood chemistry in 7 days to ensure your kidney function bounces back.',
       longitudinalClustersCited: ['reports', 'symptoms', 'medication', 'risk'],
       biomarkerFocus: [
         {
@@ -165,17 +167,26 @@ export class VirtualDoctorScreeningEngine {
     }
   ];
 
-  public getPersonas(): VirtualDoctorPersona[] {
-    return this.personas;
+  public getPersonas(userOverride?: AuthUser | null): VirtualDoctorPersona[] {
+    const user = userOverride !== undefined ? userOverride : getStoredUser();
+    const dynamicProfile = getDynamicPatientProfile(user);
+    const firstName = dynamicProfile.name.split(' ')[0] || 'Patient';
+
+    return this.basePersonas.map(p => ({
+      ...p,
+      greetingScript: p.greetingScript.replace('{NAME}', firstName)
+    }));
   }
 
-  public getPersonaById(id: string): VirtualDoctorPersona {
-    return this.personas.find(p => p.id === id) || this.personas[0];
+  public getPersonaById(id: string, userOverride?: AuthUser | null): VirtualDoctorPersona {
+    const personas = this.getPersonas(userOverride);
+    return personas.find(p => p.id === id) || personas[0];
   }
 
-  public getScreeningDialogue(personaId: string): ScreeningDialogueStep[] {
-    const persona = this.getPersonaById(personaId);
-    const patientState: PatientClinicalState = patientStateEngine.getPatientState();
+  public getScreeningDialogue(personaId: string, userOverride?: AuthUser | null): ScreeningDialogueStep[] {
+    const user = userOverride !== undefined ? userOverride : getStoredUser();
+    const persona = this.getPersonaById(personaId, user);
+    const patientState: PatientClinicalState = patientStateEngine.getPatientState(user);
 
     return [
       {
@@ -187,7 +198,7 @@ export class VirtualDoctorScreeningEngine {
         posture: 'greeting',
         suggestedActionCard: {
           headline: `Virtual Screening with ${persona.name}`,
-          description: `Longitudinal clinical screening session for ${patientState.demographics.name} (68Y/F).`,
+          description: `Longitudinal clinical screening session for ${patientState.demographics.name} (${patientState.demographics.age}Y/${patientState.demographics.gender[0]}).`,
           badge: 'LIVE VIDEO SCREENING',
           badgeColor: '#00F5D4',
           category: 'Specialist Referral'

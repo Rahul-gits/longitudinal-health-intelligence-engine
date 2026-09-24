@@ -13,19 +13,70 @@ import {
   PatientConsentSetting,
   StaticClinicalCase
 } from '../types/health';
+import { AuthUser } from '../services/authApi';
 
-export const PATIENT_INFO = {
-  id: 'PT-884920',
-  name: 'Eleanor Vance',
-  age: 64,
-  gender: 'Female',
-  bloodType: 'A+',
-  primaryPhysician: 'Dr. Aris Thorne, MD (Cardiology)',
-  status: 'Needs Clinician Review',
-  statusColor: 'amber',
-  overallHealthScore: 74,
-  lastUpdated: '2026-08-13 19:45 IST'
+export const calculateAgeFromDob = (dob?: string): number => {
+  if (!dob) return 64;
+  const birthYear = new Date(dob).getFullYear();
+  if (isNaN(birthYear)) return 64;
+  const currentYear = new Date().getFullYear();
+  return currentYear - birthYear;
 };
+
+export const getDynamicPatientProfile = (user?: AuthUser | null) => {
+  if (!user || user.email === 'eleanor@example.com' || user.fullName?.toLowerCase().includes('eleanor')) {
+    return {
+      id: user?.id || 'PT-884920',
+      name: user?.fullName || 'Eleanor Vance',
+      age: 68,
+      gender: 'Female',
+      bloodType: 'A+',
+      primaryPhysician: 'Dr. Aris Thorne, MD (Cardiology)',
+      status: 'Needs Clinician Review',
+      statusColor: 'amber',
+      overallHealthScore: 74,
+      conditions: user?.profile?.conditions && user.profile.conditions.length > 0 ? user.profile.conditions : [
+        'Heart Failure with Preserved Ejection Fraction (HFpEF)',
+        'Chronic Kidney Disease (Stage 3b)',
+        'Type 2 Diabetes Mellitus'
+      ],
+      medications: user?.profile?.medications && user.profile.medications.length > 0 ? user.profile.medications : [
+        'Empagliflozin 10mg',
+        'Furosemide 40mg',
+        'Spironolactone 25mg'
+      ],
+      allergies: user?.profile?.allergies || ['Sulfa drugs', 'NSAIDs (Avoid)'],
+      lastUpdated: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) + ' ' + new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+    };
+  }
+
+  // Registered User (e.g. Rahul Gunda or New Patient)
+  const age = calculateAgeFromDob(user.profile?.dob);
+  const conditions = user.profile?.conditions && user.profile.conditions.length > 0
+    ? user.profile.conditions
+    : ['Essential Hypertension', 'Mild Seasonal Asthma'];
+  const medications = user.profile?.medications && user.profile.medications.length > 0
+    ? user.profile.medications
+    : ['Lisinopril 10mg', 'Albuterol Inhaler (PRN)'];
+
+  return {
+    id: user.id || `PT-${Math.floor(100000 + Math.random() * 900000)}`,
+    name: user.fullName || user.email.split('@')[0],
+    age: age > 0 && age < 120 ? age : 28,
+    gender: user.profile?.sex || 'Male',
+    bloodType: 'O+',
+    primaryPhysician: 'Dr. Sarah Jenkins, MD (Internal Medicine)',
+    status: user.profile?.hasUploadedRecords ? 'Active Monitoring' : 'Healthy Baseline',
+    statusColor: 'emerald',
+    overallHealthScore: 89,
+    conditions,
+    medications,
+    allergies: user.profile?.allergies || ['None Reported'],
+    lastUpdated: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) + ' ' + new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+  };
+};
+
+export const PATIENT_INFO = getDynamicPatientProfile();
 
 export const PERSONA_PROFILES: Record<string, PersonaProfile> = {
   triage: {

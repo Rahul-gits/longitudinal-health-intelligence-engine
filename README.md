@@ -123,12 +123,73 @@ Heal Engine acts as an explainable, non-intrusive clinical copilot:
 
 ---
 
-## 🛠️ Quickstart & Local Setup
+## 🌐 Full Stack Architecture & REST API Reference
 
+The application is structured as a cohesive full-stack clinical intelligence platform:
+
+```
+HEAL-ENGINE/
+├── server/                      # Express + TypeScript Backend API (Port 5000)
+│   ├── index.ts                 # Main server entry, middleware & route mounting
+│   └── routes/
+│       ├── patientRoutes.ts     # Longitudinal records, labs & vitals
+│       ├── workflowRoutes.ts    # 6-step care loop clinical pipeline engine
+│       ├── screeningRoutes.ts   # Virtual Doctor dialogue & speech synthesis
+│       ├── swarmRoutes.ts       # Multi-agent swarm (PSO) optimization
+│       ├── conferenceRoutes.ts  # Clinical case conference debate studio
+│       ├── safetyRoutes.ts      # Hard safety constraints & contraindications
+│       ├── reportRoutes.ts      # Report parsing & FHIR R4 Bundle generation
+│       ├── benchmarkRoutes.ts   # 50-case benchmark baseline & scoring
+│       └── auditRoutes.ts       # Governance, consent & immutable audit log
+├── src/                         # React 18 + Vite + TailwindCSS Frontend (Port 3000)
+│   ├── components/              # 26 Clinical UI workspaces & dashboards
+│   ├── engine/                  # In-browser fallback clinical intelligence engines
+│   ├── services/
+│   │   └── apiClient.ts         # Unified typed API client with live health pinging
+│   ├── data/                    # Patient mock data and knowledge sets
+│   └── types/                   # Shared TypeScript clinical schemas
+├── vite.config.ts               # Proxy configuration (`/api` -> `http://localhost:5000`)
+└── package.json                 # Unified concurrent runner (`npm run dev`)
+```
+
+### 📡 Available Backend API Endpoints
+
+| Endpoint | Method | Description |
+| :--- | :--- | :--- |
+| `/api/health` | `GET` | Health check, uptime, engine version & endpoint registry |
+| `/api/patients` | `GET` | All longitudinal patient profiles |
+| `/api/patients/:id` | `GET` | Full patient state, active conditions, medications, alerts |
+| `/api/workflow/run` | `POST` | Executes the complete 6-Step Clinical Care Loop |
+| `/api/workflow/step/:step` | `POST` | Executes an individual step (Understand, Detect, Explain, etc.) |
+| `/api/screening/start` | `POST` | Initiates Virtual Doctor triage screening session |
+| `/api/screening/respond` | `POST` | Submits patient message, computes risk score & next questions |
+| `/api/swarm/simulate` | `POST` | Simulates multi-agent PSO convergence & consensus vector |
+| `/api/conference/debate`| `POST` | Generates multi-specialist debate rounds & consensus |
+| `/api/safety/check` | `POST` | Evaluates proposed orders against 14 hard safety boundaries |
+| `/api/reports/fhir` | `GET` | Exports patient state as standard FHIR R4 JSON Bundle |
+| `/api/benchmarks/summary` | `GET` | Returns 50-case gold standard accuracy & safety metrics |
+| `/api/audit/logs` | `GET` | Fetches immutable cryptographic event audit log |
+
+---
+
+## 🛠️ Quickstart & Running the Full Stack Application
+
+### 1. Install Dependencies
 ```bash
-git clone https://github.com/Rahul-gits/longitudinal-health-intelligence-engine.git
-cd longitudinal-health-intelligence-engine
 npm install
+```
+
+### 2. Run Full Stack (Frontend + Backend Concurrently)
+```bash
 npm run dev
 ```
-Open [`http://localhost:3000/`](http://localhost:3000/) in your browser.
+- **Frontend App**: `http://localhost:3000`
+- **Backend API**: `http://localhost:5000`
+- **API Health**: `http://localhost:5000/api/health`
+
+### 3. Run Separately (Optional)
+- Run Backend only: `npm run server`
+- Run Frontend only: `npm run client`
+- Run Type Checker: `npm run lint`
+- Production Build: `npm run build`
+
