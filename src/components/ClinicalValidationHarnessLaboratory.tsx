@@ -13,7 +13,10 @@ import {
   Activity,
   Layers,
   Sparkles,
-  ExternalLink
+  ExternalLink,
+  Cpu,
+  Terminal,
+  Database
 } from 'lucide-react';
 
 interface TestCaseResult {
@@ -94,16 +97,40 @@ interface ReasoningTrace {
   };
 }
 
+interface IntelligenceModule {
+  id: string;
+  name: string;
+  description: string;
+  status: string;
+  passRate: number;
+  testCasesRun: number;
+  invariantsEnforced: string[];
+}
+
+interface LogEntry {
+  id: string;
+  timestamp: string;
+  stream: string;
+  level: string;
+  service: string;
+  message: string;
+  ledgerHash?: string;
+}
+
 export const ClinicalValidationHarnessLaboratory: React.FC = () => {
+  const [activeView, setActiveView] = useState<'cohorts' | 'modules' | 'logs'>('cohorts');
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const [harnessReport, setHarnessReport] = useState<HarnessReport | null>(null);
   const [selectedCohortId, setSelectedCohortId] = useState<string>('patient-ev-68');
   const [activeTrace, setActiveTrace] = useState<ReasoningTrace | null>(null);
-  const [isLoadingTrace, setIsLoadingTrace] = useState<boolean>(false);
+  const [modules, setModules] = useState<IntelligenceModule[]>([]);
+  const [selectedLogStream, setSelectedLogStream] = useState<string>('CLINICAL_AUDIT');
+  const [streamLogs, setStreamLogs] = useState<LogEntry[]>([]);
 
   // Load initial harness run on mount
   useEffect(() => {
     runValidationHarness();
+    fetchModules();
   }, []);
 
   // Fetch reasoning trace whenever selected cohort changes
@@ -112,6 +139,13 @@ export const ClinicalValidationHarnessLaboratory: React.FC = () => {
       fetchReasoningTrace(selectedCohortId);
     }
   }, [selectedCohortId]);
+
+  // Fetch logs whenever selected stream changes
+  useEffect(() => {
+    if (activeView === 'logs') {
+      fetchLogs(selectedLogStream);
+    }
+  }, [activeView, selectedLogStream]);
 
   const runValidationHarness = async () => {
     setIsRunning(true);
@@ -128,8 +162,31 @@ export const ClinicalValidationHarnessLaboratory: React.FC = () => {
     }
   };
 
+  const fetchModules = async () => {
+    try {
+      const res = await fetch('http://localhost:5000/api/validation/module-evaluations');
+      const data = await res.json();
+      if (data.success && data.modules) {
+        setModules(data.modules);
+      }
+    } catch (err) {
+      console.error('Failed to fetch modules:', err);
+    }
+  };
+
+  const fetchLogs = async (stream: string) => {
+    try {
+      const res = await fetch(`http://localhost:5000/api/validation/log-stream/${stream}`);
+      const data = await res.json();
+      if (data.success && data.logs) {
+        setStreamLogs(data.logs);
+      }
+    } catch (err) {
+      console.error('Failed to fetch logs:', err);
+    }
+  };
+
   const fetchReasoningTrace = async (patientId: string) => {
-    setIsLoadingTrace(true);
     try {
       const res = await fetch(`http://localhost:5000/api/validation/reasoning-trace/${patientId}`);
       const data = await res.json();
@@ -138,8 +195,6 @@ export const ClinicalValidationHarnessLaboratory: React.FC = () => {
       }
     } catch (err) {
       console.error('Failed to fetch trace:', err);
-    } finally {
-      setIsLoadingTrace(false);
     }
   };
 
@@ -254,207 +309,340 @@ export const ClinicalValidationHarnessLaboratory: React.FC = () => {
         )}
       </div>
 
-      {/* Cohort Selector Tabs */}
-      {harnessReport && (
-        <div className="flex flex-wrap gap-2">
-          {harnessReport.cohortResults.map(cohort => (
-            <button
-              key={cohort.patientId}
-              onClick={() => setSelectedCohortId(cohort.patientId)}
-              className={`px-4 py-2.5 text-xs font-mono font-bold border-2 border-black transition-all flex items-center space-x-2 ${
-                selectedCohortId === cohort.patientId
-                  ? 'bg-[#FFE600] text-black shadow-[3px_3px_0px_0px_#000] -translate-y-0.5'
-                  : 'bg-white text-neutral-700 hover:bg-neutral-100 shadow-[2px_2px_0px_0px_#000]'
-              }`}
-            >
-              <span className="w-2 h-2 rounded-full bg-emerald-500" />
-              <span>{cohort.cohortLabel}: {cohort.name}</span>
-            </button>
-          ))}
-        </div>
-      )}
+      {/* Primary Sub-View Selector */}
+      <div className="flex items-center space-x-3 border-b-2 border-black pb-3">
+        <button
+          onClick={() => setActiveView('cohorts')}
+          className={`px-4 py-2 text-xs font-mono font-bold border-2 border-black transition-all flex items-center space-x-1.5 ${
+            activeView === 'cohorts' ? 'bg-[#FFE600] text-black shadow-[3px_3px_0px_0px_#000]' : 'bg-white hover:bg-neutral-100'
+          }`}
+        >
+          <span>👥 Multi-Patient Cohorts (A-E)</span>
+        </button>
 
-      {/* Detailed Cohort Inspection Pane */}
-      {selectedCohort && (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Column: Phenotype & Integrity */}
-          <div className="space-y-6 lg:col-span-1">
-            <div className="bg-white border-3 border-black p-5 shadow-[4px_4px_0px_0px_#000] space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="bg-black text-white text-[10px] font-mono px-2 py-0.5 font-bold">
-                  {selectedCohort.cohortLabel} PHENOTYPE
-                </span>
-                <span className="text-xs font-mono font-bold text-emerald-600 flex items-center">
-                  <CheckCircle2 className="w-3.5 h-3.5 mr-1" /> VALIDATED
-                </span>
-              </div>
+        <button
+          onClick={() => setActiveView('modules')}
+          className={`px-4 py-2 text-xs font-mono font-bold border-2 border-black transition-all flex items-center space-x-1.5 ${
+            activeView === 'modules' ? 'bg-[#FFE600] text-black shadow-[3px_3px_0px_0px_#000]' : 'bg-white hover:bg-neutral-100'
+          }`}
+        >
+          <Cpu className="w-3.5 h-3.5" />
+          <span>🧩 7 Intelligence Modules</span>
+        </button>
 
-              <div>
-                <h3 className="text-lg font-black font-display">{selectedCohort.name}</h3>
-                <p className="text-xs text-neutral-600 font-medium mt-1 leading-relaxed">
-                  {selectedCohort.phenotype}
-                </p>
-              </div>
+        <button
+          onClick={() => setActiveView('logs')}
+          className={`px-4 py-2 text-xs font-mono font-bold border-2 border-black transition-all flex items-center space-x-1.5 ${
+            activeView === 'logs' ? 'bg-[#FFE600] text-black shadow-[3px_3px_0px_0px_#000]' : 'bg-white hover:bg-neutral-100'
+          }`}
+        >
+          <Terminal className="w-3.5 h-3.5" />
+          <span>📜 5-Stream Observability Logs</span>
+        </button>
+      </div>
 
-              <div className="space-y-2 pt-3 border-t border-black/10 text-xs font-mono">
-                <div className="flex justify-between">
-                  <span className="text-neutral-500">Data Completeness:</span>
-                  <span className="font-bold">{selectedCohort.dataCompletenessScore}%</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-neutral-500">Uncertainty Impact:</span>
-                  <span className="font-bold text-amber-700">{selectedCohort.uncertaintyScore}%</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-neutral-500">Deterministic Consistency:</span>
-                  <span className="font-bold text-emerald-700">{selectedCohort.deterministicConsistencyScore}%</span>
-                </div>
-              </div>
-
-              <div className="pt-3 border-t border-black/10">
-                <div className="text-[11px] font-bold font-mono text-neutral-700 mb-2">
-                  DETERMINISTIC SAFETY BLOCKS:
-                </div>
-                <div className="space-y-1.5">
-                  {selectedCohort.safetyGateIntercepts.map((hazard, hIdx) => (
-                    <div
-                      key={hIdx}
-                      className="p-2 bg-rose-50 border border-rose-300 rounded text-[11px] font-semibold text-rose-900 flex items-start space-x-1.5"
-                    >
-                      <ShieldCheck className="w-3.5 h-3.5 text-rose-600 flex-shrink-0 mt-0.5" />
-                      <span>{hazard}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
+      {/* VIEW 1: Multi-Patient Cohort Inspection */}
+      {activeView === 'cohorts' && (
+        <div className="space-y-6">
+          {/* Cohort Selector Tabs */}
+          {harnessReport && (
+            <div className="flex flex-wrap gap-2">
+              {harnessReport.cohortResults.map(cohort => (
+                <button
+                  key={cohort.patientId}
+                  onClick={() => setSelectedCohortId(cohort.patientId)}
+                  className={`px-4 py-2.5 text-xs font-mono font-bold border-2 border-black transition-all flex items-center space-x-2 ${
+                    selectedCohortId === cohort.patientId
+                      ? 'bg-[#FFE600] text-black shadow-[3px_3px_0px_0px_#000] -translate-y-0.5'
+                      : 'bg-white text-neutral-700 hover:bg-neutral-100 shadow-[2px_2px_0px_0px_#000]'
+                  }`}
+                >
+                  <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                  <span>{cohort.cohortLabel}: {cohort.name}</span>
+                </button>
+              ))}
             </div>
-          </div>
+          )}
 
-          {/* Right Column: Reasoning Trace & Governing Explainability */}
-          <div className="lg:col-span-2 space-y-6">
-            {activeTrace ? (
-              <div className="bg-white border-3 border-black p-6 shadow-[5px_5px_0px_0px_#000] space-y-6">
-                <div>
-                  <div className="flex items-center space-x-2">
-                    <span className="bg-[#3A86FF] text-white text-[10px] font-mono px-2 py-0.5 font-bold">
-                      REASONING TRACE
+          {selectedCohort && (
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Left Column: Phenotype & Integrity */}
+              <div className="space-y-6 lg:col-span-1">
+                <div className="bg-white border-3 border-black p-5 shadow-[4px_4px_0px_0px_#000] space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="bg-black text-white text-[10px] font-mono px-2 py-0.5 font-bold">
+                      {selectedCohort.cohortLabel} PHENOTYPE
                     </span>
-                    <span className="text-xs font-mono text-neutral-500">ID: {activeTrace.evaluationId}</span>
+                    <span className="text-xs font-mono font-bold text-emerald-600 flex items-center">
+                      <CheckCircle2 className="w-3.5 h-3.5 mr-1" /> VALIDATED
+                    </span>
                   </div>
-                  <h2 className="text-xl font-black font-display mt-2 text-black">
-                    {activeTrace.outputExplanation.recommendationTitle}
-                  </h2>
-                </div>
 
-                {/* The 3 Core Regulatory Transparency Questions */}
-                <div className="space-y-4 bg-neutral-50 border-2 border-black p-4 rounded">
                   <div>
-                    <div className="text-[11px] font-mono font-black text-blue-800 uppercase flex items-center space-x-1">
-                      <HelpCircle className="w-3.5 h-3.5 mr-1" />
-                      <span>1. Why did Heal Engine produce this result?</span>
-                    </div>
-                    <p className="text-xs text-neutral-800 font-medium mt-1 leading-relaxed">
-                      {activeTrace.outputExplanation.whyProduced}
+                    <h3 className="text-lg font-black font-display">{selectedCohort.name}</h3>
+                    <p className="text-xs text-neutral-600 font-medium mt-1 leading-relaxed">
+                      {selectedCohort.phenotype}
                     </p>
                   </div>
 
-                  <div className="pt-3 border-t border-neutral-200">
-                    <div className="text-[11px] font-mono font-black text-emerald-800 uppercase flex items-center space-x-1">
-                      <BookOpen className="w-3.5 h-3.5 mr-1" />
-                      <span>2. What evidence and patient data contributed to it?</span>
+                  <div className="space-y-2 pt-3 border-t border-black/10 text-xs font-mono">
+                    <div className="flex justify-between">
+                      <span className="text-neutral-500">Data Completeness:</span>
+                      <span className="font-bold">{selectedCohort.dataCompletenessScore}%</span>
                     </div>
-                    <p className="text-xs text-neutral-800 font-medium mt-1 leading-relaxed">
-                      {activeTrace.outputExplanation.contributingEvidenceSummary}
-                    </p>
+                    <div className="flex justify-between">
+                      <span className="text-neutral-500">Uncertainty Impact:</span>
+                      <span className="font-bold text-amber-700">{selectedCohort.uncertaintyScore}%</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-neutral-500">Deterministic Consistency:</span>
+                      <span className="font-bold text-emerald-700">{selectedCohort.deterministicConsistencyScore}%</span>
+                    </div>
                   </div>
 
-                  <div className="pt-3 border-t border-neutral-200">
-                    <div className="text-[11px] font-mono font-black text-rose-800 uppercase flex items-center space-x-1">
-                      <ShieldCheck className="w-3.5 h-3.5 mr-1" />
-                      <span>3. What prevented an unsafe recommendation?</span>
+                  <div className="pt-3 border-t border-black/10">
+                    <div className="text-[11px] font-bold font-mono text-neutral-700 mb-2">
+                      DETERMINISTIC SAFETY BLOCKS:
                     </div>
-                    <div className="mt-1 space-y-1">
-                      {activeTrace.outputExplanation.unsafeInterventionsPrevented.map((item, i) => (
-                        <div key={i} className="text-xs font-bold text-rose-700 flex items-center space-x-1.5">
-                          <span>🛑</span>
-                          <span>{item}</span>
+                    <div className="space-y-1.5">
+                      {selectedCohort.safetyGateIntercepts.map((hazard, hIdx) => (
+                        <div
+                          key={hIdx}
+                          className="p-2 bg-rose-50 border border-rose-300 rounded text-[11px] font-semibold text-rose-900 flex items-start space-x-1.5"
+                        >
+                          <ShieldCheck className="w-3.5 h-3.5 text-rose-600 flex-shrink-0 mt-0.5" />
+                          <span>{hazard}</span>
                         </div>
                       ))}
                     </div>
                   </div>
                 </div>
+              </div>
 
-                {/* Step-by-Step Reasoning Flow */}
-                <div>
-                  <h4 className="text-xs font-mono font-black uppercase text-black mb-3">
-                    Deterministic Step-by-Step Evaluation:
-                  </h4>
-                  <div className="space-y-2">
-                    {activeTrace.reasoningSteps.map(step => (
-                      <div
-                        key={step.stepNumber}
-                        className="p-3 border border-black bg-white rounded flex items-start justify-between text-xs gap-3 shadow-[1px_1px_0px_0px_#000]"
-                      >
-                        <div className="flex items-start space-x-2">
-                          <span className="w-5 h-5 rounded-full bg-black text-[#FFE600] font-mono font-bold flex items-center justify-center text-[10px] flex-shrink-0">
-                            {step.stepNumber}
-                          </span>
-                          <div>
-                            <div className="font-mono text-[10px] text-neutral-500 font-bold">
-                              [{step.phase}] • {step.deterministicRuleApplied}
-                            </div>
-                            <div className="font-medium text-neutral-900 mt-0.5">{step.finding}</div>
-                          </div>
-                        </div>
-                        <span
-                          className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded border ${
-                            step.status === 'BLOCKED'
-                              ? 'bg-rose-100 text-rose-800 border-rose-400'
-                              : step.status === 'FLAGGED'
-                              ? 'bg-amber-100 text-amber-800 border-amber-400'
-                              : 'bg-emerald-100 text-emerald-800 border-emerald-400'
-                          }`}
-                        >
-                          {step.status}
+              {/* Right Column: Reasoning Trace */}
+              <div className="lg:col-span-2 space-y-6">
+                {activeTrace && (
+                  <div className="bg-white border-3 border-black p-6 shadow-[5px_5px_0px_0px_#000] space-y-6">
+                    <div>
+                      <div className="flex items-center space-x-2">
+                        <span className="bg-[#3A86FF] text-white text-[10px] font-mono px-2 py-0.5 font-bold">
+                          REASONING TRACE
                         </span>
+                        <span className="text-xs font-mono text-neutral-500">ID: {activeTrace.evaluationId}</span>
                       </div>
-                    ))}
+                      <h2 className="text-xl font-black font-display mt-2 text-black">
+                        {activeTrace.outputExplanation.recommendationTitle}
+                      </h2>
+                    </div>
+
+                    {/* The 3 Core Regulatory Transparency Questions */}
+                    <div className="space-y-4 bg-neutral-50 border-2 border-black p-4 rounded">
+                      <div>
+                        <div className="text-[11px] font-mono font-black text-blue-800 uppercase flex items-center space-x-1">
+                          <HelpCircle className="w-3.5 h-3.5 mr-1" />
+                          <span>1. Why did Heal Engine produce this result?</span>
+                        </div>
+                        <p className="text-xs text-neutral-800 font-medium mt-1 leading-relaxed">
+                          {activeTrace.outputExplanation.whyProduced}
+                        </p>
+                      </div>
+
+                      <div className="pt-3 border-t border-neutral-200">
+                        <div className="text-[11px] font-mono font-black text-emerald-800 uppercase flex items-center space-x-1">
+                          <BookOpen className="w-3.5 h-3.5 mr-1" />
+                          <span>2. What evidence and patient data contributed to it?</span>
+                        </div>
+                        <p className="text-xs text-neutral-800 font-medium mt-1 leading-relaxed">
+                          {activeTrace.outputExplanation.contributingEvidenceSummary}
+                        </p>
+                      </div>
+
+                      <div className="pt-3 border-t border-neutral-200">
+                        <div className="text-[11px] font-mono font-black text-rose-800 uppercase flex items-center space-x-1">
+                          <ShieldCheck className="w-3.5 h-3.5 mr-1" />
+                          <span>3. What prevented an unsafe recommendation?</span>
+                        </div>
+                        <div className="mt-1 space-y-1">
+                          {activeTrace.outputExplanation.unsafeInterventionsPrevented.map((item, i) => (
+                            <div key={i} className="text-xs font-bold text-rose-700 flex items-center space-x-1.5">
+                              <span>🛑</span>
+                              <span>{item}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Step-by-Step Reasoning Flow */}
+                    <div>
+                      <h4 className="text-xs font-mono font-black uppercase text-black mb-3">
+                        Deterministic Step-by-Step Evaluation:
+                      </h4>
+                      <div className="space-y-2">
+                        {activeTrace.reasoningSteps.map(step => (
+                          <div
+                            key={step.stepNumber}
+                            className="p-3 border border-black bg-white rounded flex items-start justify-between text-xs gap-3 shadow-[1px_1px_0px_0px_#000]"
+                          >
+                            <div className="flex items-start space-x-2">
+                              <span className="w-5 h-5 rounded-full bg-black text-[#FFE600] font-mono font-bold flex items-center justify-center text-[10px] flex-shrink-0">
+                                {step.stepNumber}
+                              </span>
+                              <div>
+                                <div className="font-mono text-[10px] text-neutral-500 font-bold">
+                                  [{step.phase}] • {step.deterministicRuleApplied}
+                                </div>
+                                <div className="font-medium text-neutral-900 mt-0.5">{step.finding}</div>
+                              </div>
+                            </div>
+                            <span
+                              className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded border ${
+                                step.status === 'BLOCKED'
+                                  ? 'bg-rose-100 text-rose-800 border-rose-400'
+                                  : step.status === 'FLAGGED'
+                                  ? 'bg-amber-100 text-amber-800 border-amber-400'
+                                  : 'bg-emerald-100 text-emerald-800 border-emerald-400'
+                              }`}
+                            >
+                              {step.status}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Cited Governed Evidence */}
+                    <div>
+                      <h4 className="text-xs font-mono font-black uppercase text-black mb-3">
+                        Governed Clinical Evidence Citations:
+                      </h4>
+                      <div className="space-y-2">
+                        {activeTrace.citedEvidence.map((ev, evIdx) => (
+                          <div
+                            key={evIdx}
+                            className="p-3 bg-[#F0F8FF] border border-blue-400 rounded text-xs space-y-1"
+                          >
+                            <div className="flex items-center justify-between font-bold text-blue-900">
+                              <span>{ev.title}</span>
+                              <span className="text-[10px] font-mono bg-blue-200 px-1.5 py-0.5 rounded">
+                                {ev.evidenceGrade}
+                              </span>
+                            </div>
+                            <div className="text-neutral-700 text-[11px] font-mono">
+                              {ev.issuingOrganization} ({ev.publicationYear}) • {ev.sectionReference}
+                            </div>
+                            <div className="text-[10px] font-mono text-neutral-400 truncate">
+                              Provenance Hash: {ev.chunkHash}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* VIEW 2: Individual 7 Intelligence Modules */}
+      {activeView === 'modules' && (
+        <div className="space-y-4">
+          <div className="bg-white border-3 border-black p-5 shadow-[4px_4px_0px_0px_#000]">
+            <h3 className="text-lg font-black font-display text-black mb-1">
+              Clinical Intelligence Modular Architecture (7 Verified Modules)
+            </h3>
+            <p className="text-xs font-mono text-neutral-600">
+              Each module is verified independently to eliminate single points of clinical failure and assure deterministic invariants.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {modules.map((m, idx) => (
+              <div
+                key={m.id}
+                className="bg-white border-2 border-black p-5 shadow-[3px_3px_0px_0px_#000] space-y-3"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-mono font-black bg-[#FFE600] px-2 py-0.5 border border-black">
+                    MODULE 0{idx + 1}
+                  </span>
+                  <span className="text-xs font-mono font-bold text-emerald-600 flex items-center">
+                    <CheckCircle2 className="w-3.5 h-3.5 mr-1" /> {m.status} ({m.passRate}%)
+                  </span>
                 </div>
 
-                {/* Cited Governed Evidence */}
                 <div>
-                  <h4 className="text-xs font-mono font-black uppercase text-black mb-3">
-                    Governed Clinical Evidence Citations:
-                  </h4>
-                  <div className="space-y-2">
-                    {activeTrace.citedEvidence.map((ev, evIdx) => (
-                      <div
-                        key={evIdx}
-                        className="p-3 bg-[#F0F8FF] border border-blue-400 rounded text-xs space-y-1"
-                      >
-                        <div className="flex items-center justify-between font-bold text-blue-900">
-                          <span>{ev.title}</span>
-                          <span className="text-[10px] font-mono bg-blue-200 px-1.5 py-0.5 rounded">
-                            {ev.evidenceGrade}
-                          </span>
-                        </div>
-                        <div className="text-neutral-700 text-[11px] font-mono">
-                          {ev.issuingOrganization} ({ev.publicationYear}) • {ev.sectionReference}
-                        </div>
-                        <div className="text-[10px] font-mono text-neutral-400 truncate">
-                          Provenance Hash: {ev.chunkHash}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                  <h4 className="text-base font-bold text-black">{m.name}</h4>
+                  <p className="text-xs text-neutral-600 mt-1">{m.description}</p>
+                </div>
+
+                <div className="pt-2 border-t border-black/10 text-[11px] font-mono space-y-1">
+                  <div className="text-neutral-500 font-bold">Enforced Clinical Invariants:</div>
+                  {m.invariantsEnforced.map((inv, iIdx) => (
+                    <div key={iIdx} className="text-neutral-800 flex items-center space-x-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-blue-600" />
+                      <span>{inv}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* VIEW 3: Separated 5-Stream Observability Logs */}
+      {activeView === 'logs' && (
+        <div className="space-y-4">
+          {/* Stream Selector */}
+          <div className="flex flex-wrap gap-2">
+            {[
+              { id: 'CLINICAL_AUDIT', label: 'Clinical Audit (WORM)', color: 'bg-emerald-100 text-emerald-900 border-emerald-500' },
+              { id: 'SECURITY', label: 'Security & RBAC', color: 'bg-rose-100 text-rose-900 border-rose-500' },
+              { id: 'MODEL_AI', label: 'Model / AI Inference', color: 'bg-blue-100 text-blue-900 border-blue-500' },
+              { id: 'APPLICATION', label: 'Application Lifecycle', color: 'bg-neutral-100 text-neutral-900 border-neutral-500' },
+              { id: 'INFRASTRUCTURE', label: 'Infrastructure & Queues', color: 'bg-purple-100 text-purple-900 border-purple-500' }
+            ].map(stream => (
+              <button
+                key={stream.id}
+                onClick={() => setSelectedLogStream(stream.id)}
+                className={`px-3 py-1.5 text-xs font-mono font-bold border-2 border-black transition-all ${
+                  selectedLogStream === stream.id
+                    ? 'bg-[#FFE600] text-black shadow-[2px_2px_0px_0px_#000]'
+                    : 'bg-white hover:bg-neutral-100'
+                }`}
+              >
+                {stream.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Log Stream Terminal */}
+          <div className="bg-neutral-900 text-neutral-100 font-mono text-xs p-5 border-3 border-black shadow-[5px_5px_0px_0px_#000] rounded space-y-2 max-h-[480px] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-neutral-700 pb-2 text-[11px] text-neutral-400">
+              <span>STREAM: {selectedLogStream}</span>
+              <span>BUFFER COUNT: {streamLogs.length}</span>
+            </div>
+
+            {streamLogs.length === 0 ? (
+              <div className="text-neutral-500 py-6 text-center">No log events recorded in this stream yet.</div>
             ) : (
-              <div className="bg-white border-3 border-black p-12 text-center shadow-[4px_4px_0px_0px_#000]">
-                <Activity className="w-8 h-8 text-neutral-400 mx-auto animate-spin mb-2" />
-                <p className="text-xs font-mono text-neutral-500">Loading cohort reasoning trace...</p>
-              </div>
+              streamLogs.map(log => (
+                <div key={log.id} className="p-2 bg-neutral-800/80 rounded border border-neutral-700 space-y-1">
+                  <div className="flex items-center justify-between text-[10px] text-neutral-400">
+                    <span className="text-[#00F5D4]">[{log.timestamp}]</span>
+                    <span className="text-neutral-400 font-bold">{log.service}</span>
+                  </div>
+                  <div className="text-white text-xs">{log.message}</div>
+                  {log.ledgerHash && (
+                    <div className="text-[10px] text-amber-400 truncate">
+                      Immutable WORM Hash: {log.ledgerHash}
+                    </div>
+                  )}
+                </div>
+              ))
             )}
           </div>
         </div>

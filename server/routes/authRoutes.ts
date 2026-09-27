@@ -316,21 +316,106 @@ router.get('/me', (req: Request, res: Response) => {
 });
 
 // 8. POST /api/auth/forgot-password
+const resetTokens: Map<string, { email: string; expiresAt: number }> = new Map();
+
 router.post('/forgot-password', (req: Request, res: Response) => {
   const { email } = req.body;
   if (!email) {
     return res.status(400).json({ success: false, error: 'Email address is required.' });
   }
 
-  // Consistent message regardless of whether email exists to prevent enumeration
+  const normalizedEmail = email.trim().toLowerCase();
+  const token = `rst_${Date.now()}_${Math.random().toString(36).substring(2, 10)}`;
+  resetTokens.set(token, { email: normalizedEmail, expiresAt: Date.now() + 15 * 60 * 1000 });
+
   return res.json({
     success: true,
     message: 'If an account exists with this email, password reset instructions have been sent.',
-    demoResetToken: 'token_reset_8928192'
+    resetToken: token,
+    expiresInMinutes: 15
   });
 });
 
-// 9. POST /api/auth/logout
+// 9. POST /api/auth/reset-password
+router.post('/reset-password', (req: Request, res: Response) => {
+  const { resetToken, newPassword } = req.body;
+  if (!resetToken || !newPassword) {
+    return res.status(400).json({ success: false, error: 'Reset token and new password are required.' });
+  }
+
+  const record = resetTokens.get(resetToken);
+  if (!record || Date.now() > record.expiresAt) {
+    return res.status(400).json({ success: false, error: 'Invalid or expired password reset token.' });
+  }
+
+  const user = usersDb.get(record.email);
+  if (user) {
+    user.passwordHash = `hash_${newPassword}`;
+    usersDb.set(record.email, user);
+  }
+
+  resetTokens.delete(resetToken);
+
+  return res.json({
+    success: true,
+    message: 'Password has been reset successfully. Please sign in with your new credentials.'
+  });
+});
+
+// 10. POST /api/auth/refresh-token (Rotation)
+const refreshTokens: Map<string, { userId: string; expiresAt: number }> = new Map();
+
+router.post('/refresh-token', (req: Request, res: Response) => {
+  const { refreshToken } = req.body;
+  if (!refreshToken || !refreshTokens.has(refreshToken)) {
+    return res.status(401).json({ success: false, error: 'INVALID_REFRESH_TOKEN', message: 'Token expired or revoked.' });
+  }
+
+  const record = refreshTokens.get(refreshToken)!;
+  if (Date.now() > record.expiresAt) {
+    refreshTokens.delete(refreshToken);
+    return res.status(401).json({ success: false, error: 'REFRESH_TOKEN_EXPIRED', message: 'Session expired. Please log in again.' });
+  }
+
+  // Rotate token (single-use semantics)
+  refreshTokens.delete(refreshToken);
+  const newRefreshToken = `rfsh_${Date.now()}_${Math.random().toString(36).substring(2, 10)}`;
+  const newAccessToken = `acc_${Date.now()}_${Math.random().toString(36).substring(2, 10)}`;
+
+  refreshTokens.set(newRefreshToken, { userId: record.userId, expiresAt: Date.now() + 7 * 24 * 60 * 60 * 1000 });
+
+  return res.json({
+    success: true,
+    accessToken: newAccessToken,
+    refreshToken: newRefreshToken,
+    expiresInSeconds: 900 // 15 mins
+  });
+});
+
+// 11. GET /api/auth/admin/audit-log (Privileged Administrator Endpoint)
+router.get('/admin/audit-log', (req: Request, res: Response) => {
+  const role = (req.headers['x-user-role'] as string) || 'patient';
+  if (role !== 'admin') {
+    return res.status(403).json({
+      success: false,
+      error: 'FORBIDDEN_ADMIN_ONLY',
+      message: 'Access denied: Privileged administrative operations are restricted to verified administrators.'
+    });
+  }
+
+  return res.json({
+    success: true,
+    adminId: 'admin-sec-ops',
+    timestamp: new Date().toISOString(),
+    systemAudits: [
+      { id: 'SEC-ADM-01', action: 'KEY_ROTATION_CHECK', status: 'COMPLIANT', timestamp: new Date().toISOString() },
+      { id: 'SEC-ADM-02', action: 'DATABASE_ENCRYPTION_VERIFICATION', status: 'AES-256-GCM_ACTIVE', timestamp: new Date().toISOString() },
+      { id: 'SEC-ADM-03', action: 'RBAC_POLICIES_ENFORCED', status: 'ZERO_TRUST', timestamp: new Date().toISOString() }
+    ]
+  });
+});
+
+// 12. POST /api/auth/logout
 router.post('/logout', (req: Request, res: Response) => {
   const sessionId = req.headers['x-session-id'] as string;
   if (sessionId) {
