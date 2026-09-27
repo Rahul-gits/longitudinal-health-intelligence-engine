@@ -5,6 +5,8 @@ import { ClinicalValidationHarnessService } from '../services/clinicalValidation
 import { securityAuditLogs } from '../middleware/securityHardeningMiddleware';
 import { clinicalLoggingService } from '../services/clinicalLoggingService';
 import { FailureChaosTestingService } from '../services/failureChaosTestingService';
+import { PerformanceLoadTestService } from '../services/performanceLoadTestService';
+import { DocumentValidationService } from '../services/documentValidationService';
 
 const router = Router();
 
@@ -255,5 +257,83 @@ const executeChaosHandler = (_req: Request, res: Response) => {
 router.get('/failure-chaos-tests', executeChaosHandler);
 router.post('/failure-chaos-tests', executeChaosHandler);
 router.post('/run-chaos-tests', executeChaosHandler);
+
+/**
+ * 11. Evidence Governance & Administrative Approval Workflows
+ */
+router.get('/evidence/pending-approvals', (_req: Request, res: Response) => {
+  const pending = KnowledgeGovernanceService.getPendingApprovals();
+  res.json({
+    success: true,
+    totalPending: pending.length,
+    pendingGuidelines: pending
+  });
+});
+
+router.post('/evidence/approve-promotion', (req: Request, res: Response) => {
+  const { evidenceId, approvedBy, approvalNotes } = req.body;
+  if (!evidenceId || !approvedBy) {
+    return res.status(400).json({ success: false, error: 'evidenceId and approvedBy are required' });
+  }
+
+  const result = KnowledgeGovernanceService.approveGuidelinePromotion(
+    evidenceId,
+    approvedBy,
+    approvalNotes || 'Administrative approval granted by Clinical Evidence Board.'
+  );
+
+  res.json(result);
+});
+
+router.post('/evidence/evaluate-coverage', (req: Request, res: Response) => {
+  const { domain, conditionTag, ragAvailable } = req.body;
+  const result = KnowledgeGovernanceService.evaluateEvidenceAvailabilityAndCoverage(
+    domain || 'NEPHROLOGY',
+    conditionTag || 'CKD_STAGE_3_5',
+    ragAvailable !== undefined ? ragAvailable : true
+  );
+
+  res.json({
+    success: true,
+    evaluation: result
+  });
+});
+
+/**
+ * 12. Milestone M1: Performance & Load Testing Benchmark
+ */
+const executeLoadTestHandler = async (req: Request, res: Response) => {
+  const tiers = req.body?.tiers || [10, 50, 100, 250, 500];
+  const loadReport = await PerformanceLoadTestService.runLoadBenchmark(tiers);
+  res.json({
+    success: true,
+    loadReport
+  });
+};
+
+router.get('/performance-load-test', executeLoadTestHandler);
+router.post('/run-load-test', executeLoadTestHandler);
+
+/**
+ * 13. Milestone M2: Real Clinical Document Validation Pipeline
+ */
+router.get('/document-pipeline-tests', (_req: Request, res: Response) => {
+  const documentReport = DocumentValidationService.runDocumentSuite();
+  res.json({
+    success: true,
+    documentReport
+  });
+});
+
+router.get('/document-pipeline-test/:id', (req: Request, res: Response) => {
+  const doc = DocumentValidationService.getDocumentById(req.params.id as string);
+  if (!doc) {
+    return res.status(404).json({ success: false, error: 'Document fixture not found' });
+  }
+  res.json({
+    success: true,
+    document: doc
+  });
+});
 
 export default router;

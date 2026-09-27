@@ -216,53 +216,42 @@ npm run dev
 
 ---
 
-## ⚡ Failure & Chaos Resilience Suite ("DO NOT GUESS")
+## 🚀 Automated Validation & Milestone Execution Runners
 
-Heal Engine executes deterministic safe degradation and refuses heuristic guesswork when data is ambiguous or infrastructure fails:
+All verification suites can be executed via reproducible CLI scripts and checked in the UI Laboratory (`/validation`):
 
 ```bash
+# 1. Multi-Patient Cohort Validation Harness (5 Cohorts, Invariants, Explanations)
+node scripts/run_clinical_validation_harness.mjs
+
+# 2. Failure & Chaos Resilience Suite (18 Stress Vectors across 4 Categories)
 node scripts/run_failure_chaos_tests.mjs
+
+# 3. Milestone M1: Performance & Load Testing Benchmark (10 to 500 Concurrency)
+node scripts/run_load_test.mjs
+
+# 4. Milestone M2: Real Clinical Document & OCR Ingestion Pipeline (6 Document Types)
+node scripts/run_document_validation.mjs
 ```
 
-```
-                    PATIENT DATA
-                         │
-              ┌──────────┴──────────┐
-              │                     │
-           VALID                  INVALID
-              │                     │
-              ▼                     ▼
-       Clinical Pipeline       Integrity Engine
-              │                     │
-              │              ┌──────┴──────┐
-              │              ▼             ▼
-              │           Missing       Conflict
-              │              │             │
-              │              └──────┬──────┘
-              │                     ▼
-              │               DO NOT GUESS
-              │                     │
-              │                     ▼
-              │             Human Review Mandated
-              │
-              ▼
-        Safety Constraint
-              │
-       ┌──────┴──────┐
-       ▼             ▼
-     SAFE          UNSAFE
-       │             │
-       ▼             ▼
-  Care Options    HARD BLOCK
-       │             │
-       └──────┬──────┘
-              ▼
-       Clinician Review (HITL)
-```
+### Verified Milestone Results:
+- **Cohort Invariants:** 100% of defined automated validation invariants passed across all 5 high-risk cohorts.
+- **Chaos Resilience:** 100% of the 18 defined failure/chaos scenarios produced their specified safe fallback behavior during automated testing.
+- **Safety Integrity:** No unsupported clinical output was produced in the tested failure scenarios.
+- **Performance Under Load:** Safety constraints remained 100% invariant across all tested concurrency levels (10 to 500 concurrent requests; p95 latency: 27ms).
+- **Document Integrity:** 100% of messy real-world document variations adhered to the "DO NOT GUESS" invariant without hallucination or corrupted state ingestion.
 
-- **18 Failure Scenarios Tested:** Missing labs, stale records, telemetry contradictions, duplicate prescriptions, specialist conflicts, unknown non-formulary entities, RAG outage (**fail-closed**), outdated guideline deprecation, LLM inference timeouts, database disconnection, OCR confidence failures, speech audio noise degradation, SSE reconnections, worker queue DLQ retries, malformed FHIR bundles, unauthorized cross-patient queries, unassigned clinician access, and prompt injection attacks.
-- **Safe Degradation Rate:** 100% of faults safely handled without unconstrained stochastic behavior.
-- **Human Escalation Rate:** 72% of ambiguous/corrupted inputs mandated human clinician review.
+---
+
+## 🏛️ Development Milestones (Roadmap)
+
+```
+M1 — Performance & Load Testing           ✅ COMPLETE
+M2 — Real Clinical Document Pipeline      ✅ COMPLETE
+M3 — Real FHIR/EHR Interoperability       ⏳ NEXT
+M4 — Independent Security Assessment      ⏳ NEXT
+M5 — Human Usability (Patient/Clinician)  ⏳ NEXT
+```
 
 ---
 

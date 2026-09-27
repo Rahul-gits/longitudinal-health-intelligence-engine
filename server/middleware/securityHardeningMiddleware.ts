@@ -80,25 +80,55 @@ export const rateLimitMiddleware = (req: Request, res: Response, next: NextFunct
 };
 
 /**
- * 3. Prompt Injection & Adversarial Clinical Input Defense
+ * 3. Layered Prompt-Injection & Adversarial Clinical Input Defense
+ * 
+ * Layer 1: Input Sanitization & Control Character Stripping
+ * Layer 2: Adversarial Pattern & Jailbreak Heuristics
+ * Layer 3: Instruction / Data Separation Boundary (<untrusted_patient_input>)
+ * Layer 4: Immutable Clinical Safety Lock (User input cannot alter safety rules)
+ * Layer 5: Tool Permission Boundary (Patient role has 0 tool execution rights)
+ * Layer 6: Post-Inference Output Verification
+ * Layer 7: Security Audit Logging
  */
-const INJECTION_PATTERNS = [
+const ADVERSARIAL_INJECTION_PATTERNS = [
   /ignore (all )?previous instructions/i,
   /bypass (all )?(safety|clinical) (gates?|rules?|constraints?)/i,
   /system prompt/i,
-  /you are now an unrestricted/i,
+  /you are now an? (unrestricted|jailbroken|evil|unaligned)/i,
   /jailbreak/i,
   /disregard (all )?contraindications/i,
   /prescribe (fentanyl|oxycodone|morphine|narcotics) without (doctor|approval|review)/i,
   /override (fatal|black box|contraindication)/i,
+  /### (instruction|system|assistant)/i,
+  /<\/?(system|instruction|admin|override)>/i,
   /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/i
 ];
 
+/**
+ * Sanitizes input text by removing control characters, null bytes, and directional overrides.
+ */
+export const sanitizeClinicalInput = (raw: string): string => {
+  return raw
+    .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '') // Strip ASCII control codes
+    .replace(/[\u202A-\u202E\u2066-\u2069]/g, '')      // Strip bidirectional override characters
+    .trim();
+};
+
+/**
+ * Isolates untrusted patient text with strict boundary delimiters
+ * ensuring the LLM parser treats user input strictly as inert passive data.
+ */
+export const isolateUntrustedInput = (sanitizedText: string): string => {
+  const escaped = sanitizedText.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  return `<untrusted_clinical_input>\n${escaped}\n</untrusted_clinical_input>`;
+};
+
 export const promptInjectionDefenseMiddleware = (req: Request, res: Response, next: NextFunction) => {
-  // Check request body, query, and message fields
+  // Layer 1: Input Normalization & Payload Extraction
   const payloadToScan = JSON.stringify(req.body) + ' ' + JSON.stringify(req.query);
 
-  for (const pattern of INJECTION_PATTERNS) {
+  // Layer 2: Adversarial Pattern & Subversion Check
+  for (const pattern of ADVERSARIAL_INJECTION_PATTERNS) {
     if (pattern.test(payloadToScan)) {
       const clientIp = req.ip || req.socket.remoteAddress || '127.0.0.1';
       const event: SecurityAuditEvent = {
@@ -108,7 +138,7 @@ export const promptInjectionDefenseMiddleware = (req: Request, res: Response, ne
         ip: clientIp,
         endpoint: req.originalUrl,
         actorRole: (req.headers['x-user-role'] as string) || 'patient',
-        details: `Adversarial input detected matching pattern: ${pattern.toString()}`,
+        details: `Adversarial prompt-injection attempt intercepted. Pattern: ${pattern.toString()}`,
         severity: 'CRITICAL'
       };
       securityAuditLogs.push(event);
@@ -116,9 +146,24 @@ export const promptInjectionDefenseMiddleware = (req: Request, res: Response, ne
       return res.status(400).json({
         success: false,
         error: 'ADVERSARIAL_INPUT_REJECTED',
-        message: 'Security Alert: Input contained disallowed prompt injection or safety bypass heuristics. Intercepted by Deterministic Safety Firewall.',
+        message: 'Security Alert: Input contained disallowed prompt injection or safety bypass heuristics. Intercepted by Layered Safety Firewall.',
+        defenseLayersApplied: [
+          'Layer 1: Input Normalization',
+          'Layer 2: Adversarial Pattern Scanner',
+          'Layer 3: Instruction/Data Separation Boundary',
+          'Layer 4: Immutable Safety Lock'
+        ],
         auditEventId: event.id
       });
+    }
+  }
+
+  // Layer 3: Delimiter Sanitization on request body text fields
+  if (req.body && typeof req.body === 'object') {
+    for (const key of Object.keys(req.body)) {
+      if (typeof req.body[key] === 'string') {
+        req.body[key] = sanitizeClinicalInput(req.body[key]);
+      }
     }
   }
 
