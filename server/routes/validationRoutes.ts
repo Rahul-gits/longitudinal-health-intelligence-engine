@@ -9,6 +9,7 @@ import { PerformanceLoadTestService } from '../services/performanceLoadTestServi
 import { DocumentValidationService } from '../services/documentValidationService';
 import { SecurityAssessmentService } from '../services/securityAssessmentService';
 import { UsabilityEvaluationService } from '../services/usabilityEvaluationService';
+import { getShadowPilotMetrics, getShadowCases, adjudicateShadowCase, getShadowCaseById } from '../services/shadowHospitalPilotService';
 
 const router = Router();
 
@@ -374,6 +375,42 @@ router.post('/run-usability-evaluation', (_req: Request, res: Response) => {
     success: true,
     usabilityReport
   });
+});
+
+/**
+ * 16. Milestone M6: Shadow Hospital Pilot
+ */
+router.get('/shadow-pilot-metrics', (_req: Request, res: Response) => {
+  const metrics = getShadowPilotMetrics();
+  res.json({
+    success: true,
+    environment: 'CLINICAL_SHADOW',
+    referenceStandard: 'Multi-disciplinary consensus of board-certified attending clinicians. Discrepancies analyzed for explainable clinical variance rather than treated as unilateral errors.',
+    metrics
+  });
+});
+
+router.get('/shadow-cases', (req: Request, res: Response) => {
+  const department = req.query.department as string | undefined;
+  const cases = getShadowCases({ department });
+  res.json({
+    success: true,
+    environment: 'CLINICAL_SHADOW',
+    totalReturned: cases.length,
+    cases
+  });
+});
+
+router.post('/adjudicate-shadow-case/:id', (req: Request, res: Response) => {
+  const caseId = (Array.isArray(req.params.id) ? req.params.id[0] : req.params.id) as string;
+  const { decision, clinicalRationale, adjudicatorId, adjudicatorSpecialty } = req.body;
+  const result = adjudicateShadowCase(caseId, {
+    decision,
+    clinicalRationale,
+    adjudicatorId: adjudicatorId || 'ATTENDING-CLINICIAN-01',
+    adjudicatorSpecialty: adjudicatorSpecialty || 'Hospitalist Attending'
+  });
+  res.json(result);
 });
 
 export default router;
