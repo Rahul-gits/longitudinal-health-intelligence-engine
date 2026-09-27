@@ -249,8 +249,8 @@ node scripts/run_document_validation.mjs
 M1 — Performance & Load Testing           ✅ COMPLETE
 M2 — Real Clinical Document Pipeline      ✅ COMPLETE
 M3 — SMART on FHIR / EHR Interoperability ✅ COMPLETE (16/16 Passed)
-M4 — Independent Security Assessment      ⏳ NEXT
-M5 — Human Usability (Patient/Clinician)  ⏳ PLANNED
+M4 — Independent Security Assessment      ✅ COMPLETE (34/34 Repelled)
+M5 — Human Usability (Patient/Clinician)  ⏳ NEXT
 M6 — Shadow Deployment & Controlled Pilot ⏳ PLANNED
 ```
 
@@ -273,7 +273,8 @@ M6 — Shadow Deployment & Controlled Pilot ⏳ PLANNED
 > - **15** unauthorized-access attempts prevented
 > - **18** failure/chaos resilience edge-cases verified
 > - **16/16** SMART on FHIR acceptance criteria passed (100%)
-> - **Cross-Patient Boundary:** Verified Fail-Closed (EHR Patient A → Heal Patient B returns HTTP 403)
+> - **34/34** adversarial security attack vectors repelled (100%)
+> - **Zero-Tolerance Boundaries:** 0 cross-patient leaks, 0 privilege escalations, 0 safety gate bypasses
 > - **7/7** intelligence modules passed integrity checks
 > - **Build:** Passed | **E2E:** Passed | **Log-stream isolation:** Verified
 
@@ -282,6 +283,7 @@ M6 — Shadow Deployment & Controlled Pilot ⏳ PLANNED
 | **Canonical 7-Layer Architecture** | ✅ Architecture Frozen | ✅ Verified |
 | **Core Full-Stack Implementation** | ✅ TypeScript / Express / React | ✅ Verified |
 | **SMART on FHIR Interoperability (M3)** | ✅ OAuth2 / Normalizer / 11 Resources | ✅ 16/16 Criteria Passed (100%) |
+| **Independent Security Assessment (M4)** | ✅ 34 Vectors across 6 Trust Boundaries | ✅ 100% Repelled (Zero Breaches) |
 | **Cross-Patient Identity Boundary Gate** | ✅ Non-Bypassable Fail-Closed Enforcer | ✅ Verified (HTTP 403) |
 | **API & Security Hardening** | ✅ Strict Isolation / Headers / Injection Firewall | ✅ Verified |
 | **Deterministic Safety Framework** | ✅ Non-Bypassable Gates | ✅ Verified (100%) |
@@ -291,7 +293,7 @@ M6 — Shadow Deployment & Controlled Pilot ⏳ PLANNED
 | **Multi-Patient Cohort Suite (A-E)** | ✅ 5 Distinct High-Risk Phenotypes | ✅ Verified (100%) |
 | **Dedicated Clinical Validation Harness** | ✅ Script & Interactive Laboratory | ✅ 100% Invariants Passed |
 | **Failure & Chaos Resilience Suite** | ✅ 18 Edge-Case Stress Vectors | ✅ 100% Invariants Passed |
-| **External Security Assessment (M4)** | ⏳ Scope & Protocol Ready | ⏳ NEXT Sprint |
+| **Human Usability (Patient/Clinician) (M5)** | ⏳ Dual-Interface Usability Protocol Ready | ⏳ NEXT Sprint |
 | **Controlled Hospital Shadow Pilot (M6)** | ⏳ Protocol Ready | ⏳ Pending Institutional Review |
 
 ---

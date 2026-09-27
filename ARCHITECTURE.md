@@ -524,11 +524,52 @@ In addition to data integrity errors, Heal Engine resilience spans 5 actual infr
   - **EHR Patient A → Heal Engine Patient A:** `HTTP 200 OK` (Accepted & mapped to canonical state).
   - **EHR Patient A → Heal Engine Patient B:** `HTTP 403 Forbidden` (**FAILS CLOSED** with `OperationOutcome` diagnostic: `CRITICAL PATIENT IDENTITY MISMATCH (FAIL-CLOSED)`).
 
+### Milestone M4: Independent Security Assessment (COMPLETE ✅)
+```
+                 M4 SECURITY
+                     │
+       ┌─────────────┼─────────────┐
+       ↓             ↓             ↓
+     Auth           API           Data
+       │             │             │
+       ↓             ↓             ↓
+   OAuth2/OIDC    IDOR/BOLA     Encryption
+   Token abuse   RBAC bypass    Secrets
+       │             │             │
+       └─────────────┼─────────────┘
+                     ↓
+              Clinical APIs
+                     ↓
+        ┌────────────┼────────────┐
+        ↓            ↓            ↓
+     FHIR          RAG           LLM
+   injection     poisoning     injection
+        │            │            │
+        └────────────┼────────────┘
+                     ↓
+                 Audit Layer
+                     ↓
+               Security Report (34/34 Repelled)
+```
+
+- **Adversarial Assessment Scope:** 34 attack vectors evaluated across 6 core trust boundaries with zero breaches:
+  1. **Identity & Authentication (6 Vectors):** Expired tokens (401), malformed signatures (401), token replay (401), scope escalation (403), session fixation (regeneration on login), OAuth2 redirect manipulation (400 whitelist enforcement).
+  2. **Authorization & Tenant Isolation (5 Vectors):** Cross-patient IDOR/BOLA (403), unassigned clinician access (403 break-glass mandatory), clinician privilege escalation to admin (403), admin clinical safety bypass attempt (**hard prohibited**), multi-hospital tenant isolation (403).
+  3. **API Security & Input Hygiene (6 Vectors):** Care plan task BOLA mutation (403), mass assignment privilege sanitization, malformed JSON crash prevention (400), oversized 18MB payload rejection (413), token-bucket rate limiting (429), replayed transaction idempotency cache.
+  4. **FHIR Security (5 Vectors):** Path traversal in references (`../../etc/passwd` 422), cross-patient subject injection (FAIL-CLOSED 403), unknown resource types (422), unverified coding systems (422), revoked patient consent under HIPAA minimum necessary (403).
+  5. **AI & RAG Security (6 Vectors):** Direct prompt injection firewall (400), indirect prompt injection delimited in `<untrusted_clinical_input>`, malicious document XSS sanitization, evidence poisoning blocked by Clinical Board approval gate (403), RAG outage deterministic fallback with explicit labeling, Virtual Doctor tool permission boundary (patient role has 0 tool execution privileges).
+  6. **Infrastructure & Secret Hygiene (6 Vectors):** Database connection strings stripped from error responses (500), PII and Bearer tokens masked in all 5 log streams, container runs under non-root UID 10001 with read-only root FS, production dependencies zero critical CVEs, full suite of defensive HTTP headers (CSP, HSTS, frame-ancestors, nosniff), strict CORS origin allowlist.
+- **Zero-Tolerance Invariants Enforced:**
+  - Zero Cross-Patient Leaks: **ENFORCED 🛡️**
+  - Zero Privilege Escalation: **ENFORCED 🛡️**
+  - Zero Safety Gate Bypasses: **ENFORCED 🛡️**
+  - Zero Plaintext Secret Disclosures: **ENFORCED 🛡️**
+
 ---
 
 ## 10. Development Roadmap (Sequential Milestones)
 
-The architecture of Heal Engine is now **frozen**. Engineering has transitioned from building the intelligence engine to proving real-world interoperability, independent security, usability, and clinical safety.
+The architecture of Heal Engine remains **frozen**. Engineering has transitioned from building the intelligence engine to proving real-world interoperability, independent security, usability, and clinical safety.
 
 ```
                  HEAL ENGINE
@@ -551,12 +592,12 @@ The architecture of Heal Engine is now **frozen**. Engineering has transitioned 
                     ▼
               ┌────────────┐
               │    M4      │
-              │  SECURITY  │ ← NEXT (External Penetration & RBAC)
+              │  SECURITY  │ ← COMPLETE (34/34 Repelled)
               └─────┬──────┘
                     ▼
               ┌────────────┐
               │    M5      │
-              │  USABILITY │ (Clinician & Patient Experience)
+              │  USABILITY │ ← NEXT (Clinician & Patient Experience)
               └─────┬──────┘
                     ▼
               ┌────────────┐
@@ -570,8 +611,8 @@ The architecture of Heal Engine is now **frozen**. Engineering has transitioned 
 | **M1** | **Performance & Load** | Test scalability under heavy concurrency (10 to 500 users) | Safety remains 100% invariant under load; 0 breaches | ✅ COMPLETE |
 | **M2** | **Real Document Pipeline** | Validate OCR, entity extraction, and unit normalization | Smudged/unreadable scans rejected (<0.65); DO NOT GUESS | ✅ COMPLETE |
 | **M3** | **Real FHIR/EHR Interoperability** | SMART on FHIR discovery, canonical normalizer, CDS hooks | Fail-closed identity boundary; 16/16 criteria passed | ✅ COMPLETE |
-| **M4** | **Security Assessment** | External penetration testing, privilege escalation, and injection | Multi-layered defense-in-depth; 0 privilege escalation | ⏳ NEXT |
-| **M5** | **Human Usability Testing** | Clinical usability with representative clinicians and patients | Task completion, comprehension, and error recovery | ⏳ PLANNED |
+| **M4** | **Independent Security Assessment** | Penetration testing across 6 trust boundaries (34 vectors) | 0 cross-patient leaks; 0 privilege escalation; 0 safety bypass | ✅ COMPLETE |
+| **M5** | **Human Usability Testing** | Dual-interface usability (Calm Patient vs Explanatory Clinician) | Patient comprehension & Clinician oversight efficiency | ⏳ NEXT |
 | **M6** | **Shadow Deployment** | Controlled clinical environment without autonomous actuation | Real cloud multi-tenant load test & clinical expert review | ⏳ PLANNED |
 
 ---

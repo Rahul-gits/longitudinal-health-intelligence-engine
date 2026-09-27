@@ -7,6 +7,7 @@ import { clinicalLoggingService } from '../services/clinicalLoggingService';
 import { FailureChaosTestingService } from '../services/failureChaosTestingService';
 import { PerformanceLoadTestService } from '../services/performanceLoadTestService';
 import { DocumentValidationService } from '../services/documentValidationService';
+import { SecurityAssessmentService } from '../services/securityAssessmentService';
 
 const router = Router();
 
@@ -333,6 +334,25 @@ router.get('/document-pipeline-test/:id', (req: Request, res: Response) => {
   res.json({
     success: true,
     document: doc
+  });
+});
+
+/**
+ * 14. Milestone M4: Independent Security Assessment (34 Attack Vectors)
+ */
+router.get('/security-assessment', (_req: Request, res: Response) => {
+  const securityReport = SecurityAssessmentService.runSecurityAssessment();
+  res.json({
+    success: true,
+    securityReport
+  });
+});
+
+router.post('/run-security-assessment', (_req: Request, res: Response) => {
+  const securityReport = SecurityAssessmentService.runSecurityAssessment();
+  res.json({
+    success: true,
+    securityReport
   });
 });
 

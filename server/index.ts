@@ -13,6 +13,7 @@ import auditRoutes from './routes/auditRoutes';
 import authRoutes from './routes/authRoutes';
 import validationRoutes from './routes/validationRoutes';
 import fhirRoutes from './routes/fhirRoutes';
+import securityRoutes from './routes/securityRoutes';
 import {
   secureHeadersMiddleware,
   rateLimitMiddleware,
@@ -77,6 +78,7 @@ app.use('/api/benchmarks', benchmarkRoutes);
 app.use('/api/audit', auditRoutes);
 app.use('/api/validation', validationRoutes);
 app.use('/api/fhir', fhirRoutes);
+app.use('/api/security', securityRoutes);
 
 // 404 Handler
 app.use((_req: Request, res: Response) => {
