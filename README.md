@@ -248,10 +248,15 @@ node scripts/run_document_validation.mjs
 ```
 M1 — Performance & Load Testing           ✅ COMPLETE
 M2 — Real Clinical Document Pipeline      ✅ COMPLETE
-M3 — Real FHIR/EHR Interoperability       ⏳ NEXT
+M3 — SMART on FHIR / EHR Interoperability ✅ COMPLETE (16/16 Passed)
 M4 — Independent Security Assessment      ⏳ NEXT
-M5 — Human Usability (Patient/Clinician)  ⏳ NEXT
+M5 — Human Usability (Patient/Clinician)  ⏳ PLANNED
+M6 — Shadow Deployment & Controlled Pilot ⏳ PLANNED
 ```
+
+> [!NOTE]
+> **Performance Caveat & Production Realism:**
+> Benchmark metrics (p50 = 8 ms, p95 = 27 ms, >83,000 req/sec) reflect **deterministic in-memory engine benchmark evaluations**. Full cloud multi-tenant production capacity under live database, vector retrieval, OCR, network latency, and background workers will be benchmarked under realistic conditions and reported separately.
 
 ---
 
@@ -267,13 +272,17 @@ M5 — Human Usability (Patient/Clinician)  ⏳ NEXT
 > - **5** explainability traces verified
 > - **15** unauthorized-access attempts prevented
 > - **18** failure/chaos resilience edge-cases verified
+> - **16/16** SMART on FHIR acceptance criteria passed (100%)
+> - **Cross-Patient Boundary:** Verified Fail-Closed (EHR Patient A → Heal Patient B returns HTTP 403)
 > - **7/7** intelligence modules passed integrity checks
 > - **Build:** Passed | **E2E:** Passed | **Log-stream isolation:** Verified
 
 | Dimension | Engineering Status | Validation Status |
-| :--- | :---: | :---: |
-| **Canonical 7-Layer Architecture** | ✅ Production Blueprint | ✅ Verified |
+| :--- | :--- | :---: |
+| **Canonical 7-Layer Architecture** | ✅ Architecture Frozen | ✅ Verified |
 | **Core Full-Stack Implementation** | ✅ TypeScript / Express / React | ✅ Verified |
+| **SMART on FHIR Interoperability (M3)** | ✅ OAuth2 / Normalizer / 11 Resources | ✅ 16/16 Criteria Passed (100%) |
+| **Cross-Patient Identity Boundary Gate** | ✅ Non-Bypassable Fail-Closed Enforcer | ✅ Verified (HTTP 403) |
 | **API & Security Hardening** | ✅ Strict Isolation / Headers / Injection Firewall | ✅ Verified |
 | **Deterministic Safety Framework** | ✅ Non-Bypassable Gates | ✅ Verified (100%) |
 | **Auditability & WORM Ledger** | ✅ Hash-Chained 11-Attribute Ledger | ✅ Verified |
@@ -282,8 +291,8 @@ M5 — Human Usability (Patient/Clinician)  ⏳ NEXT
 | **Multi-Patient Cohort Suite (A-E)** | ✅ 5 Distinct High-Risk Phenotypes | ✅ Verified (100%) |
 | **Dedicated Clinical Validation Harness** | ✅ Script & Interactive Laboratory | ✅ 100% Invariants Passed |
 | **Failure & Chaos Resilience Suite** | ✅ 18 Edge-Case Stress Vectors | ✅ 100% Invariants Passed |
-| **External Clinical Peer Review** | ⏳ Protocol Ready | ⏳ Pending Pilot |
-| **Controlled Hospital Shadow Pilot** | ⏳ Protocol Ready | ⏳ Pending Institutional Review |
+| **External Security Assessment (M4)** | ⏳ Scope & Protocol Ready | ⏳ NEXT Sprint |
+| **Controlled Hospital Shadow Pilot (M6)** | ⏳ Protocol Ready | ⏳ Pending Institutional Review |
 
 ---
 
