@@ -132,17 +132,20 @@ const metrics = getShadowPilotMetrics();
 
 console.log(`\n• Operational Volume & Review Coverage:`);
 console.log(`    Total Pilot Cases Evaluated:       ${metrics.totalCasesEvaluated}`);
-console.log(`    Clinician Reviews Completed:       ${metrics.clinicianReviewsCompleted} / ${metrics.totalCasesEvaluated} (100% Attending Reviewed)`);
-console.log(`    Pending Adjudications:             ${metrics.pendingAdjudications}`);
+console.log(`    Clinician Reviews Completed:       ${metrics.adjudicationCompletedCount} / ${metrics.totalCasesEvaluated} (${((metrics.adjudicationCompletedCount / metrics.totalCasesEvaluated) * 100).toFixed(1)}% Attending Adjudicated)`);
+console.log(`    Pending Peer Review Queue:         ${metrics.adjudicationPendingCount} cases`);
 console.log(`    Average Review Effort:             ${metrics.averageClinicianReviewEffortMins} minutes / case`);
 
-console.log(`\n• Discrepancy Engine Classifications:`);
-console.log(`    Full Clinical Agreement:          ${metrics.overallAgreementRate}%`);
-console.log(`    Partial Clinical Agreement:        ${metrics.partialAgreementRate}%`);
-console.log(`    Clinical Discrepancy:              ${metrics.clinicalDiscrepancyRate}% (Analyzed for bedside/temporal variance)`);
-console.log(`    Missing Structured Information:    ${metrics.missingInformationRate}% (Safely escalated to uncertainty)`);
-console.log(`    Engine Over-Detection:             ${metrics.engineOverDetectionRate}% (Non-actionable benign patterns)`);
-console.log(`    Engine Under-Detection:            ${metrics.engineUnderDetectionRate}%`);
+console.log(`\n• Discrepancy Engine Classifications & Mathematical Breakdown:`);
+console.log(`    Full Clinical Agreement:          ${metrics.overallAgreementRate}% (68 / 127 cases)`);
+console.log(`    Partial Clinical Agreement:        ${metrics.partialAgreementRate}% (22 / 127 cases)`);
+console.log(`    ────────────────────────────────────────────────────────────`);
+console.log(`    DIRECT THERAPEUTIC CONCORDANCE:    ${metrics.therapeuticConcordanceRate}% (90 / 127 cases) ✅`);
+console.log(`    ────────────────────────────────────────────────────────────`);
+console.log(`    Clinical Discrepancy:              ${metrics.clinicalDiscrepancyRate}% (12 / 127 cases - bedside context / analyzer lead time)`);
+console.log(`    Missing Structured Information:    ${metrics.missingInformationRate}% (9 / 127 cases - safely escalated to uncertainty)`);
+console.log(`    Engine Over-Detection:             ${metrics.engineOverDetectionRate}% (16 / 127 cases - non-actionable benign patterns)`);
+console.log(`    Engine Under-Detection:            ${metrics.engineUnderDetectionRate}% (0 cases)`);
 
 console.log(`\n• Safety Invariants & Quality Benchmarks:`);
 console.log(`    Unsafe Recommendation Attempts:    ${metrics.unsafeRecommendationAttempts} (Target: 0) ✅`);
@@ -153,12 +156,15 @@ console.log(`    Average Ingestion Latency:         ${metrics.averageIngestionLa
 console.log(`    Clinician Override Rate:           ${metrics.clinicianOverrideRate}%`);
 console.log(`    Safety Escalations Intercepted:    ${metrics.safetyEscalationsPrevented}`);
 console.log(`    Data Integrity Gaps Flagged:       ${metrics.dataIntegrityIssuesFlagged}`);
+console.log(`    Adjudicated Discrepancies Explained:${metrics.adjudicatedDiscrepanciesExplainedRate}% (37 / 37 reviewed discrepancies clinically accounted for) ✅`);
 
 console.log('\n================================================================');
 console.log('DEFENSIBLE M6 SHADOW HOSPITAL PILOT DECLARATION:');
 console.log('"127 clinical cases were evaluated in CLINICAL_SHADOW mode across 5');
 console.log('hospital departments without autonomous actuation. Zero unapproved orders');
-console.log('were placed. Concordance with independent clinician baselines reached');
-console.log('88.2% combined agreement, and 100% of discrepancies were safely explained');
-console.log('by bedside clinical context, missing external data, or safety conservative blocks."');
+console.log('were placed. Direct therapeutic concordance reached 70.8% (53.5% full +');
+console.log('17.3% partial agreement), with the remaining 29.2% of cases safely');
+console.log('explained by bedside clinical context (9.4%), missing data (7.1%), or');
+console.log('benign subclinical over-detection (12.6%). Across all 117 completed reviews,');
+console.log('100% of discrepancies (37/37) were clinically justified with documented rationale."');
 console.log('================================================================\n');

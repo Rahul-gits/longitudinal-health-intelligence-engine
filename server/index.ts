@@ -16,6 +16,7 @@ import fhirRoutes from './routes/fhirRoutes';
 import securityRoutes from './routes/securityRoutes';
 import usabilityRoutes from './routes/usabilityRoutes';
 import shadowRoutes from './routes/shadowRoutes';
+import governanceRoutes from './routes/governanceRoutes';
 import {
   secureHeadersMiddleware,
   rateLimitMiddleware,
@@ -83,6 +84,7 @@ app.use('/api/fhir', fhirRoutes);
 app.use('/api/security', securityRoutes);
 app.use('/api/usability', usabilityRoutes);
 app.use('/api/shadow', shadowRoutes);
+app.use('/api/governance', governanceRoutes);
 
 // 404 Handler
 app.use((_req: Request, res: Response) => {
