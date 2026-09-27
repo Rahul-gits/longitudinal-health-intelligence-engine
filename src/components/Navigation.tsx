@@ -65,28 +65,39 @@ export const Navigation: React.FC<NavigationProps> = ({
     };
   }, []);
 
-  // Primary Human Navigation Tabs (Aligned to the 6 UX Pillars)
-  const healthTabs = [
+  // 1. Patient Portal (Clean human tabs, zero cognitive overload)
+  const patientTabs = [
     { id: 'command', label: 'Overview', sub: 'Health at a glance', icon: Home, badge: 'Daily' },
     { id: 'reports', label: 'My Health Data', sub: 'Reports & records', icon: FolderOpen, badge: '3' },
     { id: 'timeline', label: 'Health Timeline', sub: 'Changes over time', icon: Clock },
-    { id: 'insights', label: 'Health Insights', sub: 'What data shows', icon: Sparkles, badge: 'New' }
-  ];
-
-  const careTabs = [
+    { id: 'insights', label: 'Health Insights', sub: 'What data shows', icon: Sparkles, badge: 'New' },
     { id: 'virtual-doctor', label: 'Virtual Specialist', sub: 'Talk through health', icon: Video, badge: 'Live AI' },
     { id: 'recovery', label: 'Follow-Up', sub: 'What needs attention', icon: BellRing, badge: '2 items' },
     { id: 'clinician-summary', label: 'Clinical Summary', sub: 'Screening results', icon: ClipboardList }
   ];
 
-  // Advanced Technical Workspaces for Deep Research & Clinicians
-  const advancedTabs = [
-    { id: 'workflow', label: '13-Phase Clinical Pipeline', icon: Sparkles, badge: 'Engine' },
+  // 2. Clinician Workspace (High precision clinical tools)
+  const clinicianTabs = [
+    { id: 'command', label: 'Command Center', icon: Home },
+    { id: 'health', label: 'Patient Health Picture', icon: Layers },
+    { id: 'changes', label: 'Change Detection', icon: TrendingDown },
+    { id: 'insights', label: 'Clinical Explanation', icon: Sparkles },
+    { id: 'safety', label: 'Safety Review', icon: ShieldCheck, badge: 'Hard Gates' },
+    { id: 'decide', label: 'Care Options', icon: Target },
+    { id: 'conference', label: 'Clinical Conference', icon: Users },
+    { id: 'reports', label: 'Reports & Labs', icon: FileText },
+    { id: 'timeline', label: 'Longitudinal Timeline', icon: Clock },
+    { id: 'recovery', label: 'Monitoring Loop', icon: Activity },
+    { id: 'governance', label: 'Audit & Provenance', icon: Lock }
+  ];
+
+  // 3. Research & Evaluation Platform (Completely segregated from clinical care!)
+  const researchTabs = [
+    { id: 'workflow', label: '13-Phase Clinical Pipeline', icon: Sparkles, badge: 'Architecture' },
+    { id: 'swarm', label: 'Swarm Simulation (PSO)', icon: Cpu, badge: 'Simulation Plane' },
     { id: 'conference', label: 'Multi-Specialist Debate', icon: Layers },
-    { id: 'swarm', label: 'Reasoning Trace (Swarm PSO)', icon: Cpu },
-    { id: 'safety', label: 'Safety Check Rules Matrix', icon: ShieldCheck },
-    { id: 'clinician', label: 'Clinician EHR Portal (FHIR R4)', icon: Stethoscope },
-    { id: 'governance', label: 'Activity & Review History (Audit)', icon: Lock }
+    { id: 'governance', label: 'Activity & Forensic Audit', icon: Lock },
+    { id: 'health', label: 'Knowledge Graph Explorer', icon: Target }
   ];
 
   // Dynamically compute patient details for the authenticated user
@@ -137,7 +148,10 @@ export const Navigation: React.FC<NavigationProps> = ({
           {/* 3 Audience Complexity Levels (Progressive Disclosure) */}
           <div className="flex items-center bg-[#FAF8F5] p-1 border-2 border-black shadow-[2px_2px_0px_0px_#000] text-xs font-bold font-mono">
             <button
-              onClick={() => setActiveRole('patient')}
+              onClick={() => {
+                setActiveRole('patient');
+                if (!patientTabs.some(t => t.id === activeTab)) setActiveTab('command');
+              }}
               title="Simple human language for patients and families"
               className={`flex items-center space-x-1.5 px-3 py-1 border transition-all cursor-pointer ${
                 activeRole === 'patient'
@@ -149,7 +163,10 @@ export const Navigation: React.FC<NavigationProps> = ({
               <span>Patient</span>
             </button>
             <button
-              onClick={() => setActiveRole('clinician')}
+              onClick={() => {
+                setActiveRole('clinician');
+                if (!clinicianTabs.some(t => t.id === activeTab)) setActiveTab('command');
+              }}
               title="Clinical decision support & medical precision"
               className={`flex items-center space-x-1.5 px-3 py-1 border transition-all cursor-pointer ${
                 activeRole === 'clinician'
@@ -161,8 +178,11 @@ export const Navigation: React.FC<NavigationProps> = ({
               <span>Clinician</span>
             </button>
             <button
-              onClick={() => setActiveRole('research')}
-              title="Full multi-agent swarm architecture & algorithmic audit"
+              onClick={() => {
+                setActiveRole('research');
+                if (!researchTabs.some(t => t.id === activeTab)) setActiveTab('workflow');
+              }}
+              title="Research & evaluation platform: Swarm simulation, benchmarking, forensic pipeline"
               className={`flex items-center space-x-1.5 px-3 py-1 border transition-all cursor-pointer ${
                 activeRole === 'research'
                   ? 'bg-[#A855F7] text-white font-black border-2 border-black shadow-[2px_2px_0px_0px_#000]'
@@ -218,126 +238,106 @@ export const Navigation: React.FC<NavigationProps> = ({
         </div>
       </div>
 
-      {/* Main Humanized Navigation Bar */}
+      {/* Role-Specific Experience Navigation Bar */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t-2 border-black bg-[#FAF8F5]">
-        <nav className="flex space-x-4 overflow-x-auto py-2.5 scrollbar-none items-center justify-between">
+        <nav className="flex space-x-2 overflow-x-auto py-2.5 scrollbar-none items-center">
           
-          {/* Section 1: YOUR HEALTH */}
-          <div className="flex items-center space-x-1.5 shrink-0">
-            <span className="hidden xl:inline-block text-[10px] font-black uppercase tracking-wider text-black/50 font-mono pr-1">
-              YOUR HEALTH:
+          {/* Role Identifier Label */}
+          <div className="hidden lg:flex items-center space-x-1 pr-2 shrink-0 border-r-2 border-black/20">
+            <span className={`text-[10px] font-black uppercase tracking-wider font-mono px-2 py-0.5 border border-black ${
+              activeRole === 'patient' 
+                ? 'bg-[#FFE600] text-black' 
+                : activeRole === 'clinician' 
+                ? 'bg-[#3A86FF] text-white' 
+                : 'bg-[#A855F7] text-white'
+            }`}>
+              {activeRole === 'patient' ? 'PATIENT PORTAL' : activeRole === 'clinician' ? 'CLINICIAN WORKSPACE' : 'RESEARCH & EVALUATION'}
             </span>
-            {healthTabs.map((tab) => {
-              const Icon = tab.icon;
-              const isActive = activeTab === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => {
-                    setActiveTab(tab.id);
-                    setShowAdvancedMenu(false);
-                  }}
-                  className={`flex items-center space-x-1.5 px-3 py-1.5 text-xs font-black font-display whitespace-nowrap transition-all border-2 border-black cursor-pointer ${
-                    isActive
-                      ? 'bg-[#FFE600] text-black shadow-[3px_3px_0px_0px_#000] translate-x-[-1px] translate-y-[-1px]'
-                      : 'bg-[#FFFFFF] text-black/80 hover:bg-[#FFE600]/30 hover:text-black'
-                  }`}
-                >
-                  <Icon className={`w-3.5 h-3.5 stroke-[2.5] ${isActive ? 'text-black' : 'text-black/70'}`} />
-                  <span>{tab.label}</span>
-                  {tab.badge && (
-                    <span className="px-1.5 py-0.2 text-[8px] font-black uppercase tracking-wider bg-[#FF70A6] text-black border border-black shadow-[1px_1px_0px_0px_#000]">
-                      {tab.badge}
-                    </span>
-                  )}
-                </button>
-              );
-            })}
           </div>
 
-          <div className="h-5 w-0.5 bg-black/20 shrink-0 hidden sm:block"></div>
+          {/* Patient Portal Tabs */}
+          {activeRole === 'patient' && patientTabs.map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center space-x-1.5 px-3 py-1.5 text-xs font-black font-display whitespace-nowrap transition-all border-2 border-black cursor-pointer shrink-0 ${
+                  isActive
+                    ? 'bg-[#FFE600] text-black shadow-[3px_3px_0px_0px_#000] translate-x-[-1px] translate-y-[-1px]'
+                    : 'bg-[#FFFFFF] text-black/80 hover:bg-[#FFE600]/30 hover:text-black'
+                }`}
+              >
+                <Icon className={`w-3.5 h-3.5 stroke-[2.5] ${isActive ? 'text-black' : 'text-black/70'}`} />
+                <span>{tab.label}</span>
+                {tab.badge && (
+                  <span className="px-1.5 py-0.2 text-[8px] font-black uppercase tracking-wider bg-[#FF70A6] text-black border border-black shadow-[1px_1px_0px_0px_#000]">
+                    {tab.badge}
+                  </span>
+                )}
+              </button>
+            );
+          })}
 
-          {/* Section 2: YOUR CARE */}
-          <div className="flex items-center space-x-1.5 shrink-0">
-            <span className="hidden xl:inline-block text-[10px] font-black uppercase tracking-wider text-black/50 font-mono pr-1">
-              YOUR CARE:
-            </span>
-            {careTabs.map((tab) => {
-              const Icon = tab.icon;
-              const isActive = activeTab === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => {
-                    setActiveTab(tab.id);
-                    setShowAdvancedMenu(false);
-                  }}
-                  className={`flex items-center space-x-1.5 px-3 py-1.5 text-xs font-black font-display whitespace-nowrap transition-all border-2 border-black cursor-pointer ${
-                    isActive
-                      ? 'bg-[#00F5D4] text-black shadow-[3px_3px_0px_0px_#000] translate-x-[-1px] translate-y-[-1px]'
-                      : 'bg-[#FFFFFF] text-black/80 hover:bg-[#00F5D4]/30 hover:text-black'
-                  }`}
-                >
-                  <Icon className={`w-3.5 h-3.5 stroke-[2.5] ${isActive ? 'text-black' : 'text-black/70'}`} />
-                  <span>{tab.label}</span>
-                  {tab.badge && (
-                    <span className="px-1.5 py-0.2 text-[8px] font-black uppercase tracking-wider bg-[#FFE600] text-black border border-black shadow-[1px_1px_0px_0px_#000]">
-                      {tab.badge}
-                    </span>
-                  )}
-                </button>
-              );
-            })}
-          </div>
+          {/* Clinician Workspace Tabs */}
+          {activeRole === 'clinician' && clinicianTabs.map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center space-x-1.5 px-3 py-1.5 text-xs font-black font-display whitespace-nowrap transition-all border-2 border-black cursor-pointer shrink-0 ${
+                  isActive
+                    ? 'bg-[#3A86FF] text-white shadow-[3px_3px_0px_0px_#000] translate-x-[-1px] translate-y-[-1px]'
+                    : 'bg-[#FFFFFF] text-black/80 hover:bg-[#3A86FF]/20 hover:text-black'
+                }`}
+              >
+                <Icon className={`w-3.5 h-3.5 stroke-[2.5] ${isActive ? 'text-white' : 'text-black/70'}`} />
+                <span>{tab.label}</span>
+                {tab.badge && (
+                  <span className="px-1.5 py-0.2 text-[8px] font-black uppercase tracking-wider bg-[#FF0055] text-white border border-black shadow-[1px_1px_0px_0px_#000]">
+                    {tab.badge}
+                  </span>
+                )}
+              </button>
+            );
+          })}
 
-          {/* Advanced / Engine Dropdown Menu */}
-          <div className="relative shrink-0">
-            <button
-              onClick={() => setShowAdvancedMenu(!showAdvancedMenu)}
-              className={`flex items-center space-x-1 px-3 py-1.5 text-xs font-black font-mono whitespace-nowrap transition-all border-2 border-black cursor-pointer ${
-                advancedTabs.some(t => t.id === activeTab) || showAdvancedMenu
-                  ? 'bg-[#A855F7] text-white shadow-[3px_3px_0px_0px_#000]'
-                  : 'bg-white text-black/80 hover:bg-black/5'
-              }`}
-            >
-              <span>🔬 Engine & Deep Views</span>
-              <ChevronDown className={`w-3.5 h-3.5 transition-transform ${showAdvancedMenu ? 'rotate-180' : ''}`} />
-            </button>
-
-            {showAdvancedMenu && (
-              <div className="absolute right-0 mt-2 w-72 bg-white border-3 border-black shadow-[5px_5px_0px_0px_#000] z-50 py-2 font-mono text-xs animate-in zoom-in-95">
-                <div className="px-3 py-1 text-[10px] font-black uppercase text-black/60 border-b border-black/20">
-                  Clinical & Forensic Engine Views
-                </div>
-                {advancedTabs.map((tab) => {
-                  const Icon = tab.icon;
-                  const isActive = activeTab === tab.id;
-                  return (
-                    <button
-                      key={tab.id}
-                      onClick={() => {
-                        setActiveTab(tab.id);
-                        setShowAdvancedMenu(false);
-                      }}
-                      className={`w-full text-left px-3 py-2 flex items-center justify-between font-bold hover:bg-[#FFE600] transition-all cursor-pointer ${
-                        isActive ? 'bg-[#FFE600] text-black font-black' : 'text-black'
-                      }`}
-                    >
-                      <div className="flex items-center space-x-2">
-                        <Icon className="w-4 h-4 stroke-[2.5]" />
-                        <span>{tab.label}</span>
-                      </div>
-                      {tab.badge && (
-                        <span className="text-[9px] px-1 bg-black text-[#FFE600] font-black uppercase">
-                          {tab.badge}
-                        </span>
-                      )}
-                    </button>
-                  );
-                })}
+          {/* Research & Evaluation Platform Tabs (Segregated from Patient Care) */}
+          {activeRole === 'research' && (
+            <>
+              <div className="flex items-center space-x-2 shrink-0 pr-2">
+                <span className="text-[10px] bg-black text-[#CCFF00] font-mono px-2 py-0.5 border border-black font-black uppercase">
+                  SIMULATION PLANE ONLY
+                </span>
               </div>
-            )}
-          </div>
+              {researchTabs.map((tab) => {
+                const Icon = tab.icon;
+                const isActive = activeTab === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`flex items-center space-x-1.5 px-3 py-1.5 text-xs font-black font-display whitespace-nowrap transition-all border-2 border-black cursor-pointer shrink-0 ${
+                      isActive
+                        ? 'bg-[#A855F7] text-white shadow-[3px_3px_0px_0px_#000] translate-x-[-1px] translate-y-[-1px]'
+                        : 'bg-[#FFFFFF] text-black/80 hover:bg-[#A855F7]/20 hover:text-black'
+                    }`}
+                  >
+                    <Icon className={`w-3.5 h-3.5 stroke-[2.5] ${isActive ? 'text-white' : 'text-black/70'}`} />
+                    <span>{tab.label}</span>
+                    {tab.badge && (
+                      <span className="px-1.5 py-0.2 text-[8px] font-black uppercase tracking-wider bg-[#CCFF00] text-black border border-black shadow-[1px_1px_0px_0px_#000]">
+                        {tab.badge}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </>
+          )}
 
         </nav>
       </div>

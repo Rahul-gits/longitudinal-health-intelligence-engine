@@ -64,8 +64,8 @@ export const ConsentView: React.FC = () => {
         {/* Policy Details Accordion */}
         {showFullPolicy && (
           <div className="p-3 bg-[#F1F5F9] border border-[#CBD5E1] rounded-xl text-[11px] text-[#475569] space-y-1.5 max-h-36 overflow-y-auto">
-            <p className="font-semibold text-[#1E293B]">Data Handling & HIPAA Compliance:</p>
-            <p>All clinical data points are encrypted in transit (TLS 1.3) and at rest (AES-256). Cryptographic provenance hashes trace each decision step without exposing raw identifiable details to third parties.</p>
+            <p className="font-semibold text-[#1E293B]">Data Handling & Privacy Governance:</p>
+            <p>All clinical data points are encrypted in transit (TLS 1.3) and at rest (AES-256). An immutable, hash-chained audit trail is maintained to support clinical governance, traceability, and future regulatory evaluation.</p>
           </div>
         )}
 

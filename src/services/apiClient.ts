@@ -146,3 +146,182 @@ export const evaluateBenchmarks = async () => {
     return null;
   }
 };
+
+/**
+ * Real-Time Server-Sent Events (SSE) Bus Listener
+ * Listens for asynchronous clinical events (overrides, order signs, job updates).
+ */
+export const subscribeToWorkflowEvents = (
+  onEvent: (eventType: string, data: any) => void
+): (() => void) => {
+  if (typeof window === 'undefined' || !('EventSource' in window)) {
+    return () => {};
+  }
+
+  try {
+    const eventSource = new EventSource('/api/workflow/events/stream');
+
+    eventSource.addEventListener('message', (e) => {
+      try {
+        const parsed = JSON.parse(e.data);
+        onEvent('MESSAGE', parsed);
+      } catch (err) {
+        // ignore malformed
+      }
+    });
+
+    const eventNames = [
+      'SAFETY_OVERRIDE_AUTHORIZED', 
+      'ORDERS_BATCH_SIGNED', 
+      'JOB_ENQUEUED', 
+      'CDS_HOOK_EVALUATED',
+      'CLINICIAN_DECISION_RECORDED',
+      'TASK_STATUS_CHANGED',
+      'VIRTUAL_DOCTOR_ESCALATION',
+      'SCENARIO_SUITE_EVALUATED'
+    ];
+    eventNames.forEach(evt => {
+      eventSource.addEventListener(evt, (e: any) => {
+        try {
+          const parsed = JSON.parse(e.data);
+          onEvent(evt, parsed);
+        } catch (err) {
+          // ignore
+        }
+      });
+    });
+
+    return () => {
+      eventSource.close();
+    };
+  } catch (err) {
+    console.warn('SSE subscription notice:', err);
+    return () => {};
+  }
+};
+
+/**
+ * Semantic Vector Guideline Retrieval
+ */
+export const searchGuidelinesVector = async (query: string, org?: string) => {
+  try {
+    const url = `/api/workflow/vector/search?q=${encodeURIComponent(query)}${org ? `&org=${encodeURIComponent(org)}` : ''}`;
+    const res = await fetch(url);
+    if (res.ok) return await res.json();
+    return null;
+  } catch (err) {
+    console.warn('Vector search fallback:', err);
+    return null;
+  }
+};
+
+/**
+ * Asynchronous Background Task Enqueuer
+ */
+export const enqueueBackgroundJob = async (type: string, payload: Record<string, any>) => {
+  try {
+    const res = await fetch('/api/workflow/jobs/enqueue', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type, payload })
+    });
+    if (res.ok) return await res.json();
+    return null;
+  } catch (err) {
+    console.warn('Job enqueue fallback:', err);
+    return null;
+  }
+};
+
+/**
+ * SMART-on-FHIR CDS Hooks Evaluation
+ */
+export const evaluateCdsHookMedication = async (medications: Array<{ code: string; display: string }>) => {
+  try {
+    const res = await fetch('/api/workflow/cds-services/medication-prescribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        hook: 'medication-prescribe',
+        hookInstance: `hook-${Date.now()}`,
+        context: {
+          patientId: 'patient-ev-68',
+          userId: 'dr-thorne',
+          medications
+        }
+      })
+    });
+    if (res.ok) return await res.json();
+    return null;
+  } catch (err) {
+    console.warn('CDS Hook evaluation fallback:', err);
+    return null;
+  }
+};
+
+/**
+ * Execute Automated Clinical Scenario Test Suite (Scenarios 001-004)
+ */
+export const runClinicalScenarioSuite = async () => {
+  try {
+    const res = await fetch('/api/workflow/scenarios/run-suite', { method: 'POST' });
+    if (res.ok) return await res.json();
+    return null;
+  } catch (err) {
+    console.warn('Clinical scenario test suite fallback:', err);
+    return null;
+  }
+};
+
+/**
+ * Record a Virtual Doctor Dialogue Turn with NegEx & Longitudinal Safety
+ */
+export const recordVirtualDoctorTurn = async (params: {
+  sessionId: string;
+  patientResponseRaw: string;
+  questionVersionId?: string;
+  doctorQuestionScript?: string;
+  doctorPosture?: string;
+}) => {
+  try {
+    const res = await fetch('/api/workflow/virtual-doctor/turn', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(params)
+    });
+    if (res.ok) return await res.json();
+    return null;
+  } catch (err) {
+    console.warn('Virtual doctor turn fallback:', err);
+    return null;
+  }
+};
+
+/**
+ * Fetch AI Model, Prompt & Clinical Rules Version Registry
+ */
+export const fetchAiGovernanceRegistry = async () => {
+  try {
+    const res = await fetch('/api/workflow/governance/registry');
+    if (res.ok) return await res.json();
+    return null;
+  } catch (err) {
+    console.warn('AI Governance registry fallback:', err);
+    return null;
+  }
+};
+
+/**
+ * Fetch System & Clinical Observability Metrics
+ */
+export const fetchObservabilityMetrics = async () => {
+  try {
+    const res = await fetch('/api/workflow/observability/metrics');
+    if (res.ok) return await res.json();
+    return null;
+  } catch (err) {
+    console.warn('Observability metrics fallback:', err);
+    return null;
+  }
+};
+

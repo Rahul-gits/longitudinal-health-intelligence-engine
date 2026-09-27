@@ -22,6 +22,10 @@ import { AuthProvider } from './context/AuthContext';
 import { AuthGateway } from './components/auth/AuthGateway';
 import { Activity, ShieldAlert, Sparkles } from 'lucide-react';
 
+import { PatientPortalDashboard } from './components/PatientPortalDashboard';
+import { CareFollowUpWorkspace } from './components/CareFollowUpWorkspace';
+import { EvidenceProvenanceModal } from './components/EvidenceProvenanceModal';
+import { NotificationBanner } from './components/NotificationBanner';
 import { useAuth } from './context/AuthContext';
 import { getDynamicPatientProfile } from './data/mockPatientData';
 
@@ -33,6 +37,7 @@ const MainDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>('command');
   const [activeRole, setActiveRole] = useState<'patient' | 'clinician' | 'research'>('patient');
   const [showEmergencyModal, setShowEmergencyModal] = useState<boolean>(false);
+  const [showEvidenceModal, setShowEvidenceModal] = useState<boolean>(false);
 
   return (
     <div className="min-h-screen bg-[#FAF8F5] text-black flex flex-col font-sans selection:bg-[#FFE600] selection:text-black">
@@ -104,12 +109,27 @@ const MainDashboard: React.FC = () => {
         )}
 
         {/* Primary Tab Routing (Human + Clinical) */}
-        {activeTab === 'command' && <CommandCenter onNavigateTab={setActiveTab} />}
+        {activeTab === 'command' && (
+          activeRole === 'patient' ? (
+            <PatientPortalDashboard 
+              onNavigateTab={setActiveTab} 
+              onOpenVirtualDoctor={() => setActiveTab('virtual-doctor')} 
+            />
+          ) : (
+            <CommandCenter onNavigateTab={setActiveTab} />
+          )
+        )}
         {activeTab === 'reports' && <ReportIntelligence />}
         {activeTab === 'timeline' && <HealthTimeline />}
         {activeTab === 'insights' && <ExplainWorkspace />}
         {activeTab === 'virtual-doctor' && <VirtualDoctorScreeningWorkspace />}
-        {activeTab === 'recovery' && <RecoveryJourney onNavigateTab={setActiveTab} />}
+        {activeTab === 'recovery' && (
+          activeRole === 'patient' ? (
+            <CareFollowUpWorkspace onNavigateTab={setActiveTab} />
+          ) : (
+            <RecoveryJourney onNavigateTab={setActiveTab} />
+          )
+        )}
         {activeTab === 'clinician-summary' && <ClinicalSummaryWorkspace onNavigateTab={setActiveTab} />}
 
         {/* Advanced & Forensic Engine Workspaces */}
@@ -125,6 +145,9 @@ const MainDashboard: React.FC = () => {
         {activeTab === 'changes' && <DetectWorkspace />}
         {activeTab === 'decide' && <DecideWorkspace />}
       </main>
+
+      {/* Real-Time Live Notification Banner (SSE Driven) */}
+      <NotificationBanner />
 
       {/* Neubrutalist Footer */}
       <footer className="border-t-3 border-black py-6 bg-[#FFFFFF] mt-8">
@@ -149,6 +172,12 @@ const MainDashboard: React.FC = () => {
       {showEmergencyModal && (
         <EmergencyScreen onClose={() => setShowEmergencyModal(false)} />
       )}
+
+      {/* Clinical Evidence & Provenance Inspector Modal */}
+      <EvidenceProvenanceModal 
+        isOpen={showEvidenceModal} 
+        onClose={() => setShowEvidenceModal(false)} 
+      />
     </div>
   );
 };

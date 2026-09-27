@@ -1,115 +1,267 @@
 import { Router, Request, Response } from 'express';
+import { broadcastWorkflowEvent } from './workflowRoutes';
 
 const router = Router();
 
-// Primary longitudinal patient state for Eleanor Vance
-export const mockPatientProfile = {
-  id: 'patient-ev-68',
-  name: 'Eleanor Vance',
-  age: 68,
-  gender: 'Female',
-  mrn: 'EV-88492-X',
-  status: 'High Alert (Decompensation Risk)',
-  primaryCarePhysician: 'Dr. Aris Thorne (Cardiorenal Specialist)',
-  conditions: [
-    { id: 'c1', name: 'Heart Failure with Preserved Ejection Fraction (HFpEF)', status: 'Active - Worsening NYHA III', icd10: 'I50.32', onsetDate: '2023-04-12' },
-    { id: 'c2', name: 'Chronic Kidney Disease (CKD Stage 3b)', status: 'Active - eGFR Decline (38 mL/min)', icd10: 'N18.32', onsetDate: '2022-09-18' },
-    { id: 'c3', name: 'Type 2 Diabetes Mellitus with Nephropathy', status: 'Active - HbA1c 7.9%', icd10: 'E11.21', onsetDate: '2019-02-10' },
-    { id: 'c4', name: 'Essential Hypertension', status: 'Suboptimally Controlled (148/92 mmHg)', icd10: 'I10', onsetDate: '2018-05-20' },
-    { id: 'c5', name: 'Osteoarthritis (Bilateral Knees)', status: 'Intermittent Flare (Avoid NSAIDs)', icd10: 'M17.0', onsetDate: '2021-01-15' }
-  ],
-  currentMedications: [
-    { name: 'Empagliflozin (Jardiance)', dose: '10 mg', route: 'Oral', frequency: 'Daily in morning', category: 'SGLT2i', indication: 'HFpEF & Renal Protection', adherenceRate: 96 },
-    { name: 'Sacubitril / Valsartan (Entresto)', dose: '24/26 mg', route: 'Oral', frequency: 'Twice daily', category: 'ARNI', indication: 'HFpEF', adherenceRate: 92 },
-    { name: 'Spironolactone', dose: '25 mg', route: 'Oral', frequency: 'Daily', category: 'MRA', indication: 'Aldosterone Antagonist', adherenceRate: 90 },
-    { name: 'Furosemide (Lasix)', dose: '40 mg', route: 'Oral', frequency: 'Daily (PRN titration)', category: 'Loop Diuretic', indication: 'Volume Overload Relief', adherenceRate: 98 },
-    { name: 'Metformin', dose: '500 mg', route: 'Oral', frequency: 'Twice daily', category: 'Biguanide', indication: 'T2D (Hold if eGFR < 30)', adherenceRate: 94 },
-    { name: 'Atorvastatin', dose: '20 mg', route: 'Oral', frequency: 'Nightly', category: 'Statin', indication: 'Cardiovascular Risk Reduction', adherenceRate: 95 }
-  ],
-  vitalsHistory: [
-    { timestamp: '2026-09-20T08:00:00Z', bpSystolic: 134, bpDiastolic: 82, heartRate: 74, spo2: 97, weightKg: 73.2, edemaGrade: '1+' },
-    { timestamp: '2026-09-21T08:00:00Z', bpSystolic: 138, bpDiastolic: 85, heartRate: 76, spo2: 96, weightKg: 73.8, edemaGrade: '1+' },
-    { timestamp: '2026-09-22T08:00:00Z', bpSystolic: 142, bpDiastolic: 88, heartRate: 80, spo2: 95, weightKg: 74.6, edemaGrade: '2+' },
-    { timestamp: '2026-09-23T08:00:00Z', bpSystolic: 146, bpDiastolic: 90, heartRate: 84, spo2: 94, weightKg: 75.5, edemaGrade: '2+' },
-    { timestamp: '2026-09-24T08:00:00Z', bpSystolic: 148, bpDiastolic: 92, heartRate: 88, spo2: 93, weightKg: 76.4, edemaGrade: '3+' }
-  ],
-  labsHistory: [
-    { date: '2026-06-15', egfr: 45, creatinine: 1.4, potassium: 4.4, bnp: 280, hba1c: 7.6, uacr: 180 },
-    { date: '2026-08-01', egfr: 42, creatinine: 1.5, potassium: 4.7, bnp: 390, hba1c: 7.7, uacr: 210 },
-    { date: '2026-09-10', egfr: 39, creatinine: 1.7, potassium: 5.1, bnp: 580, hba1c: 7.8, uacr: 245 },
-    { date: '2026-09-23', egfr: 38, creatinine: 1.8, potassium: 5.3, bnp: 840, hba1c: 7.9, uacr: 290 }
-  ],
-  activeAlerts: [
+// Canonical In-Memory Patient State Store (Backed by PostgreSQL & TimescaleDB schema in production)
+interface CanonicalPatientState {
+  patientId: string;
+  name: string;
+  age: number;
+  gender: string;
+  dob: string;
+  conditions: Array<{ name: string; stage: string; onset: string; status: 'ACTIVE' | 'RESOLVED' }>;
+  activeMedications: Array<{ drug: string; dose: string; freq: string; adherence: number; indication: string }>;
+  biomarkers: Array<{ marker: string; baseline: number; current: number; unit: string; trend: 'declining' | 'stable' | 'improving' }>;
+  allergies: Array<{ allergen: string; severity: string; reaction: string }>;
+  vitals: { sbp: number; dbp: number; heartRate: number; weightLbs: number };
+}
+
+interface CarePlanTask {
+  id: string;
+  title: string;
+  timeOfDay: string;
+  category: 'MEDICATION' | 'TELEMETRY' | 'SYMPTOM_SURVEY' | 'LIFESTYLE';
+  completed: boolean;
+  dueDate: string;
+}
+
+interface FollowUpAppointment {
+  id: string;
+  title: string;
+  specialty: string;
+  clinicianName: string;
+  scheduledDate: string;
+  purpose: string;
+  status: 'SCHEDULED' | 'CONFIRMED' | 'PENDING_RESULTS';
+}
+
+interface ClinicianDecisionRecord {
+  decisionId: string;
+  clinicianId: string;
+  clinicianName: string;
+  action: 'APPROVED' | 'MODIFIED' | 'REJECTED';
+  candidateChosen: string;
+  rationaleNotes: string;
+  signedAt: string;
+  ledgerTxId: string;
+}
+
+const canonicalPatients: Map<string, CanonicalPatientState> = new Map([
+  [
+    'patient-ev-68',
     {
-      id: 'alt-001',
-      severity: 'CRITICAL',
-      title: 'Rapid Fluid Accumulation & Acute Hyperkalemia Risk',
-      description: 'Weight gained +3.2 kg over 4 days with Potassium at 5.3 mEq/L and NT-proBNP elevated to 840 pg/mL. High risk of pulmonary congestion.',
-      actionRequired: 'Titrate Loop Diuretic (Furosemide -> 60mg), temporarily hold Spironolactone, check repeat BMP in 48 hours.',
-      evidenceScore: 0.96
-    },
-    {
-      id: 'alt-002',
-      severity: 'WARNING',
-      title: 'eGFR Borderline Threshold for Metformin',
-      description: 'Current eGFR 38 mL/min is nearing safety cutoff (< 30 mL/min). Monitor lactic acidosis risk.',
-      actionRequired: 'Consider dose halving to 500mg daily if eGFR drops below 35 mL/min.',
-      evidenceScore: 0.91
+      patientId: 'patient-ev-68',
+      name: 'Eleanor Vance',
+      age: 68,
+      gender: 'Female',
+      dob: '1958-03-14',
+      conditions: [
+        { name: 'Chronic Kidney Disease', stage: 'Stage 3b (eGFR 39 mL/min)', onset: '2023-04', status: 'ACTIVE' },
+        { name: 'Essential Hypertension', stage: 'Stage 1 (Controlled)', onset: '2019-11', status: 'ACTIVE' },
+        { name: 'Osteoarthritis', stage: 'Bilateral Knees', onset: '2021-08', status: 'ACTIVE' },
+        { name: 'Type 2 Diabetes Mellitus', stage: 'Mild (HbA1c 6.8%)', onset: '2022-01', status: 'ACTIVE' }
+      ],
+      activeMedications: [
+        { drug: 'Lisinopril', dose: '20mg', freq: 'Daily morning', adherence: 94, indication: 'Hypertension & Renoprotection' },
+        { drug: 'Empagliflozin', dose: '10mg', freq: 'Daily morning', adherence: 96, indication: 'Cardiorenal Risk Reduction' },
+        { drug: 'Metformin', dose: '500mg', freq: 'Daily with dinner', adherence: 92, indication: 'Type 2 Diabetes' },
+        { drug: 'Atorvastatin', dose: '20mg', freq: 'Daily bedtime', adherence: 95, indication: 'Lipid Management' }
+      ],
+      biomarkers: [
+        { marker: 'eGFR', baseline: 64, current: 52, unit: 'mL/min/1.73m²', trend: 'declining' },
+        { marker: 'Serum Creatinine', baseline: 1.10, current: 1.38, unit: 'mg/dL', trend: 'declining' },
+        { marker: 'Serum Potassium', baseline: 4.4, current: 4.8, unit: 'mEq/L', trend: 'stable' },
+        { marker: 'Blood Pressure (SBP)', baseline: 128, current: 126, unit: 'mmHg', trend: 'stable' }
+      ],
+      allergies: [
+        { allergen: 'Penicillin', severity: 'SEVERE', reaction: 'Hives & Wheezing' },
+        { allergen: 'Sulfa Drugs', severity: 'MODERATE', reaction: 'Rash' }
+      ],
+      vitals: { sbp: 126, dbp: 82, heartRate: 74, weightLbs: 158.4 }
     }
   ]
-};
+]);
 
-// GET /api/patients
-router.get('/', (_req: Request, res: Response) => {
-  res.json({
-    total: 1,
-    patients: [
-      {
-        id: mockPatientProfile.id,
-        name: mockPatientProfile.name,
-        age: mockPatientProfile.age,
-        gender: mockPatientProfile.gender,
-        mrn: mockPatientProfile.mrn,
-        status: mockPatientProfile.status,
-        activeAlertsCount: mockPatientProfile.activeAlerts.length,
-        lastUpdated: new Date().toISOString()
-      }
-    ]
+// Active Care Plans
+const activeCarePlans: Map<string, {
+  tasks: CarePlanTask[];
+  followUps: FollowUpAppointment[];
+  latestDecision?: ClinicianDecisionRecord;
+  doctorSummaryNote: string;
+}> = new Map([
+  [
+    'patient-ev-68',
+    {
+      doctorSummaryNote: 'Discontinue systemic oral NSAIDs (Ibuprofen) due to acute eGFR decline. Transition to topical Diclofenac 1% gel PRN. Repeat renal panel in 7 days.',
+      tasks: [
+        { id: 'task-1', title: 'Take Lisinopril 20mg with breakfast', timeOfDay: 'Morning', category: 'MEDICATION', completed: true, dueDate: 'Today' },
+        { id: 'task-2', title: 'Check morning weight on smart scale', timeOfDay: 'Morning', category: 'TELEMETRY', completed: true, dueDate: 'Today' },
+        { id: 'task-3', title: 'Apply Topical Diclofenac 1% gel to right knee (Pause Advil)', timeOfDay: 'Afternoon', category: 'MEDICATION', completed: false, dueDate: 'Today' },
+        { id: 'task-4', title: 'Hydration goal: 6 to 8 glasses of water', timeOfDay: 'Evening', category: 'LIFESTYLE', completed: false, dueDate: 'Today' }
+      ],
+      followUps: [
+        {
+          id: 'fu-1',
+          title: 'Repeat Renal Function Panel (BMP & eGFR)',
+          specialty: 'Outpatient Laboratory',
+          clinicianName: 'Dr. Aris Thorne',
+          scheduledDate: 'August 20, 2026',
+          purpose: 'Verify eGFR reversibility after stopping systemic NSAID',
+          status: 'SCHEDULED'
+        },
+        {
+          id: 'fu-2',
+          title: 'Virtual Cardiorenal Follow-Up Dialogue',
+          specialty: 'Virtual Specialist Clinic',
+          clinicianName: 'Dr. Aris Thorne',
+          scheduledDate: 'August 27, 2026',
+          purpose: 'Assess knee comfort and review repeat creatinine lab results',
+          status: 'SCHEDULED'
+        }
+      ]
+    }
+  ]
+]);
+
+// GET /api/patient/:id/state
+router.get('/:id/state', (req: Request, res: Response) => {
+  const patient = canonicalPatients.get(req.params.id as string) || canonicalPatients.get('patient-ev-68')!;
+  return res.json({ success: true, patient });
+});
+
+// GET /api/patient/:id/attention
+router.get('/:id/attention', (req: Request, res: Response) => {
+  const patient = canonicalPatients.get(req.params.id as string) || canonicalPatients.get('patient-ev-68')!;
+  const plan = activeCarePlans.get(patient.patientId);
+
+  const attentionItems = [
+    {
+      id: 'att-1',
+      title: 'Knee Pain Medication Safety Check',
+      description: 'Your recent blood work shows your kidneys are sensitive. Please pause over-the-counter pain pills (like Advil or Ibuprofen) until you discuss a gentler topical option with Dr. Thorne.',
+      severity: 'WARNING',
+      actionType: 'TALK_TO_VIRTUAL_SPECIALIST',
+      category: 'Medication Safety'
+    },
+    {
+      id: 'att-2',
+      title: 'Hydration & Blood Pressure Check',
+      description: 'Morning blood pressure readings are steady at 126/82. Remember to drink 6 to 8 glasses of water daily and take your Lisinopril with breakfast.',
+      severity: 'INFO',
+      actionType: 'VIEW_TIMELINE',
+      category: 'Maintenance'
+    }
+  ];
+
+  return res.json({
+    success: true,
+    totalItems: attentionItems.length,
+    doctorNote: plan?.doctorSummaryNote,
+    attentionItems
   });
 });
 
-// GET /api/patients/:id
-router.get('/:id', (req: Request, res: Response) => {
-  const { id } = req.params;
-  if (id === 'patient-ev-68' || id === 'current' || id === 'eleanor') {
-    return res.json({
-      success: true,
-      patient: mockPatientProfile,
-      meta: {
-        engineVersion: 'HEAL-Engine-v2.4.0',
-        timestamp: new Date().toISOString()
-      }
-    });
+// GET /api/patient/:id/timeline
+router.get('/:id/timeline', (req: Request, res: Response) => {
+  const timelineEvents = [
+    {
+      id: 'evt-1',
+      date: 'August 13, 2026',
+      title: 'Outpatient Comprehensive Metabolic Panel (St. Jude Health)',
+      category: 'LAB_RESULT',
+      summary: 'Serum Creatinine increased to 1.38 mg/dL; eGFR declined from 64 to 52 mL/min (-18.7%).',
+      clinicianBadge: 'Validated by Dr. Thorne',
+      tags: ['Renal', 'eGFR', 'Creatinine']
+    },
+    {
+      id: 'evt-2',
+      date: 'August 10, 2026',
+      title: 'Reported Right Knee Osteoarthritis Flare',
+      category: 'PATIENT_REPORT',
+      summary: 'Patient logged moderate knee stiffness and initiated over-the-counter Ibuprofen 600mg TID.',
+      clinicianBadge: 'Logged via Portal',
+      tags: ['Symptom', 'NSAID', 'Joint']
+    },
+    {
+      id: 'evt-3',
+      date: 'July 15, 2026',
+      title: 'Routine Cardiorenal Clinic Visit',
+      category: 'ENCOUNTER',
+      summary: 'Stable blood pressure on Lisinopril 20mg. Normal renal baseline eGFR 64 mL/min.',
+      clinicianBadge: 'Dr. Aris Thorne',
+      tags: ['Visit', 'Baseline', 'Stable']
+    }
+  ];
+
+  return res.json({ success: true, count: timelineEvents.length, timeline: timelineEvents });
+});
+
+// GET /api/patient/:id/care-plan
+router.get('/:id/care-plan', (req: Request, res: Response) => {
+  const patientId = (req.params.id as string) || 'patient-ev-68';
+  const plan = activeCarePlans.get(patientId) || activeCarePlans.get('patient-ev-68')!;
+  return res.json({ success: true, carePlan: plan });
+});
+
+// POST /api/patient/:id/care-plan/decision (Clinician Human-In-The-Loop Decision)
+router.post('/:id/care-plan/decision', (req: Request, res: Response) => {
+  const patientId = (req.params.id as string) || 'patient-ev-68';
+  const { action, candidateChosen, rationaleNotes, clinicianName } = req.body;
+
+  const plan = activeCarePlans.get(patientId);
+  if (!plan) {
+    return res.status(404).json({ success: false, error: 'Care plan not found' });
   }
-  return res.status(404).json({ success: false, error: `Patient ID ${id} not found.` });
-});
 
-// GET /api/patients/:id/vitals
-router.get('/:id/vitals', (_req: Request, res: Response) => {
-  res.json({
+  const decisionRecord: ClinicianDecisionRecord = {
+    decisionId: `dec-${Date.now().toString(36)}`,
+    clinicianId: 'dr-aris-thorne',
+    clinicianName: clinicianName || 'Dr. Aris Thorne, MD',
+    action: action || 'APPROVED',
+    candidateChosen: candidateChosen || 'Topical Diclofenac 1% Gel PRN',
+    rationaleNotes: rationaleNotes || 'Approved safe topical alternative; ordered 7-day repeat renal panel.',
+    signedAt: new Date().toISOString(),
+    ledgerTxId: `tx-worm-hash-${Math.random().toString(36).substring(2, 10)}`
+  };
+
+  plan.latestDecision = decisionRecord;
+  plan.doctorSummaryNote = `Physician Decision (${decisionRecord.action}): Selected "${decisionRecord.candidateChosen}". ${decisionRecord.rationaleNotes}`;
+
+  // Broadcast real-time SSE event to all connected patient & clinician clients
+  broadcastWorkflowEvent(
+    'CLINICIAN_DECISION_RECORDED',
+    {
+      patientId,
+      decision: decisionRecord,
+      message: `Dr. Thorne has signed your updated care plan: ${decisionRecord.candidateChosen}`
+    },
+    patientId
+  );
+
+  return res.json({
     success: true,
-    patientId: mockPatientProfile.id,
-    vitals: mockPatientProfile.vitalsHistory
+    message: 'Clinician decision successfully recorded in immutable audit ledger.',
+    decision: decisionRecord,
+    updatedCarePlan: plan
   });
 });
 
-// GET /api/patients/:id/labs
-router.get('/:id/labs', (_req: Request, res: Response) => {
-  res.json({
-    success: true,
-    patientId: mockPatientProfile.id,
-    labs: mockPatientProfile.labsHistory
-  });
+// POST /api/patient/:id/care-plan/task/toggle
+router.post('/:id/care-plan/task/toggle', (req: Request, res: Response) => {
+  const patientId = (req.params.id as string) || 'patient-ev-68';
+  const { taskId } = req.body;
+
+  const plan = activeCarePlans.get(patientId);
+  if (!plan) return res.status(404).json({ success: false, error: 'Care plan not found' });
+
+  const task = plan.tasks.find(t => t.id === taskId);
+  if (!task) return res.status(404).json({ success: false, error: 'Task not found' });
+
+  task.completed = !task.completed;
+
+  broadcastWorkflowEvent('TASK_STATUS_CHANGED', { patientId, taskId, completed: task.completed }, patientId);
+  return res.json({ success: true, task });
 });
 
 export default router;

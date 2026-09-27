@@ -55,6 +55,7 @@ app.get('/api/health', (_req: Request, res: Response) => {
 // Mount Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/patients', patientRoutes);
+app.use('/api/patient', patientRoutes);
 app.use('/api/workflow', workflowRoutes);
 app.use('/api/screening', screeningRoutes);
 app.use('/api/swarm', swarmRoutes);

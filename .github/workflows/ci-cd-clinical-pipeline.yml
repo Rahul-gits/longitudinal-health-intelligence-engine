@@ -1,0 +1,144 @@
+name: Heal Engine Clinical Intelligence CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  # ============================================================================
+  # Stage 1: Static Analysis, Type Verification & Linting
+  # ============================================================================
+  static_analysis:
+    name: 1. Code Quality & TypeScript Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: TypeScript Static Compilation Check
+        run: npx tsc --noEmit
+
+  # ============================================================================
+  # Stage 2: Automated Security & RBAC Boundary Evaluation
+  # ============================================================================
+  security_rbac_evaluation:
+    name: 2. Security Invariant & RBAC Test Suite
+    needs: static_analysis
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run Automated Security Test Suite (SEC-001 - SEC-004)
+        run: |
+          npx ts-node -e "
+            import { securityRbacTestSuite } from './server/tests/securityRbacTestSuite';
+            const res = securityRbacTestSuite.runAllSecurityTests();
+            console.log('Security Score:', res.securityScore + '%');
+            if (!res.allPassed) {
+              console.error('Security assertions failed!');
+              process.exit(1);
+            }
+          "
+
+  # ============================================================================
+  # Stage 3: Automated Clinical Scenario Validation (12 Core Tests)
+  # ============================================================================
+  clinical_safety_validation:
+    name: 3. Deterministic Clinical Safety Suite (12 Scenarios)
+    needs: security_rbac_evaluation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run Clinical Scenarios (SCENARIO-001 - SCENARIO-012)
+        run: |
+          npx ts-node -e "
+            import { clinicalScenarioTestSuite } from './server/services/clinicalScenarioTestSuite';
+            clinicalScenarioTestSuite.runAllScenarios().then(res => {
+              console.log('Clinical Safety Score:', res.overallClinicalSafetyScore + '%');
+              console.log('Passed:', res.passedCount, 'Failed:', res.failedCount);
+              if (!res.allPassed) {
+                console.error('Clinical safety regression detected!');
+                process.exit(1);
+              }
+            });
+          "
+
+  # ============================================================================
+  # Stage 4: Production Build & Multi-Stage Docker Container Packaging
+  # ============================================================================
+  build_and_docker:
+    name: 4. Production Build & Docker Containerization
+    needs: clinical_safety_validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies & Run Production Build
+        run: |
+          npm ci
+          npm run build
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Production Docker Image (Non-Root Secure Container)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: false
+          tags: heal-engine/core:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # ============================================================================
+  # Stage 5: Clinical Shadow Deployment Gate
+  # ============================================================================
+  clinical_shadow_release:
+    name: 5. Clinical Shadow Deployment & Governance Verification
+    needs: build_and_docker
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to Isolated Hospital Staging / Clinical Shadow Plane
+        run: |
+          echo "Deploying container image to CLINICAL_SHADOW cluster..."
+          echo "Release status: PENDING_HUMAN_CLINICAL_BOARD_SIGNOFF"

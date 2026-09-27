@@ -108,34 +108,37 @@ export class SpeechSynthesisEngine {
         }
       };
 
-      utterance.onend = () => {
+      this.currentUtterance = utterance;
+
+      // Chrome keep-alive heartbeat to prevent silent cutoffs on utterances > 15s
+      const pingInterval = setInterval(() => {
+        if (!this.isSpeakingInternal || !this.synth) {
+          clearInterval(pingInterval);
+        } else if (this.synth.speaking && !this.synth.paused) {
+          this.synth.pause();
+          this.synth.resume();
+        }
+      }, 10000);
+
+      const cleanupUtterance = () => {
+        clearInterval(pingInterval);
         this.isSpeakingInternal = false;
         this.isPausedInternal = false;
         this.currentUtterance = null;
+      };
+
+      utterance.onend = () => {
+        cleanupUtterance();
         callbacks.onEnd?.();
       };
 
       utterance.onerror = (e) => {
+        cleanupUtterance();
         console.warn('Speech synthesis notice/error:', e);
-        this.isSpeakingInternal = false;
-        this.isPausedInternal = false;
-        this.currentUtterance = null;
         callbacks.onError?.(e);
-        // If error due to audio policy or interrupted, complete gracefully
         callbacks.onEnd?.();
       };
 
-      utterance.onpause = () => {
-        this.isPausedInternal = true;
-        callbacks.onPause?.();
-      };
-
-      utterance.onresume = () => {
-        this.isPausedInternal = false;
-        callbacks.onResume?.();
-      };
-
-      this.currentUtterance = utterance;
       this.synth.speak(utterance);
     } catch (err) {
       console.warn('Speech synthesis exception, falling back to simulated speech:', err);

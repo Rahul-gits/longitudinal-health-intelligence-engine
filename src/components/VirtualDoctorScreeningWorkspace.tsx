@@ -7,7 +7,9 @@ import {
 } from '../types/health';
 import { virtualDoctorScreeningEngine } from '../engine/virtualDoctorScreeningEngine';
 import { speechEngine } from '../engine/speechSynthesisEngine';
+import { speechRecognitionEngine } from '../engine/speechRecognitionEngine';
 import { patientStateEngine } from '../engine/patientStateEngine';
+import { recordVirtualDoctorTurn } from '../services/apiClient';
 import { DoctorAnimatedAvatar } from './DoctorAnimatedAvatar';
 import { PATIENT_INFO, getDynamicPatientProfile } from '../data/mockPatientData';
 import { useAuth } from '../context/AuthContext';
@@ -61,6 +63,13 @@ export const VirtualDoctorScreeningWorkspace: React.FC = () => {
   const [isCallActive, setIsCallActive] = useState<boolean>(true);
   const [completedSteps, setCompletedSteps] = useState<number[]>([0]);
   const [exportNotice, setExportNotice] = useState<string | null>(null);
+
+  // Free-Text & Microphone ASR State
+  const [patientFreeTextInput, setPatientFreeTextInput] = useState<string>('');
+  const [isRecordingMic, setIsRecordingMic] = useState<boolean>(false);
+  const [isSubmittingDialogue, setIsSubmittingDialogue] = useState<boolean>(false);
+  const [emergencyBanner, setEmergencyBanner] = useState<string | null>(null);
+  const [activeSafetyGateNotice, setActiveSafetyGateNotice] = useState<string | null>(null);
 
   const activePersona: VirtualDoctorPersona = virtualDoctorScreeningEngine.getPersonaById(activePersonaId, user);
   const dialogueSteps: ScreeningDialogueStep[] = virtualDoctorScreeningEngine.getScreeningDialogue(activePersonaId, user);
@@ -190,6 +199,102 @@ export const VirtualDoctorScreeningWorkspace: React.FC = () => {
 
     // Auto-read doctor's feedback response
     handlePlaySpeech(option.doctorFeedbackScript);
+  };
+
+  const handleVoiceMicToggle = () => {
+    if (isRecordingMic) {
+      speechRecognitionEngine.stop();
+      setIsRecordingMic(false);
+    } else {
+      if (!speechRecognitionEngine.isSupported()) {
+        alert('Voice speech recognition is not supported in this browser. Please type your message into the box below.');
+        return;
+      }
+      setIsRecordingMic(true);
+      speechRecognitionEngine.start({
+        onStart: () => setIsRecordingMic(true),
+        onResult: (transcript, isFinal) => {
+          setPatientFreeTextInput(transcript);
+          if (isFinal) {
+            setIsRecordingMic(false);
+            handleCustomPatientSubmit(transcript);
+          }
+        },
+        onError: (err) => {
+          console.warn('ASR error:', err);
+          setIsRecordingMic(false);
+        },
+        onEnd: () => setIsRecordingMic(false)
+      });
+    }
+  };
+
+  const handleCustomPatientSubmit = async (textToProcess?: string) => {
+    const rawText = textToProcess || patientFreeTextInput;
+    if (!rawText.trim()) return;
+
+    setIsSubmittingDialogue(true);
+    speechEngine.stop();
+
+    try {
+      // 1. Send to server-side Virtual Doctor session engine
+      const res = await recordVirtualDoctorTurn({
+        sessionId: 'session-eleanor-2026-09',
+        questionVersionId: currentStep.id,
+        doctorQuestionScript: currentStep.spokenScript,
+        doctorPosture: activePosture,
+        patientResponseRaw: rawText
+      });
+
+      if (res && res.latestTurn) {
+        const turn = res.latestTurn;
+
+        // Check for STAT_EMERGENCY
+        if (turn.escalationDetails?.urgency === 'STAT_EMERGENCY') {
+          setActivePosture('alerting');
+          setEmergencyBanner(turn.escalationDetails.recommendedAction);
+          setCustomDoctorFeedback(
+            `EMERGENCY ALERT: ${turn.escalationDetails.reason}. ${turn.escalationDetails.recommendedAction}`
+          );
+          setActiveSafetyGateNotice(`HARD STOP: Emergency symptom detected. Routine screening suspended.`);
+          handlePlaySpeech(`Please stop routine screening. We have detected a medical emergency: ${turn.escalationDetails.reason}. Please contact emergency medical services or dial 911 immediately.`);
+        } else if (turn.escalationDetails?.urgency === 'SAME_DAY_CLINICIAN') {
+          setActivePosture('explaining');
+          setCustomDoctorFeedback(turn.escalationDetails.recommendedAction);
+          setActiveSafetyGateNotice(`Clinical Discrepancy Flagged: ${turn.escalationDetails.reason}`);
+          handlePlaySpeech(turn.escalationDetails.recommendedAction);
+        } else {
+          setActivePosture('reassuring');
+          const reply = `Thank you for sharing that. I have recorded "${rawText.slice(0, 40)}" into your longitudinal health record and verified it against your kidney function trend. Let's proceed with your care plan.`;
+          setCustomDoctorFeedback(reply);
+          handlePlaySpeech(reply);
+        }
+
+        patientStateEngine.addReportedSymptom(rawText, `Virtual Doctor (${activePersona.name})`);
+        setPatientFreeTextInput('');
+      } else {
+        // Fallback local understanding
+        const lower = rawText.toLowerCase();
+        if (lower.includes('chest pain') || lower.includes('crushing')) {
+          setActivePosture('alerting');
+          setEmergencyBanner('Chest pain detected. Dial 911 or visit the nearest emergency room immediately.');
+          handlePlaySpeech('Please stop. Because you reported chest pain, please seek emergency medical attention immediately.');
+        } else if (lower.includes('stopped') && lower.includes('medication')) {
+          setActivePosture('explaining');
+          const prompt = 'I noticed you mentioned stopping your medication. To ensure your safety, could you share which medication you stopped and whether it was due to side effects, cost, or another concern?';
+          setCustomDoctorFeedback(prompt);
+          handlePlaySpeech(prompt);
+        } else {
+          setActivePosture('reassuring');
+          setCustomDoctorFeedback(`I have recorded your symptom into your chart.`);
+          handlePlaySpeech(`I have recorded that in your chart.`);
+        }
+      }
+    } catch (err) {
+      console.warn('Dialogue submit error:', err);
+    } finally {
+      setIsSubmittingDialogue(false);
+    }
   };
 
   const handleExportSummary = () => {
@@ -524,6 +629,120 @@ CONSENSUS STATUS: Verified by Multi-Agent Swarm (94.8% Cohesion).
                 </p>
               </div>
             )}
+
+            {/* Emergency Red Alert Banner */}
+            {emergencyBanner && (
+              <div className="p-3.5 bg-[#FF0055] text-white border-2 border-black shadow-[3px_3px_0px_0px_#000] space-y-1.5 animate-bounce">
+                <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider">
+                  <AlertTriangle className="w-4 h-4 text-white" />
+                  <span>EMERGENCY RED FLAG PROTOCOL ACTIVATED</span>
+                </div>
+                <p className="text-xs font-bold leading-snug">{emergencyBanner}</p>
+                <div className="pt-1 flex items-center gap-2">
+                  <button 
+                    onClick={() => window.open('tel:911')}
+                    className="px-3 py-1 bg-white text-[#FF0055] font-black text-xs border border-black uppercase cursor-pointer"
+                  >
+                    Call 911 Now
+                  </button>
+                  <button 
+                    onClick={() => setEmergencyBanner(null)}
+                    className="px-2 py-1 bg-black text-white text-[10px] font-mono cursor-pointer"
+                  >
+                    Acknowledge
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Active Safety Gate Warning Notice */}
+            {activeSafetyGateNotice && (
+              <div className="p-2.5 bg-amber-50 border-2 border-black text-xs font-bold text-amber-950 flex items-center justify-between">
+                <span className="flex items-center gap-1.5">
+                  <ShieldCheck className="w-4 h-4 text-amber-700" />
+                  <span>{activeSafetyGateNotice}</span>
+                </span>
+                <button 
+                  onClick={() => setActiveSafetyGateNotice(null)} 
+                  className="text-[10px] underline cursor-pointer"
+                >
+                  Dismiss
+                </button>
+              </div>
+            )}
+
+            {/* Interactive Voice & Free-Text Dialogue Input (Adaptive Screening Loop) */}
+            <div className="p-3 bg-[#FAF8F5] border-2 border-black shadow-[2px_2px_0px_0px_#000] space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-mono font-black uppercase text-black flex items-center gap-1.5">
+                  <Mic className="w-3.5 h-3.5 text-blue-600" />
+                  <span>TWO-WAY DIALOGUE • SPEAK OR TYPE TO DOCTOR:</span>
+                </span>
+                {isRecordingMic && (
+                  <span className="text-[9px] font-mono font-black px-1.5 py-0.2 bg-[#FF0055] text-white animate-pulse">
+                    RECORDING LIVE AUDIO...
+                  </span>
+                )}
+              </div>
+
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={handleVoiceMicToggle}
+                  className={`p-2 border-2 border-black shadow-[2px_2px_0px_0px_#000] transition-colors cursor-pointer ${
+                    isRecordingMic ? 'bg-[#FF0055] text-white' : 'bg-white hover:bg-[#FFE600] text-black'
+                  }`}
+                  title={isRecordingMic ? 'Stop microphone' : 'Speak via microphone'}
+                >
+                  {isRecordingMic ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+                </button>
+
+                <input
+                  type="text"
+                  value={patientFreeTextInput}
+                  onChange={(e) => setPatientFreeTextInput(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleCustomPatientSubmit()}
+                  placeholder="Tell Dr. Thorne your symptoms (e.g. 'I stopped my pills' or 'My knee hurts')..."
+                  className="flex-1 px-2.5 py-2 border-2 border-black text-xs font-semibold bg-white text-black placeholder:text-black/40 focus:outline-none focus:bg-amber-50/50"
+                  disabled={isSubmittingDialogue}
+                />
+
+                <button
+                  type="button"
+                  onClick={() => handleCustomPatientSubmit()}
+                  disabled={isSubmittingDialogue || !patientFreeTextInput.trim()}
+                  className="px-3 py-2 bg-[#FFE600] hover:bg-[#E6CF00] disabled:opacity-40 text-black font-black font-display text-xs border-2 border-black shadow-[2px_2px_0px_0px_#000] cursor-pointer uppercase"
+                >
+                  {isSubmittingDialogue ? '...' : 'SEND'}
+                </button>
+              </div>
+
+              {/* Quick Clinical Simulation Chips for Testing */}
+              <div className="flex flex-wrap gap-1.5 pt-1">
+                <span className="text-[9px] font-mono text-black/60 font-bold self-center">Quick tests:</span>
+                <button
+                  type="button"
+                  onClick={() => handleCustomPatientSubmit('I stopped taking my medication.')}
+                  className="px-2 py-0.5 bg-white hover:bg-slate-100 text-[10px] font-mono border border-black text-slate-800 cursor-pointer"
+                >
+                  "I stopped taking medication"
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleCustomPatientSubmit('I have severe crushing chest pain.')}
+                  className="px-2 py-0.5 bg-rose-50 hover:bg-rose-100 text-[10px] font-mono border border-rose-600 text-rose-800 font-bold cursor-pointer"
+                >
+                  "Severe crushing chest pain"
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleCustomPatientSubmit('I took two Advil for my knee yesterday.')}
+                  className="px-2 py-0.5 bg-amber-50 hover:bg-amber-100 text-[10px] font-mono border border-amber-600 text-amber-900 cursor-pointer"
+                >
+                  "Took Advil for knee"
+                </button>
+              </div>
+            </div>
 
             {/* Step 4: Interactive Patient Screening Choices */}
             {currentStep.patientOptions && (

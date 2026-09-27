@@ -493,6 +493,17 @@ export interface EvidenceChain {
   missingDataAlerts: string[];
 }
 
+export interface ClinicalUncertaintyModel {
+  finding: string;
+  confidence: 'LOW' | 'MODERATE' | 'HIGH' | 'VERY_HIGH';
+  evidenceStrength: 'LOW' | 'MODERATE' | 'HIGH' | 'VERY_HIGH';
+  dataCompleteness: 'COMPLETE' | 'PARTIAL' | 'INSUFFICIENT';
+  dataFreshnessMinutes: number;
+  contradictionsDetected: string[];
+  uncertaintyReasons: string[];
+  requiresClinicianReview: boolean;
+}
+
 export interface DecisionSynthesisResult {
   overallRiskLevel: 'LOW' | 'MODERATE' | 'HIGH' | 'CRITICAL';
   primaryRecommendation: string;
@@ -502,6 +513,7 @@ export interface DecisionSynthesisResult {
   missingDataAlerts: string[];
   evidenceChain: EvidenceChain;
   safetyResult: SafetyCheckResult;
+  uncertaintyModel: ClinicalUncertaintyModel;
   clinicianActionStatus: 'PENDING_REVIEW' | 'APPROVED' | 'MODIFIED' | 'REJECTED';
   clinicianNotes?: string;
   stateVersionId: string;

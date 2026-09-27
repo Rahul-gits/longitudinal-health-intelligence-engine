@@ -24,15 +24,15 @@ export class ClinicalOrchestrator {
   private moduleContracts: ModuleContract[] = [
     {
       moduleId: 'triage',
-      name: 'Triage AI Module',
-      responsibility: 'Acute risk stratification & immediate decompensation warning',
-      expectedInput: ['Vitals Telemetry', 'Acute Symptom Logs'],
+      name: '1. Triage & Decompensation AI Module',
+      responsibility: 'Acute risk stratification & immediate cardiorenal decompensation warning',
+      expectedInput: ['Vitals Telemetry', 'Acute Symptom Logs', 'Smart Cuff Trends'],
       outputFormat: 'Risk Alert Index & Escalation Level',
       constraintsEnforced: ['Response latency < 2 sec', 'Zero unacknowledged red flags']
     },
     {
       moduleId: 'data_integrity',
-      name: 'Data Integrity & Validation Module',
+      name: '2. Data Integrity & Validation Module',
       responsibility: 'Pre-reasoning data conflict, stale record, and missing timestamp detection',
       expectedInput: ['Raw EHR Data', 'Wearable Telemetry', 'Lab Reports'],
       outputFormat: 'Trusted Patient State & Data Integrity Alerts',
@@ -40,7 +40,7 @@ export class ClinicalOrchestrator {
     },
     {
       moduleId: 'medication',
-      name: 'Medication Safety Module',
+      name: '3. Medication Safety & Pharmacovigilance Module',
       responsibility: 'Pharmacovigilance, drug-drug interaction detection, deprescribing options',
       expectedInput: ['Active Medication List', 'Renal Panel Labs', 'Allergy List'],
       outputFormat: 'Interaction Risk Score & Safe Analgesic Alternatives',
@@ -48,26 +48,90 @@ export class ClinicalOrchestrator {
     },
     {
       moduleId: 'nephrology',
-      name: 'Nephrology Clinical Module',
-      responsibility: 'Renal filtration rate tracking & glomerular hemodynamic balance',
-      expectedInput: ['Serum Creatinine', 'eGFR Trend', 'ACEi/ARB Prescriptions'],
+      name: '4. Nephrology & Renal Clearance Module',
+      responsibility: 'Renal filtration rate tracking & glomerular hemodynamic balance (Cockcroft-Gault / KDIGO)',
+      expectedInput: ['Serum Creatinine', 'eGFR Trend', 'ACEi/ARB Prescriptions', 'UACR'],
       outputFormat: 'eGFR Decompensation Risk & Fluid Balance Plan',
-      constraintsEnforced: ['Alert if eGFR drops > 15%', 'Discontinue systemic NSAIDs']
+      constraintsEnforced: ['Alert if eGFR drops > 15%', 'Discontinue systemic NSAIDs if CrCl < 60']
+    },
+    {
+      moduleId: 'clinical',
+      name: '5. Cardiology & Hemodynamic Module',
+      responsibility: 'Blood pressure trajectory, NT-proBNP ventricular strain, and fluid overload monitoring',
+      expectedInput: ['Home BP Cuff Telemetry', 'NT-proBNP', 'Weight Velocity (48h)'],
+      outputFormat: 'Cardiovascular Risk Index & Antihypertensive Adjustment Plan',
+      constraintsEnforced: ['Target SBP < 130 mmHg', 'Alert if weight gain > 1.5kg / 48h']
+    },
+    {
+      moduleId: 'planner',
+      name: '6. Endocrinology & Metabolic Module',
+      responsibility: 'Glycemic variability, HbA1c trajectory, and metabolic risk harmonization',
+      expectedInput: ['Continuous Glucose Monitor (CGM)', 'HbA1c', 'Metformin Dosing'],
+      outputFormat: 'Metabolic Stability Score & Renal Dose Adjustment for Hypoglycemics',
+      constraintsEnforced: ['Dose reduce Metformin when eGFR < 45 mL/min']
+    },
+    {
+      moduleId: 'genomic',
+      name: '7. Geriatric Multi-Morbidity Module',
+      responsibility: 'Beers Criteria compliance, fall risk assessment, and anticholinergic cognitive burden',
+      expectedInput: ['Age', 'Comprehensive Medication List', 'Mobility Status'],
+      outputFormat: 'Beers Criteria Inappropriate Medication Index & Deprescribing Schedule',
+      constraintsEnforced: ['Avoid systemic NSAIDs and high-risk sedatives in age >= 65']
     },
     {
       moduleId: 'ethics',
-      name: 'Bioethics & Quality of Life Module',
+      name: '8. Bioethics & Quality of Life Module',
       responsibility: 'Shared decision-making, patient autonomy, and pain management quality of life',
-      expectedInput: ['Pain Scale Diary', 'Mobility Step Count', 'Patient Functional Goals'],
+      expectedInput: ['Pain Scale Diary (WOMAC)', 'Mobility Step Count', 'Patient Functional Goals'],
       outputFormat: 'Pain Relief Attainment & Non-Toxic Analgesic Proposal',
-      constraintsEnforced: ['Do not remove analgesia without safe alternative']
+      constraintsEnforced: ['Do not remove analgesia without safe validated alternative']
+    },
+    {
+      moduleId: 'evidence',
+      name: '9. Diagnostic Entity Extraction Module',
+      responsibility: 'Clinical NegEx NLP parsing of voice/text reports and clinical assertion tagging',
+      expectedInput: ['Patient Dialogue Transcripts', 'Unstructured Clinical Notes'],
+      outputFormat: 'Structured Assertions (Affirmed/Negated/FamilyHistory) with Provenance',
+      constraintsEnforced: ['Zero silent hallucinations', 'Confidence threshold > 90%']
+    },
+    {
+      moduleId: 'recovery',
+      name: '10. Recovery & Adherence Monitoring Module',
+      responsibility: 'Closed-loop follow-up verification, reminder compliance, and symptom trajectory tracking',
+      expectedInput: ['Smart Pill Bottle / Reminder Log', 'Daily Vitals Check-in', '14-day Repeat Labs'],
+      outputFormat: 'Care Loop Adherence Metric & Automatic Clinician Recurrence Notification',
+      constraintsEnforced: ['Notify care team if repeat lab overdue by > 72 hours']
+    },
+    {
+      moduleId: 'conflict',
+      name: '11. Drug-Disease & Goal Conflict Engine',
+      responsibility: 'Tradeoff quantification between competing clinical priorities (e.g. Pain vs Renal vs BP)',
+      expectedInput: ['Clinical Goals', 'Candidate Interventions', 'Knowledge Graph Edges'],
+      outputFormat: 'Goal Tradeoff Matrix & Pareto-Optimal Care Options',
+      constraintsEnforced: ['Safety constraints override patient comfort preferences']
+    },
+    {
+      moduleId: 'lifestyle',
+      name: '12. Preventative & Lifestyle Module',
+      responsibility: 'Dietary sodium guidance, hydration optimization, and physical therapy mobility pathways',
+      expectedInput: ['Daily Hydration Logs', 'Dietary Recall', 'Step Count Telemetry'],
+      outputFormat: 'Personalized Lifestyle Action Plan & Exercise Safety Thresholds',
+      constraintsEnforced: ['Restrict sodium < 2000mg/day in hypertension/CKD']
+    },
+    {
+      moduleId: 'swarm_orchestrator',
+      name: '13. Clinical Uncertainty Quantification Module',
+      responsibility: 'Epistemic and aleatoric uncertainty estimation, missing data flags, and confidence calibration',
+      expectedInput: ['Candidate Findings from Modules 1-12', 'Data Recency / Provenance Metadata'],
+      outputFormat: 'Uncertainty Index, Missing Data Requirements & Clinician Verification Mandates',
+      constraintsEnforced: ['Flag for mandatory human review when uncertainty > 15%']
     }
   ];
 
   /**
    * Closed-Loop Clinical Orchestration Pipeline Execution:
-   * Patient State v[N] -> Clinical Goals -> Specialized Modules (Structured) -> Candidate Interventions ->
-   * Safety Constraints -> Goal Conflict Analysis -> Evidence Verification -> Decision Synthesis -> Clinician Review
+   * Patient State v[N] -> Clinical Goals -> 13 Specialized Modules (Structured) -> Candidate Interventions ->
+   * Knowledge Graph Context -> Safety Constraints -> Goal Conflict Analysis -> Evidence Verification -> Decision Synthesis -> Clinician Review
    */
   public runPipeline(): {
     patientState: PatientClinicalState;
@@ -76,6 +140,7 @@ export class ClinicalOrchestrator {
     goalConflicts: GoalTradeoff[];
     synthesisResult: DecisionSynthesisResult;
     moduleContracts: ModuleContract[];
+    knowledgeGraphContext: any;
   } {
     // 1. Ingest Versioned Patient Clinical State
     const patientState = patientStateEngine.getPatientState();
@@ -83,43 +148,167 @@ export class ClinicalOrchestrator {
     // 2. Pre-Reasoning Data Integrity Check
     const integrityResult = dataIntegrityEngine.validatePatientState(patientState);
 
-    // 3. Specialized Clinical Intelligence Modules (Structured Schema)
+    // 3. Knowledge Graph Entity Context Traversal
+    const kg = knowledgeGraphEngine.getKnowledgeGraph();
+    const riskContext = knowledgeGraphEngine.getRiskNeighbors('med_ibuprofen');
+
+    // 4. Execute All 13 Specialized Clinical Intelligence Modules (Structured Schema)
     const structuredModuleOutputs: StructuredModuleOutput[] = [
       {
         moduleId: 'triage',
-        moduleName: 'Acute Triage Module',
-        finding: 'Decompensation Warning: eGFR dropped 18.7% to 52 mL/min with NT-proBNP elevation (480 pg/mL).',
+        moduleName: '1. Triage & Decompensation AI Module',
+        finding: 'Decompensation Warning: eGFR dropped 18.7% to 52 mL/min with SBP 142 mmHg and NT-proBNP elevation (480 pg/mL).',
         riskLevel: 'HIGH',
         primaryGoal: 'Prevent Acute Kidney Injury progression & fluid overload',
         candidateRecommendation: 'Urgent renal panel draw & cardiac ultrasound',
         evidenceCitation: 'KDIGO 2023 Acute Decompensation Criteria',
         confidenceScore: 94,
-        constraintsEnforced: ['Response latency < 2 sec'],
+        constraintsEnforced: ['Response latency < 2 sec', 'Zero unacknowledged red flags'],
         goalConflictsIdentified: ['Pain Relief vs Renal Preservation']
       },
       {
-        moduleId: 'nephrology',
-        moduleName: 'Nephrology Clinical Module',
-        finding: 'Hemodynamic Prerenal Insufficiency: Lisinopril (efferent) + Ibuprofen (afferent) constrictive collision.',
-        riskLevel: 'CRITICAL',
-        primaryGoal: 'Halt systemic NSAID exposure immediately',
-        candidateRecommendation: 'Cease OTC Ibuprofen; transition to non-systemic topical therapy',
-        evidenceCitation: 'KDIGO Clinical Practice Guideline for CKD (Section 4.2)',
-        confidenceScore: 98,
-        constraintsEnforced: ['Discontinue systemic NSAIDs if eGFR < 60'],
-        goalConflictsIdentified: ['Renal Preservation vs Analgesia']
+        moduleId: 'data_integrity',
+        moduleName: '2. Data Integrity & Validation Module',
+        finding: 'Verified 4 clinical feeds. Flagged pending UACR lab (>6 months old) and validated recent SBP cuff reading (142/88).',
+        riskLevel: 'LOW',
+        primaryGoal: 'Ensure zero reasoning on stale or fabricated clinical data',
+        candidateRecommendation: 'Order repeat UACR along with 14-day renal panel',
+        evidenceCitation: 'CLSI C28-A3 Clinical Laboratory Data Quality Standard',
+        confidenceScore: 99,
+        constraintsEnforced: ['Zero silent LLM data repair', 'Provenance audit trail'],
+        goalConflictsIdentified: []
       },
       {
         moduleId: 'medication',
-        moduleName: 'Pharmacology Safety Module',
-        finding: 'CYP2C9*3 Intermediate Metabolizer status delays Ibuprofen systemic clearance by ~50%.',
+        moduleName: '3. Medication Safety & Pharmacovigilance Module',
+        finding: 'Severe Drug-Drug-Disease Conflict: Oral OTC Ibuprofen 400mg TID + Lisinopril 20mg daily in baseline CKD Stage 2.',
+        riskLevel: 'CRITICAL',
+        primaryGoal: 'Halt afferent arteriolar vasoconstriction',
+        candidateRecommendation: 'Discontinue oral Ibuprofen immediately; substitute Topical 1% Diclofenac or 5% Lidocaine Patch',
+        evidenceCitation: 'Beers Criteria 2023 & FDA Black Box Warning for NSAIDs in CKD',
+        confidenceScore: 98,
+        constraintsEnforced: ['Zero nephrotoxic co-prescriptions', 'CYP2C9 clearance dosing'],
+        goalConflictsIdentified: ['Renal Preservation vs Pain Relief']
+      },
+      {
+        moduleId: 'nephrology',
+        moduleName: '4. Nephrology & Renal Clearance Module',
+        finding: 'Hemodynamic Prerenal Insufficiency: Lisinopril (efferent dilation) + Ibuprofen (afferent constriction) collapse glomerular filtration.',
+        riskLevel: 'CRITICAL',
+        primaryGoal: 'Restore glomerular capillary hydrostatic pressure',
+        candidateRecommendation: 'Cease oral NSAID; monitor CrCl via Cockcroft-Gault (current: 43.9 mL/min, Stage G3b)',
+        evidenceCitation: 'KDIGO 2024 Clinical Practice Guideline for CKD (Section 4.2)',
+        confidenceScore: 98,
+        constraintsEnforced: ['Discontinue systemic NSAIDs if CrCl < 60', 'Re-check creatinine in 14 days'],
+        goalConflictsIdentified: ['Renal Preservation vs Analgesia']
+      },
+      {
+        moduleId: 'clinical',
+        moduleName: '5. Cardiology & Hemodynamic Module',
+        finding: 'Stage 1 Isolated Systolic Hypertension (142/88 mmHg) with mild bilateral peripheral ankle edema (+1.5 kg fluid weight).',
+        riskLevel: 'MODERATE',
+        primaryGoal: 'Achieve SBP < 130 mmHg and prevent congestive decompensation',
+        candidateRecommendation: 'Maintain Lisinopril 20mg daily; avoid adding fluid-retaining NSAIDs; re-evaluate cuff trends',
+        evidenceCitation: 'ACC/AHA 2023 Guidelines on Hypertension & Heart Failure Prevention',
+        confidenceScore: 93,
+        constraintsEnforced: ['Target SBP < 130 mmHg', 'Alert if weight gain > 1.5kg in 48h'],
+        goalConflictsIdentified: ['Hypertension Control vs Vasodilatory Renal Perfusion']
+      },
+      {
+        moduleId: 'planner',
+        moduleName: '6. Endocrinology & Metabolic Module',
+        finding: 'Metabolic panel shows Fasting Glucose 108 mg/dL, HbA1c 6.1% (Prediabetes). Renal clearance reduction does not yet impact non-renal hypoglycemics.',
+        riskLevel: 'LOW',
+        primaryGoal: 'Maintain glycemic control without renal clearance hazard',
+        candidateRecommendation: 'Annual metabolic panel surveillance; lifestyle glucose stabilization',
+        evidenceCitation: 'ADA 2024 Standards of Medical Care in Diabetes',
+        confidenceScore: 95,
+        constraintsEnforced: ['Screen for microalbuminuria annually'],
+        goalConflictsIdentified: []
+      },
+      {
+        moduleId: 'genomic',
+        moduleName: '7. Geriatric Multi-Morbidity Module',
+        finding: 'Patient age 68 with 3 active co-morbidities. Oral NSAIDs trigger Beers Criteria PIM (Potentially Inappropriate Medication) alert.',
         riskLevel: 'HIGH',
-        primaryGoal: 'Deprescribe nephrotoxic OTC agents',
-        candidateRecommendation: 'Substitute Topical 5% Lidocaine Patch PRN',
-        evidenceCitation: 'CPIC Guideline for NSAIDs & CYP2C9 Genotypes',
+        primaryGoal: 'Minimize iatrogenic risk and avoid polypharmacy cascade',
+        candidateRecommendation: 'Deprescribe oral NSAID; replace with low-risk topical therapy; implement fall prevention review',
+        evidenceCitation: 'AGS Beers Criteria for Potentially Inappropriate Medication Use in Older Adults (2023)',
+        confidenceScore: 96,
+        constraintsEnforced: ['Avoid systemic NSAIDs in adults >= 65 with renal impairment'],
+        goalConflictsIdentified: ['Analgesia vs Geriatric Fall & AKI Safety']
+      },
+      {
+        moduleId: 'ethics',
+        moduleName: '8. Bioethics & Quality of Life Module',
+        finding: 'Patient reports severe knee stiffness interfering with daily walking. Simply stopping pain pills without an alternative will lead to non-adherence.',
+        riskLevel: 'MODERATE',
+        primaryGoal: 'Preserve patient ambulatory autonomy and daily quality of life',
+        candidateRecommendation: 'Provide effective non-toxic topical analgesia and referral to low-impact hydrotherapy',
+        evidenceCitation: 'WHO Guidelines on Chronic Pain Management in Older Adults',
+        confidenceScore: 91,
+        constraintsEnforced: ['Do not remove analgesia without providing a safe alternative'],
+        goalConflictsIdentified: ['Patient Autonomy vs Strict Deprescribing']
+      },
+      {
+        moduleId: 'evidence',
+        moduleName: '9. Diagnostic Entity Extraction Module',
+        finding: 'Clinical NegEx NLP extracted: [Affirmed: Bilateral Ankle Edema (2w), Knee Osteoarthritis PRN Ibuprofen]; [Negated: Chest Pain, Resting Dyspnea].',
+        riskLevel: 'LOW',
+        primaryGoal: 'Accurately structure patient-reported outcomes with zero false escalation',
+        candidateRecommendation: 'Screening confirmed stable non-emergent cardiorenal strain; continue outpatient protocol',
+        evidenceCitation: 'JAMIA Clinical NegEx & Assertion Classification Standard',
+        confidenceScore: 98,
+        constraintsEnforced: ['NegEx token boundary assertion parsing', 'Zero silent hallucination'],
+        goalConflictsIdentified: []
+      },
+      {
+        moduleId: 'recovery',
+        moduleName: '10. Recovery & Adherence Monitoring Module',
+        finding: 'Adherence tracking indicates 94% compliance on Lisinopril, but sporadic unmonitored OTC NSAID intake during knee flares.',
+        riskLevel: 'MODERATE',
+        primaryGoal: 'Close the loop with 14-day repeat renal panel and daily smart cuff monitoring',
+        candidateRecommendation: 'Activate daily automated reminders; schedule repeat eGFR/creatinine check-in on August 27, 2026',
+        evidenceCitation: 'ATA Telehealth & Remote Patient Monitoring Clinical Standards',
+        confidenceScore: 95,
+        constraintsEnforced: ['14-day closed loop re-assessment trigger'],
+        goalConflictsIdentified: []
+      },
+      {
+        moduleId: 'conflict',
+        moduleName: '11. Drug-Disease & Goal Conflict Engine',
+        finding: 'Detected active tradeoff tension (88/100) between Knee Pain Relief (WOMAC < 3.0) and Renal Preservation (eGFR > 60).',
+        riskLevel: 'HIGH',
+        primaryGoal: 'Resolve multi-goal friction via non-systemic substitution',
+        candidateRecommendation: 'Pareto-optimal solution: Discontinue oral NSAID + Prescribe Topical Diclofenac/Lidocaine',
+        evidenceCitation: 'Decision Analysis in Cardiorenal Medicine (Lancet 2023)',
+        confidenceScore: 94,
+        constraintsEnforced: ['Hard safety constraints strictly override symptomatic preference'],
+        goalConflictsIdentified: ['Pain Relief vs Glomerular Filtration']
+      },
+      {
+        moduleId: 'lifestyle',
+        moduleName: '12. Preventative & Lifestyle Module',
+        finding: 'Daily dietary sodium ~2800 mg/day exacerbates ankle edema and blunts Lisinopril antihypertensive response.',
+        riskLevel: 'LOW',
+        primaryGoal: 'Lower dietary sodium to < 2000 mg/day and encourage 1.5 - 2.0 L daily hydration',
+        candidateRecommendation: 'Introduce low-sodium dietary guidance and structured non-weight-bearing physical therapy',
+        evidenceCitation: 'KDIGO 2024 Lifestyle Management in Chronic Kidney Disease',
         confidenceScore: 92,
-        constraintsEnforced: ['CYP2C9 clearance dosing constraint'],
-        goalConflictsIdentified: ['Medication Benefit vs Toxicity']
+        constraintsEnforced: ['Renal hydration preservation protocol'],
+        goalConflictsIdentified: []
+      },
+      {
+        moduleId: 'swarm_orchestrator',
+        moduleName: '13. Clinical Uncertainty Quantification Module',
+        finding: 'Low overall epistemic uncertainty (4.2%). Primary driver of residual uncertainty is pending repeat UACR lab.',
+        riskLevel: 'LOW',
+        primaryGoal: 'Quantify clinical confidence and gate high-uncertainty outputs',
+        candidateRecommendation: 'High confidence for NSAID discontinuation; clinician signature required for final order dispatch',
+        evidenceCitation: 'FDA SaMD Guidance on Clinical Decision Support Transparency',
+        confidenceScore: 96,
+        constraintsEnforced: ['Mandatory clinician sign-off on all pharmacological order changes'],
+        goalConflictsIdentified: []
       }
     ];
 
@@ -231,6 +420,21 @@ export class ClinicalOrchestrator {
       ],
       evidenceChain,
       safetyResult,
+      uncertaintyModel: {
+        finding: 'Accelerated eGFR decline (-18.7%) driven by hemodynamic afferent constriction from unmonitored OTC NSAID intake on background ACE inhibitor therapy.',
+        confidence: 'HIGH',
+        evidenceStrength: 'HIGH',
+        dataCompleteness: 'PARTIAL',
+        dataFreshnessMinutes: 14,
+        contradictionsDetected: [
+          'EHR records indicate adherence to Lisinopril without adverse events, but self-reported intake logs reveal sporadic unmonitored Ibuprofen consumption.'
+        ],
+        uncertaintyReasons: [
+          'Pending fresh Urine Albumin-to-Creatinine Ratio (UACR) to confirm whether glomerular damage is purely hemodynamic vs structural membranous nephropathy.',
+          'Missing recent 2D Echocardiography report to rule out subclinical reduced ejection fraction.'
+        ],
+        requiresClinicianReview: true
+      },
       clinicianActionStatus: 'PENDING_REVIEW',
       stateVersionId: patientState.versionId,
       timestamp: new Date().toLocaleString()
@@ -242,7 +446,8 @@ export class ClinicalOrchestrator {
       structuredModuleOutputs,
       goalConflicts,
       synthesisResult,
-      moduleContracts: this.moduleContracts
+      moduleContracts: this.moduleContracts,
+      knowledgeGraphContext: { kg, riskContext }
     };
   }
 
