@@ -26,6 +26,8 @@ import { PatientPortalDashboard } from './components/PatientPortalDashboard';
 import { CareFollowUpWorkspace } from './components/CareFollowUpWorkspace';
 import { EvidenceProvenanceModal } from './components/EvidenceProvenanceModal';
 import { NotificationBanner } from './components/NotificationBanner';
+import { VirtualDoctorSimpleConsultation } from './components/VirtualDoctorSimpleConsultation';
+import { ClinicalValidationHarnessLaboratory } from './components/ClinicalValidationHarnessLaboratory';
 import { useAuth } from './context/AuthContext';
 import { getDynamicPatientProfile } from './data/mockPatientData';
 
@@ -38,6 +40,7 @@ const MainDashboard: React.FC = () => {
   const [activeRole, setActiveRole] = useState<'patient' | 'clinician' | 'research'>('patient');
   const [showEmergencyModal, setShowEmergencyModal] = useState<boolean>(false);
   const [showEvidenceModal, setShowEvidenceModal] = useState<boolean>(false);
+  const [patientUseAdvancedTeleDoc, setPatientUseAdvancedTeleDoc] = useState<boolean>(false);
 
   return (
     <div className="min-h-screen bg-[#FAF8F5] text-black flex flex-col font-sans selection:bg-[#FFE600] selection:text-black">
@@ -122,7 +125,17 @@ const MainDashboard: React.FC = () => {
         {activeTab === 'reports' && <ReportIntelligence />}
         {activeTab === 'timeline' && <HealthTimeline />}
         {activeTab === 'insights' && <ExplainWorkspace />}
-        {activeTab === 'virtual-doctor' && <VirtualDoctorScreeningWorkspace />}
+        {activeTab === 'virtual-doctor' && (
+          activeRole === 'patient' && !patientUseAdvancedTeleDoc ? (
+            <VirtualDoctorSimpleConsultation
+              onSwitchToAdvanced={() => setPatientUseAdvancedTeleDoc(true)}
+              onNavigateTab={setActiveTab}
+            />
+          ) : (
+            <VirtualDoctorScreeningWorkspace />
+          )
+        )}
+        {activeTab === 'validation-harness' && <ClinicalValidationHarnessLaboratory />}
         {activeTab === 'recovery' && (
           activeRole === 'patient' ? (
             <CareFollowUpWorkspace onNavigateTab={setActiveTab} />

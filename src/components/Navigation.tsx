@@ -88,12 +88,14 @@ export const Navigation: React.FC<NavigationProps> = ({
     { id: 'reports', label: 'Reports & Labs', icon: FileText },
     { id: 'timeline', label: 'Longitudinal Timeline', icon: Clock },
     { id: 'recovery', label: 'Monitoring Loop', icon: Activity },
+    { id: 'validation-harness', label: 'Clinical Validation Harness', icon: FlaskConical, badge: '5 Cohorts' },
     { id: 'governance', label: 'Audit & Provenance', icon: Lock }
   ];
 
   // 3. Research & Evaluation Platform (Completely segregated from clinical care!)
   const researchTabs = [
     { id: 'workflow', label: '13-Phase Clinical Pipeline', icon: Sparkles, badge: 'Architecture' },
+    { id: 'validation-harness', label: 'Regression Harness Lab', icon: FlaskConical, badge: 'Deterministic' },
     { id: 'swarm', label: 'Swarm Simulation (PSO)', icon: Cpu, badge: 'Simulation Plane' },
     { id: 'conference', label: 'Multi-Specialist Debate', icon: Layers },
     { id: 'governance', label: 'Activity & Forensic Audit', icon: Lock },

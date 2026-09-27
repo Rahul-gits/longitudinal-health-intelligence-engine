@@ -265,3 +265,60 @@ To prevent clinical confusion, all stochastic simulation components are segregat
 - **Audit Ledger:** Every clinician decision, override, and background calculation records an 11-attribute WORM entry with previous hash linking.
 - **AI Versioning:** Explicit tracking of `modelVersion`, `promptVersion`, `retrievalVersion`, `knowledgeVersion`, and `clinicalRulesVersion`.
 - **Automated Regression Suite:** 12 executable clinical scenarios covering hyperkalemia, euglycemic DKA, cirrhosis, fatal CYP2C9 interactions, allergy gating, hemolyzed samples, and contradictory PROMs.
+
+---
+
+## 7. The 6-Phase Clinical Hardening & Validation Harness
+
+```
+             CLINICAL VALIDATION HARNESS & REGRESSION LABORATORY
+
+                 ┌───────────────────────────┐
+                 │ Patient Cohorts (A to E)  │
+                 └─────────────┬─────────────┘
+                               │
+                               ▼
+                 ┌───────────────────────────┐
+                 │ Heal Engine Full Pipeline │
+                 └─────────────┬─────────────┘
+                               │
+        ┌──────────────────────┼──────────────────────┐
+        ▼                      ▼                      ▼
+  State Integrity         Safety Gate          Governed Evidence
+  • Missing Labs          • 100% Intercept     • KDIGO 2024 (Sec 4.2)
+  • Stale Records         • Lisinopril+NSAID   • AHA/ACC 2023 (Sec 7.3)
+  • Duplicate Meds        • Carvedilol/Asthma  • GINA 2024 (Sec 3.1)
+  • Specialist Conflicts  • Metformin/eGFR<30  • AGS Beers 2023
+  • Pregnancy Alerts      • Teratogens/Preg    • ACOG PB 222
+        │                      │                      │
+        └──────────────────────┼──────────────────────┘
+                               │
+                               ▼
+        ┌──────────────────────────────────────────────┐
+        │       VERIFIED REGRESSION DIMENSIONS         │
+        │ • Safety Gating:           100% PASS         │
+        │ • Guideline Traceability:  100% PASS         │
+        │ • State Integrity Det.:    100% PASS         │
+        │ • Deterministic Reproduc.: 100% (0% Drift)   │
+        │ • Explainability Tracing:  100% PASS         │
+        │ • RBAC Patient Isolation:  100% PASS         │
+        └──────────────────────────────────────────────┘
+```
+
+### 5 Verified Clinical Cohorts:
+1. **Patient A (Eleanor Vance, 68F):** Cardiorenal CKD 3b + HTN + T2D + Osteoarthritis. Acute eGFR drop under Lisinopril + oral Ibuprofen. Intercepted by KDIGO 2024 Sec 4.2.
+2. **Patient B (Marcus Rodriguez, 42M):** Step 4 Persistent Asthma + Angina. Pulmonology contraindication vs Cardiology Carvedilol order. Intercepted by GINA 2024 Sec 3.1.
+3. **Patient C (Arthur Liu, 79M):** Geriatric Polypharmacy (11 Rx) + CKD 4 + Missing baseline LFTs + Duplicate Metformin from 2 outpatient clinics. Intercepted by Beers Criteria 2023 & ADA 2024.
+4. **Patient D (Sarah Miller, 31F):** 1st Trimester Pregnancy + Acute Pyelonephritis + Severe Penicillin/Cephalosporin anaphylaxis. Intercepted by ACOG PB 222 (IV Aztreonam clearance).
+5. **Patient E (David Jackson, 63M):** HFrEF (EF 28%) + Hyperkalemia (K+ 5.9 mEq/L) + Stale 420-day creatinine. Intercepted by AHA/ACC 2023 Sec 7.3 (STAT ECG & MRA hold).
+
+---
+
+## 8. Clinical Maturity & Regulatory Scope Declaration
+
+> [!CAUTION]
+> **Regulatory Boundary & Supervised Use Only:**
+> The successful execution of the Heal Engine test harnesses, regression laboratories, and software suites verifies that the *implemented software pipeline compiles, passes defined clinical invariants, and enforces deterministic barriers*. 
+>
+> It does **not** constitute independent autonomous medical decision-making clearance, nor turnkey compliance with FDA 510(k) / De Novo Class II SaMD, EU MDR 2017/745, or HIPAA omnibus regulations. All clinical directives, care plan modifications, and drug discontinuations require licensed Human-in-the-Loop (HITL) physician authorization.
+

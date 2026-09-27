@@ -11,16 +11,25 @@ import reportRoutes from './routes/reportRoutes';
 import benchmarkRoutes from './routes/benchmarkRoutes';
 import auditRoutes from './routes/auditRoutes';
 import authRoutes from './routes/authRoutes';
+import validationRoutes from './routes/validationRoutes';
+import {
+  secureHeadersMiddleware,
+  rateLimitMiddleware,
+  promptInjectionDefenseMiddleware
+} from './middleware/securityHardeningMiddleware';
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middleware
+// Security & Robustness Middleware
+app.use(secureHeadersMiddleware);
 app.use(cors());
+app.use(rateLimitMiddleware);
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
+app.use(promptInjectionDefenseMiddleware);
 
 // Request Logging
 app.use((req: Request, _res: Response, next: NextFunction) => {
@@ -34,7 +43,7 @@ app.get('/api/health', (_req: Request, res: Response) => {
   res.json({
     status: 'HEALTHY',
     service: 'HEAL Engine Longitudinal Clinical Intelligence Backend',
-    version: '2.4.0',
+    version: '2.5.0-governed',
     uptimeSeconds: Math.floor(process.uptime()),
     timestamp: new Date().toISOString(),
     endpoints: [
@@ -47,7 +56,8 @@ app.get('/api/health', (_req: Request, res: Response) => {
       '/api/safety',
       '/api/reports',
       '/api/benchmarks',
-      '/api/audit'
+      '/api/audit',
+      '/api/validation'
     ]
   });
 });
@@ -64,6 +74,7 @@ app.use('/api/safety', safetyRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/benchmarks', benchmarkRoutes);
 app.use('/api/audit', auditRoutes);
+app.use('/api/validation', validationRoutes);
 
 // 404 Handler
 app.use((_req: Request, res: Response) => {
