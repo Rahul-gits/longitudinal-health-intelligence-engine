@@ -4,6 +4,7 @@ import { KnowledgeGovernanceService } from '../services/knowledgeGovernanceServi
 import { ClinicalValidationHarnessService } from '../services/clinicalValidationHarnessService';
 import { securityAuditLogs } from '../middleware/securityHardeningMiddleware';
 import { clinicalLoggingService } from '../services/clinicalLoggingService';
+import { FailureChaosTestingService } from '../services/failureChaosTestingService';
 
 const router = Router();
 
@@ -239,5 +240,20 @@ router.get('/module-evaluations', (_req: Request, res: Response) => {
     modules
   });
 });
+
+/**
+ * 10. Run Full Failure & Chaos Testing Suite (18 Scenarios)
+ */
+const executeChaosHandler = (_req: Request, res: Response) => {
+  const chaosReport = FailureChaosTestingService.runChaosSuite();
+  res.json({
+    success: true,
+    chaosReport
+  });
+};
+
+router.get('/failure-chaos-tests', executeChaosHandler);
+router.post('/failure-chaos-tests', executeChaosHandler);
+router.post('/run-chaos-tests', executeChaosHandler);
 
 export default router;
