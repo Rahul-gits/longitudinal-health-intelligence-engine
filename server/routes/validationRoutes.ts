@@ -8,6 +8,7 @@ import { FailureChaosTestingService } from '../services/failureChaosTestingServi
 import { PerformanceLoadTestService } from '../services/performanceLoadTestService';
 import { DocumentValidationService } from '../services/documentValidationService';
 import { SecurityAssessmentService } from '../services/securityAssessmentService';
+import { UsabilityEvaluationService } from '../services/usabilityEvaluationService';
 
 const router = Router();
 
@@ -353,6 +354,25 @@ router.post('/run-security-assessment', (_req: Request, res: Response) => {
   res.json({
     success: true,
     securityReport
+  });
+});
+
+/**
+ * 15. Milestone M5: Human Usability Evaluation
+ */
+router.get('/usability-evaluation', (_req: Request, res: Response) => {
+  const usabilityReport = UsabilityEvaluationService.runUsabilityEvaluation();
+  res.json({
+    success: true,
+    usabilityReport
+  });
+});
+
+router.post('/run-usability-evaluation', (_req: Request, res: Response) => {
+  const usabilityReport = UsabilityEvaluationService.runUsabilityEvaluation();
+  res.json({
+    success: true,
+    usabilityReport
   });
 });
 

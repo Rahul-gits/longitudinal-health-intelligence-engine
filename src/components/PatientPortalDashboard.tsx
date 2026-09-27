@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   Heart, 
   AlertCircle, 
@@ -12,7 +12,9 @@ import {
   ChevronRight,
   ShieldCheck,
   PhoneCall,
-  Activity
+  Activity,
+  X,
+  MessageSquare
 } from 'lucide-react';
 import { PATIENT_INFO } from '../data/mockPatientData';
 
@@ -25,6 +27,7 @@ export const PatientPortalDashboard: React.FC<PatientPortalDashboardProps> = ({
   onNavigateTab,
   onOpenVirtualDoctor
 }) => {
+  const [showExplainModal, setShowExplainModal] = useState<boolean>(false);
   return (
     <div className="max-w-5xl mx-auto space-y-6 pb-12">
       {/* Header Greeting */}
@@ -68,7 +71,7 @@ export const PatientPortalDashboard: React.FC<PatientPortalDashboardProps> = ({
           </div>
 
           <div className="space-y-3">
-            {/* Attention Item 1 */}
+            {/* Attention Item 1 - Medication Check */}
             <div className="p-4 rounded-xl bg-amber-50/60 border border-amber-200/80 flex items-start justify-between gap-3">
               <div className="flex items-start gap-3">
                 <div className="w-8 h-8 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center shrink-0 mt-0.5">
@@ -76,23 +79,24 @@ export const PatientPortalDashboard: React.FC<PatientPortalDashboardProps> = ({
                 </div>
                 <div>
                   <h3 className="text-sm font-semibold text-slate-900">
-                    Knee Pain Medication Safety Check
+                    Medication check
                   </h3>
                   <p className="text-xs text-slate-600 mt-0.5">
-                    Your recent blood work shows your kidneys are sensitive. Please pause over-the-counter pain pills (like Advil or Ibuprofen) until you discuss a gentler topical option with Dr. Thorne.
+                    Your recent kidney results changed.
                   </p>
                 </div>
               </div>
               <button 
-                onClick={onOpenVirtualDoctor}
-                className="shrink-0 text-xs font-semibold text-blue-600 hover:text-blue-800 flex items-center gap-1 mt-1"
+                onClick={() => setShowExplainModal(true)}
+                className="shrink-0 text-xs font-semibold px-3 py-1.5 bg-amber-100 hover:bg-amber-200 text-amber-900 rounded-lg flex items-center gap-1 transition-colors"
+                id="understand-why-btn"
               >
-                <span>Discuss</span>
+                <span>Understand why</span>
                 <ChevronRight className="w-3.5 h-3.5" />
               </button>
             </div>
 
-            {/* Attention Item 2 */}
+            {/* Attention Item 2 - Blood Pressure & Hydration */}
             <div className="p-4 rounded-xl bg-blue-50/60 border border-blue-200/80 flex items-start justify-between gap-3">
               <div className="flex items-start gap-3">
                 <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center shrink-0 mt-0.5">
@@ -100,18 +104,19 @@ export const PatientPortalDashboard: React.FC<PatientPortalDashboardProps> = ({
                 </div>
                 <div>
                   <h3 className="text-sm font-semibold text-slate-900">
-                    Hydration & Blood Pressure Check
+                    Blood pressure & hydration
                   </h3>
                   <p className="text-xs text-slate-600 mt-0.5">
-                    Your morning blood pressure readings are steady at 128/82. Remember to drink 6 to 8 glasses of water daily and take your Lisinopril with breakfast.
+                    Your recent readings are being watched.
                   </p>
                 </div>
               </div>
               <button 
                 onClick={() => onNavigateTab('timeline')}
-                className="shrink-0 text-xs font-semibold text-blue-600 hover:text-blue-800 flex items-center gap-1 mt-1"
+                className="shrink-0 text-xs font-semibold px-3 py-1.5 bg-blue-100 hover:bg-blue-200 text-blue-900 rounded-lg flex items-center gap-1 transition-colors"
+                id="view-details-btn"
               >
-                <span>View Trend</span>
+                <span>View details</span>
                 <ChevronRight className="w-3.5 h-3.5" />
               </button>
             </div>
@@ -225,6 +230,98 @@ export const PatientPortalDashboard: React.FC<PatientPortalDashboardProps> = ({
           <span>Protected Health Record</span>
         </div>
       </div>
+
+      {/* Screen 2 — Explain Modal (Zero Clinical Jargon, Pure Plain Language) */}
+      {showExplainModal && (
+        <div 
+          className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="explain-modal-title"
+        >
+          <div className="bg-white w-full max-w-lg rounded-2xl shadow-2xl border border-slate-200 overflow-hidden transform transition-all">
+            {/* Modal Header */}
+            <div className="px-6 py-5 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-slate-100 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center font-bold">
+                  <Heart className="w-5 h-5 text-blue-600" />
+                </div>
+                <div>
+                  <h3 id="explain-modal-title" className="text-base font-bold text-slate-900">
+                    Understanding Your Health Check
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    Plain-language guide prepared for Eleanor Vance
+                  </p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setShowExplainModal(false)}
+                className="w-8 h-8 rounded-full hover:bg-slate-200/70 flex items-center justify-center text-slate-400 hover:text-slate-600 transition-colors"
+                aria-label="Close dialog"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Modal Body: 4 Clear Questions */}
+            <div className="p-6 space-y-5 text-sm">
+              {/* Question 1: What changed? */}
+              <div className="space-y-1">
+                <span className="text-xs font-bold uppercase tracking-wider text-blue-700">What changed?</span>
+                <p className="text-slate-800 font-medium bg-blue-50/50 p-3 rounded-xl border border-blue-100">
+                  Your kidney function has changed compared with your previous results.
+                </p>
+              </div>
+
+              {/* Question 2: Why does it matter? */}
+              <div className="space-y-1">
+                <span className="text-xs font-bold uppercase tracking-wider text-amber-700">Why does it matter?</span>
+                <p className="text-slate-700 bg-amber-50/50 p-3 rounded-xl border border-amber-100">
+                  Some medicines can affect kidney function when combined with certain health conditions.
+                </p>
+              </div>
+
+              {/* Question 3: What should I do? */}
+              <div className="space-y-1">
+                <span className="text-xs font-bold uppercase tracking-wider text-emerald-700">What should I do?</span>
+                <p className="text-slate-700 bg-emerald-50/50 p-3 rounded-xl border border-emerald-100">
+                  Your care team has recommended reviewing your medication and pausing over-the-counter pain pills (like Advil or Ibuprofen) until you discuss a gentler topical option with Dr. Thorne.
+                </p>
+              </div>
+
+              {/* Question 4: When should I seek immediate help? */}
+              <div className="space-y-1">
+                <span className="text-xs font-bold uppercase tracking-wider text-rose-700">When should I seek immediate help?</span>
+                <p className="text-slate-700 bg-rose-50/50 p-3 rounded-xl border border-rose-100 text-xs leading-relaxed">
+                  If you experience sudden shortness of breath, severe chest pressure, or rapid swelling in your legs, call 911 or visit Urgent Care immediately.
+                </p>
+              </div>
+            </div>
+
+            {/* Modal Actions */}
+            <div className="px-6 py-4 bg-slate-50 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-end gap-3">
+              <button
+                onClick={() => setShowExplainModal(false)}
+                className="w-full sm:w-auto px-4 py-2 text-xs font-medium text-slate-600 hover:text-slate-800 rounded-lg hover:bg-slate-200 transition-colors"
+              >
+                Done reading
+              </button>
+              <button
+                onClick={() => {
+                  setShowExplainModal(false);
+                  onOpenVirtualDoctor();
+                }}
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-xl shadow-sm transition-colors"
+                id="talk-to-care-team-btn"
+              >
+                <MessageSquare className="w-3.5 h-3.5" />
+                <span>Talk to my care team</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
