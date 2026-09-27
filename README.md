@@ -6,82 +6,101 @@
 
 ---
 
-## 🧭 Diagram 1: Human Experience Architecture
+## 🧭 Canonical 7-Layer Production Architecture
 
 ```
-                 ┌────────────────────────────────┐
-                 │          1. UNDERSTAND         │ (Patient Health Picture)
-                 │  "What do we know about her?"  │
-                 └───────────────┬────────────────┘
-                                 ↓
-                 ┌────────────────────────────────┐
-                 │           2. DETECT            │ (⚠️ eGFR: 64 → 52 mL/min)
-                 │ "What changed/needs attention?"│
-                 └───────────────┬────────────────┘
-                                 ↓
-                 ┌────────────────────────────────┐
-                 │           3. EXPLAIN           │ (Potential Contributing Factors)
-                 │     "Why is this happening?"   │
-                 └───────────────┬────────────────┘
-                                 ↓
-                 ┌────────────────────────────────┐
-                 │           4. PROTECT           │ (🛡️ High-Risk Pattern Flagged)
-                 │   "Is anything unsafe/risky?"  │
-                 └───────────────┬────────────────┘
-                                 ↓
-                 ┌────────────────────────────────┐
-                 │           5. DECIDE            │ (Evidence-Informed Care Options)
-                 │      "What should we do?"      │
-                 └───────────────┬────────────────┘
-                                 ↓
-                 ┌────────────────────────────────┐
-                 │           6. MONITOR           │ (14-Day Recovery Feedback)
-                 │ "What happened after decision?"│
-                 └───────────────┬────────────────┘
-                                 │
-                                 └──────────→ Updated Patient Health State v1.5
-```
+┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                                     1. EXPERIENCE LAYER                                          │
+│  [Patient Portal]                  [Virtual Specialist (Multimodal)]   [Clinician Command Center]│
+│  • Calm Health Overview            • Web Speech API (ASR / Live Mic)   • Longitudinal Sparklines │
+│  • 2 Attention Items               • TTS / Karaoke Subtitles           • Why/Why Not Candidates  │
+│  • Daily Care Plan Tasks           • Animated Posture Reactions        • Deep Evidence Inspector │
+│  • Timeline & Downloadable Reports • Emergency 911 Red Flag Handoff    • Mandatory HITL Approval │
+└────────────────────────────────────────────────┬─────────────────────────────────────────────────┘
+                                                 │
+                                                 ▼
+┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                             2. APPLICATION / API & SECURITY LAYER                                │
+│  • Multi-Role RBAC: Patient (Self), Clinician (Panel-Scoped), Researcher (De-ID), Admin (Policy) │
+│  • Scoped Real-Time Server-Sent Events (SSE) Bus (15s Heartbeats, Replay & Connection Cleanup)   │
+│  • Canonical FHIR R4 Normalization Adapter: Patient, Observation, Condition, MedicationRequest   │
+│  • Non-Bypassable Safety Invariant: Administrative privileges cannot bypass clinical safety gates│
+└────────────────────────────────────────────────┬─────────────────────────────────────────────────┘
+                                                 │
+                                                 ▼
+┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                                 3. CLINICAL ORCHESTRATION LAYER                                  │
+│                                  CENTRAL CLINICAL ORCHESTRATOR                                   │
+│       ┌───────────────┬────────────────────────┼────────────────────────┬───────────────┐        │
+│       ▼               ▼                        ▼                        ▼               ▼        │
+│   Screening       Workflow            13 Specialized            Evidence RAG     Goal Conflict   │
+│   Engine          Orchestrator        Clinical Modules             Engine           Engine       │
+│  (Adaptive       (What happens       (Nephrology, Cardio,        (KDIGO 2024,     (Analgesia vs  │
+│   dialogue)       next in care)       Pharm, Geriatrics)          ADA, Beers)      Renal Tradeoff)│
+│                                                │                                                 │
+│                                                ▼                                                 │
+│                                   SPECIALIST CONSENSUS ENGINE                                    │
+│                             (Multi-specialist cross-disciplinary panel)                          │
+└────────────────────────────────────────────────┬─────────────────────────────────────────────────┘
+                                                 │
+                                                 ▼
+┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                                    4. DETERMINISTIC SAFETY LAYER                                 │
+│    AI / LLM Candidate Options ──► ┌──────────────────────────────────────────────┐               │
+│                                   │          DETERMINISTIC SAFETY GATE           │               │
+│                                   │  • Cockcroft-Gault CrCl Renal Equation       │               │
+│                                   │  • Hard Drug-Drug Interactions (NSAID+ACEi)  │               │
+│                                   │  • IgE Anaphylactic Allergen Shields         │               │
+│                                   │  • Acute Hyperkalemia (K+ >= 5.2) Blocks     │               │
+│                                   │  • Metformin Lactic Acidosis (eGFR < 30)     │               │
+│                                   │  • Euglycemic DKA Perioperative Withhold     │               │
+│                                   └──────────────────────┬───────────────────────┘               │
+│                                                          │                                       │
+│                                   ┌──────────────────────┴──────────────────────┐                │
+│                                   ▼                                             ▼                │
+│                              [HARD BLOCK]                                  [SAFE/REVIEW]         │
+│                        Halt routine execution                          Multi-Candidate Options   │
+│                        Emergency triage dispatch                       Clinician Review Required │
+└────────────────────────────────────────────────┬─────────────────────────────────────────────────┘
+                                                 │
+                                                 ▼
+┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                                      5. PATIENT STATE LAYER                                      │
+│  • Canonical Longitudinal Patient State (Single Source of Truth across all clinical workspaces)  │
+│  • Temporal Biomarker Trajectories & Slope Analysis (eGFR 64 → 52 mL/min, Creatinine 1.1 → 1.38)│
+│  • Active Medication List & Adherence Metrics (94% Lisinopril, unmonitored OTC NSAID intake)   │
+│  • Chronic Conditions (CKD 3b, HTN, Knee Osteoarthritis, Type 2 Diabetes)                        │
+│  • Multi-Dimensional Clinical Uncertainty Model:                                                 │
+│    { Confidence: HIGH, EvidenceStrength: Level A, DataCompleteness: PARTIAL, Review: MANDATORY }│
+└────────────────────────────────────────────────┬─────────────────────────────────────────────────┘
+                                                 │
+                                                 ▼
+┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                                 6. EVIDENCE & KNOWLEDGE LAYER                                    │
+│  Clinical Guidelines (KDIGO 2024, ADA, ACC/AHA) ──► Ingestion & Chunking ──► BioMed Embeddings   │
+│  Deep Provenance Retrieval: Evidence ID, Guideline Edition, Page, Vector Score (0.942) & Chunk ID│
+└────────────────────────────────────────────────┬─────────────────────────────────────────────────┘
+                                                 │
+                                                 ▼
+┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                               7. DATA & INFRASTRUCTURE LAYER                                     │
+│  PostgreSQL 16        TimescaleDB           Redis 7              Qdrant Vector    Object Storage │
+│  (Relational Core,   (Hypertables for       (BullMQ Asynchronous (Guideline       (Encrypted S3  │
+│   Consents, Plans)    Telemetry Streams)     Worker Queue & Key)  Embeddings)      Scans, PDFs)  │
+│  • Immutable WORM Audit Ledger (SHA-256 Hash Chain)                                             │
+│  • Asynchronous Background Workers: OCR Extraction, RAG Embedding, Longitudinal Recalc          │
+│  • Disaster Recovery: Automated PITR Backups (RPO < 15 min, RTO < 2 min)                         │
+└──────────────────────────────────────────────────────────────────────────────────────────────────┘
 
 ---
 
-## ⚙️ Diagram 2: Internal Technical Architecture
+## 🔄 Closed-Loop Longitudinal Clinical Feedback Cycle
 
 ```
-                           DATA INGESTION
-             (EHR Records, Telemetry Streams, Lab Panels)
-                                  ↓
-                        DATA INTEGRITY LAYER
-             (Schema Verification, Time-Decay Weights)
-                                  ↓
-                      PATIENT HEALTH STATE (v1.4)
-             (Longitudinal Baseline, Active Meds, Genetics)
-                                  ↓
-                      CLINICAL ORCHESTRATOR
-             (State Delta Evaluation, Trigger Detection)
-                                  ↓
-                   13 SPECIALIZED CLINICAL MODULES
-             (Nephrology, Cardiology, Pharmacogenomics, etc.)
-                                  ↓
-                   KNOWLEDGE GRAPH & EVIDENCE RAG
-             (KDIGO 2024, CPIC, FDA Blackbox, Semantic Graph)
-                                  ↓
-                     GOAL CONFLICT ENGINE
-             (Analgesia vs Renal Preservation Tradeoffs)
-                                  ↓
-                 DETERMINISTIC SAFETY POLICIES (v3.0)
-             (Hard Contraindication Gate: Action Blocked)
-                                  ↓
-                     DECISION SYNTHESIS ENGINE
-             (Care Options, Why NOT? Forensics, What-If Simulator)
-                                  ↓
-                 MANDATORY CLINICIAN REVIEW (HITL)
-             (Approve / Modify / Reject with Clinical Notes)
-                                  ↓
-                   11-ATTRIBUTE AUDIT LOGGING
-             (Cryptographic Hash, FHIR R4 Order Bundles)
-                                  ↓
-                     OUTCOME MONITORING LOOP
-             (14-Day Trajectory Feedback → State v1.5)
+PATIENT ──► INGESTION ──► PATIENT STATE ──► CLINICAL ORCHESTRATOR ──► VIRTUAL DOCTOR
+                               ▲                                            │
+                               │                                            ▼
+                       NEW PATIENT DATA ◄── MONITORING ◄── CARE PLAN ◄── CLINICIAN HITL
 ```
 
 ---
