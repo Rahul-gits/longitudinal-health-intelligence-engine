@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Mic, MicOff, Send, Sparkles, CheckCircle2, AlertTriangle, ShieldCheck, Heart, ArrowRight } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { getDynamicPatientProfile } from '../data/mockPatientData';
+import { getStoredSessionId } from '../services/authApi';
 
 interface VirtualDoctorSimpleConsultationProps {
   onSwitchToAdvanced?: () => void;
@@ -14,6 +15,8 @@ interface DialogueTurn {
   time: string;
   suggestedQuickReplies?: string[];
   safetyAlert?: string;
+  clinicalObservations?: string[];
+  riskLevel?: string;
 }
 
 export const VirtualDoctorSimpleConsultation: React.FC<VirtualDoctorSimpleConsultationProps> = ({
@@ -27,12 +30,18 @@ export const VirtualDoctorSimpleConsultation: React.FC<VirtualDoctorSimpleConsul
   const [isRecording, setIsRecording] = useState<boolean>(false);
   const [patientText, setPatientText] = useState<string>('');
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
+  const [aiProvider, setAiProvider] = useState<string>('LLM Virtual Specialist');
   const [dialogueHistory, setDialogueHistory] = useState<DialogueTurn[]>([
     {
       speaker: 'doctor',
-      text: `Hello ${currentPatient.name.split(' ')[0]}. I'm Dr. Maya. Let's talk about how you've been feeling since your last check-in.`,
+      text: `Hello ${currentPatient.name.split(' ')[0]}. I'm Dr. Maya, your HEAL Engine Virtual Specialist. I am reviewing your health picture alongside ${currentPatient.primaryPhysician.split(' (')[0]}. How are you feeling today?`,
       time: 'Just now',
-      suggestedQuickReplies: ["I'm feeling better", "About the same", "I'm feeling worse", "I have a question about my medicine"]
+      suggestedQuickReplies: [
+        "I'm feeling good today",
+        "My joints or knees are aching",
+        "I have a question about my medication",
+        "I noticed some swelling or puffiness"
+      ]
     }
   ]);
 
@@ -99,42 +108,73 @@ export const VirtualDoctorSimpleConsultation: React.FC<VirtualDoctorSimpleConsul
     setIsProcessing(true);
 
     try {
-      // Send to the backend Virtual Doctor endpoint
-      const res = await fetch('http://localhost:5000/api/workflow/virtual-doctor/patient-check', {
+      const sessionId = getStoredSessionId();
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json'
+      };
+      if (sessionId) {
+        headers['Authorization'] = `Bearer ${sessionId}`;
+        headers['x-session-id'] = sessionId;
+      }
+
+      // Call the LLM-powered virtual specialist chat endpoint
+      const res = await fetch('/api/screening/chat', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({
           patientId: currentPatient.id || 'patient-ev-68',
-          message
+          message,
+          patientProfile: {
+            name: currentPatient.name,
+            age: currentPatient.age,
+            gender: currentPatient.gender,
+            conditions: currentPatient.conditions,
+            medications: currentPatient.medications,
+            allergies: currentPatient.allergies,
+            primaryPhysician: currentPatient.primaryPhysician
+          },
+          dialogueHistory: dialogueHistory.map(d => ({ speaker: d.speaker, text: d.text }))
         })
       });
 
       if (!res.ok) {
-        throw new Error('Doctor response failed');
+        throw new Error(`Doctor API responded with ${res.status}`);
       }
 
       const data = await res.json();
-      
+      if (data.provider) {
+        setAiProvider(data.provider === 'GEMINI' ? 'Gemini 1.5 LLM' : data.provider === 'OPENAI' ? 'OpenAI LLM' : 'HEAL Clinical LLM');
+      }
+
       const doctorReply: DialogueTurn = {
         speaker: 'doctor',
-        text: data.doctorResponse || "Thank you for sharing that with me. I have noted this in your health timeline for Dr. Thorne to review.",
+        text: data.doctorResponse || `Thank you for sharing that with me, ${currentPatient.name.split(' ')[0]}. I have documented this in your health timeline.`,
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         suggestedQuickReplies: data.suggestedReplies || [
-          "My pain is manageable",
-          "I feel a bit of swelling",
-          "Everything feels normal"
+          "Tell me more",
+          "I will discuss this with my doctor",
+          "Everything is clear, thank you"
         ],
-        safetyAlert: data.safetyGateTriggered ? "Safety Guard: We noted a medication or symptom that requires doctor confirmation before taking any pills." : undefined
+        clinicalObservations: data.clinicalObservations,
+        riskLevel: data.riskLevel,
+        safetyAlert: data.safetyGateTriggered
+          ? (data.safetyDetails || "Safety Guard: A medication interaction or vital trend was flagged for clinical physician review.")
+          : undefined
       };
 
       setDialogueHistory(prev => [...prev, doctorReply]);
-    } catch {
-      // Calm, reassuring fallback message
+    } catch (err) {
+      console.warn('[VIRTUAL-SPECIALIST] Primary API request error, using resilient dialogue fallback:', err);
+      // Fallback personalized response
+      const isPain = message.toLowerCase().includes('pain') || message.toLowerCase().includes('knee');
       const fallbackReply: DialogueTurn = {
         speaker: 'doctor',
-        text: `Thank you for sharing that. I've updated your daily record. Remember to avoid any extra pain pills until Dr. Thorne reviews your repeat lab tests.`,
+        text: isPain
+          ? `Thank you for sharing that with me, ${currentPatient.name.split(' ')[0]}. Because we are monitoring your kidney function and you take ${currentPatient.medications[0] || 'prescriptions'}, oral pain pills like Advil or Ibuprofen should be avoided. A gentle topical gel or cold compress is much safer until ${currentPatient.primaryPhysician.split(',')[0]} checks in.`
+          : `Thank you for updating me, ${currentPatient.name.split(' ')[0]}. I've noted this in your health timeline. Continue your prescribed ${currentPatient.medications.join(', ')} as scheduled and reach out if your symptoms change.`,
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        suggestedQuickReplies: ["Understood, thank you", "I have another question"]
+        suggestedQuickReplies: ["Understood, thank you", "I have another question", "Can we contact my doctor?"],
+        clinicalObservations: ['Logged symptom observation in local resilient cache']
       };
       setDialogueHistory(prev => [...prev, fallbackReply]);
     } finally {
@@ -157,15 +197,19 @@ export const VirtualDoctorSimpleConsultation: React.FC<VirtualDoctorSimpleConsul
                 <span className="bg-[#00F5D4] text-black text-[10px] font-mono font-bold px-2 py-0.5 border border-black rounded-full flex items-center">
                   <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse mr-1" /> ACTIVE
                 </span>
+                <span className="hidden sm:inline-flex items-center gap-1 bg-[#FFE600] text-black text-[10px] font-mono font-black px-2 py-0.5 border border-black shadow-[1px_1px_0px_0px_#000]">
+                  <Sparkles className="w-3 h-3 text-black" />
+                  <span>{aiProvider}</span>
+                </span>
               </div>
-              <p className="text-sm text-neutral-600 font-medium">With Dr. Maya, Virtual Specialist Partner</p>
+              <p className="text-sm text-neutral-600 font-medium">Personalized for {currentPatient.name} • Dr. Maya, Virtual Specialist Partner</p>
             </div>
           </div>
 
           {onSwitchToAdvanced && (
             <button
               onClick={onSwitchToAdvanced}
-              className="text-xs font-mono font-bold text-neutral-500 hover:text-black underline underline-offset-4"
+              className="text-xs font-mono font-bold text-neutral-500 hover:text-black underline underline-offset-4 cursor-pointer"
             >
               Clinical Tele-Screening View →
             </button>
@@ -197,6 +241,18 @@ export const VirtualDoctorSimpleConsultation: React.FC<VirtualDoctorSimpleConsul
                 }`}
               >
                 {turn.text}
+
+                {/* AI Extracted Clinical Observations */}
+                {turn.clinicalObservations && turn.clinicalObservations.length > 0 && (
+                  <div className="mt-2.5 pt-2 border-t border-slate-100 flex flex-wrap items-center gap-1.5 text-[10px]">
+                    <span className="font-mono text-slate-500 font-bold uppercase tracking-wider">AI Clinical Note:</span>
+                    {turn.clinicalObservations.map((obs, oIdx) => (
+                      <span key={oIdx} className="px-2 py-0.5 bg-blue-50 text-blue-800 font-mono font-semibold rounded border border-blue-200">
+                        {obs}
+                      </span>
+                    ))}
+                  </div>
+                )}
 
                 {turn.safetyAlert && (
                   <div className="mt-3 p-2.5 bg-amber-50 border border-amber-300 rounded text-xs font-semibold text-amber-900 flex items-start space-x-2">

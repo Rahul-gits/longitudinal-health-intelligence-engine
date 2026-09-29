@@ -3,7 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import patientRoutes from './routes/patientRoutes';
 import workflowRoutes from './routes/workflowRoutes';
-import screeningRoutes from './routes/screeningRoutes';
+import screeningRoutes, { handleVirtualDoctorChat } from './routes/screeningRoutes';
 import swarmRoutes from './routes/swarmRoutes';
 import conferenceRoutes from './routes/conferenceRoutes';
 import safetyRoutes from './routes/safetyRoutes';
@@ -92,6 +92,7 @@ app.get('/api/metrics', (_req: Request, res: Response) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/patients', patientRoutes);
 app.use('/api/patient', patientRoutes);
+app.post('/api/workflow/virtual-doctor/patient-check', handleVirtualDoctorChat);
 app.use('/api/workflow', workflowRoutes);
 app.use('/api/screening', screeningRoutes);
 app.use('/api/swarm', swarmRoutes);
