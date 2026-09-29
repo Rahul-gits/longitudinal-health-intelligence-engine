@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { PATIENT_INFO } from '../data/mockPatientData';
+import { useAuth } from '../context/AuthContext';
+import { getDynamicPatientProfile } from '../data/mockPatientData';
 import { 
   Stethoscope, 
   CheckCircle2, 
@@ -9,13 +10,15 @@ import {
 } from 'lucide-react';
 
 export const ClinicianPortal: React.FC = () => {
+  const { user } = useAuth();
+  const currentPatient = getDynamicPatientProfile(user);
   const [physicianNotes, setPhysicianNotes] = useState<string>('');
   const [isApproved, setIsApproved] = useState<boolean>(false);
 
   const handoffSummary = {
     chiefComplaint: 'Worsening exertional dyspnea (Grade II), leg edema (2+), and fatigue over 3 weeks.',
-    relevantHistory: 'Essential Hypertension (2021), Mild Stage 2 CKD baseline eGFR ~68 (2024), Type 2 Diabetes.',
-    currentMedications: 'Lisinopril 20mg QD, Furosemide 20mg QD, Metformin 500mg BID, OTC Ibuprofen 400mg PRN (Started July 2026).',
+    relevantHistory: `${currentPatient.conditions.join(', ')}.`,
+    currentMedications: `${currentPatient.medications.join(', ')}.`,
     recentLabChanges: 'eGFR dropped from 64 to 52 mL/min (Stage 3a shift). Serum Creatinine 1.45 mg/dL. NT-proBNP 480 pg/mL.',
     aiIdentifiedConcern: 'NSAID-induced acute-on-chronic renal hemodynamics impairment due to Ibuprofen + Lisinopril combination.',
     recommendedClinicianActions: [
@@ -35,10 +38,10 @@ export const ClinicianPortal: React.FC = () => {
             <span>CLINICAL DECISION SUPPORT PORTAL</span>
           </div>
           <h2 className="text-xl font-black font-display tracking-tight mt-1 text-white">
-            CLINICAL HANDOFF: {PATIENT_INFO.name.toUpperCase()}
+            CLINICAL HANDOFF: {currentPatient.name.toUpperCase()}
           </h2>
           <p className="text-xs font-mono font-bold text-white/90">
-            Synthesized 30-second executive summary for Dr. Aris Thorne (Cardiology / Nephrology Review).
+            Synthesized 30-second executive summary for {currentPatient.primaryPhysician}.
           </p>
         </div>
 

@@ -16,7 +16,7 @@ import {
   Video
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { PATIENT_INFO } from '../data/mockPatientData';
+import { getDynamicPatientProfile } from '../data/mockPatientData';
 
 interface CareTask {
   id: string;
@@ -43,39 +43,61 @@ interface CareFollowUpWorkspaceProps {
 
 export const CareFollowUpWorkspace: React.FC<CareFollowUpWorkspaceProps> = ({ onNavigateTab }) => {
   const { user } = useAuth();
-  const [tasks, setTasks] = useState<CareTask[]>([
-    { id: 'task-1', title: 'Take Lisinopril 20mg with breakfast', timeOfDay: 'Morning', category: 'MEDICATION', completed: true, dueDate: 'Today' },
-    { id: 'task-2', title: 'Check morning weight on smart scale', timeOfDay: 'Morning', category: 'TELEMETRY', completed: true, dueDate: 'Today' },
-    { id: 'task-3', title: 'Apply Topical Diclofenac 1% gel to right knee (Pause Advil)', timeOfDay: 'Afternoon', category: 'MEDICATION', completed: false, dueDate: 'Today' },
-    { id: 'task-4', title: 'Hydration goal: 6 to 8 glasses of water', timeOfDay: 'Evening', category: 'LIFESTYLE', completed: false, dueDate: 'Today' }
-  ]);
+  const currentPatient = getDynamicPatientProfile(user);
+  const isCardiorenal = currentPatient.name.toLowerCase().includes('eleanor');
+
+  const [tasks, setTasks] = useState<CareTask[]>(() => {
+    if (isCardiorenal) {
+      return [
+        { id: 'task-1', title: 'Take Lisinopril 20mg with breakfast', timeOfDay: 'Morning', category: 'MEDICATION', completed: true, dueDate: 'Today' },
+        { id: 'task-2', title: 'Check morning weight on smart scale', timeOfDay: 'Morning', category: 'TELEMETRY', completed: true, dueDate: 'Today' },
+        { id: 'task-3', title: 'Apply Topical Diclofenac 1% gel to right knee (Pause Advil)', timeOfDay: 'Afternoon', category: 'MEDICATION', completed: false, dueDate: 'Today' },
+        { id: 'task-4', title: 'Hydration goal: 6 to 8 glasses of water', timeOfDay: 'Evening', category: 'LIFESTYLE', completed: false, dueDate: 'Today' }
+      ];
+    }
+    const medTasks: CareTask[] = currentPatient.medications.map((m, idx) => ({
+      id: `task-med-${idx}`,
+      title: `Take ${m}`,
+      timeOfDay: idx % 2 === 0 ? 'Morning' : 'Evening',
+      category: 'MEDICATION' as const,
+      completed: idx === 0,
+      dueDate: 'Today'
+    }));
+    return [
+      ...medTasks,
+      { id: 'task-vitals', title: 'Log blood pressure & morning vitals', timeOfDay: 'Morning', category: 'TELEMETRY', completed: true, dueDate: 'Today' },
+      { id: 'task-lifestyle', title: 'Hydration goal: 6 to 8 glasses of water', timeOfDay: 'Evening', category: 'LIFESTYLE', completed: false, dueDate: 'Today' }
+    ];
+  });
 
   const [followUps, setFollowUps] = useState<FollowUpItem[]>([
     {
       id: 'fu-1',
-      title: 'Repeat Renal Function Panel (BMP & eGFR)',
+      title: isCardiorenal ? 'Repeat Renal Function Panel (BMP & eGFR)' : 'Annual Comprehensive Metabolic Panel',
       specialty: 'Outpatient Laboratory',
-      clinicianName: 'Dr. Aris Thorne',
-      scheduledDate: 'August 20, 2026',
-      purpose: 'Verify eGFR reversibility after stopping systemic NSAID',
+      clinicianName: currentPatient.primaryPhysician.split(' (')[0],
+      scheduledDate: 'October 20, 2026',
+      purpose: isCardiorenal ? 'Verify eGFR reversibility after stopping systemic NSAID' : `Routine assessment for ${currentPatient.conditions[0] || 'health baseline'}`,
       status: 'SCHEDULED'
     },
     {
       id: 'fu-2',
-      title: 'Virtual Cardiorenal Follow-Up Dialogue',
+      title: 'Virtual Clinical Follow-Up Dialogue',
       specialty: 'Virtual Specialist Clinic',
-      clinicianName: 'Dr. Aris Thorne',
-      scheduledDate: 'August 27, 2026',
-      purpose: 'Assess knee comfort and review repeat creatinine lab results',
+      clinicianName: currentPatient.primaryPhysician.split(' (')[0],
+      scheduledDate: 'October 27, 2026',
+      purpose: `Review care response and follow up on ${currentPatient.conditions[0] || 'wellbeing'}`,
       status: 'SCHEDULED'
     }
   ]);
 
   const [doctorNote, setDoctorNote] = useState<string>(
-    'Discontinue systemic oral NSAIDs (Ibuprofen) due to acute eGFR decline. Transition to topical Diclofenac 1% gel PRN. Repeat renal panel in 7 days.'
+    isCardiorenal
+      ? 'Discontinue systemic oral NSAIDs (Ibuprofen) due to acute eGFR decline. Transition to topical Diclofenac 1% gel PRN. Repeat renal panel in 7 days.'
+      : `Continue prescribed regimen of ${currentPatient.medications.join(', ')}. Monitoring vitals and lifestyle indicators for ${currentPatient.conditions[0] || 'wellness'}.`
   );
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [syncStatus, setSyncStatus] = useState<string>('Live Connected to Patient State Engine');
+  const [syncStatus, setSyncStatus] = useState<string>(`Live Synced to ${currentPatient.name}'s Profile`);
 
   // Fetch live care plan from server
   const fetchCarePlan = async () => {
@@ -129,7 +151,7 @@ export const CareFollowUpWorkspace: React.FC<CareFollowUpWorkspaceProps> = ({ on
           </div>
           <h1 className="text-2xl font-bold text-slate-900">Your Care & Follow-Up Plan</h1>
           <p className="text-slate-500 text-sm mt-0.5">
-            Personalized daily tasks, monitoring schedules, and clinician instructions for {PATIENT_INFO.name}.
+            Personalized daily tasks, monitoring schedules, and clinician instructions for {currentPatient.name}.
           </p>
         </div>
 

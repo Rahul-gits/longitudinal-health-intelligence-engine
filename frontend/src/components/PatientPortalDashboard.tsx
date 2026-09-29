@@ -9,14 +9,18 @@ import {
   ArrowRight, 
   Clock, 
   CheckCircle2, 
-  ChevronRight,
-  ShieldCheck,
-  PhoneCall,
-  Activity,
-  X,
-  MessageSquare
+  ChevronRight, 
+  ShieldCheck, 
+  PhoneCall, 
+  Activity, 
+  X, 
+  MessageSquare,
+  UserCheck,
+  Tag,
+  ShieldAlert
 } from 'lucide-react';
-import { PATIENT_INFO } from '../data/mockPatientData';
+import { useAuth } from '../context/AuthContext';
+import { getDynamicPatientProfile } from '../data/mockPatientData';
 
 interface PatientPortalDashboardProps {
   onNavigateTab: (tabId: string) => void;
@@ -27,32 +31,126 @@ export const PatientPortalDashboard: React.FC<PatientPortalDashboardProps> = ({
   onNavigateTab,
   onOpenVirtualDoctor
 }) => {
+  const { user } = useAuth();
+  const currentPatient = getDynamicPatientProfile(user);
   const [showExplainModal, setShowExplainModal] = useState<boolean>(false);
+
+  // Determine if this is a cardiorenal profile or customized user profile
+  const isCardiorenalCase = currentPatient.name.toLowerCase().includes('eleanor') || 
+    currentPatient.conditions.some(c => c.toLowerCase().includes('heart') || c.toLowerCase().includes('kidney'));
+
   return (
     <div className="max-w-5xl mx-auto space-y-6 pb-12">
-      {/* Header Greeting */}
+      {/* Header Greeting & Profile Sync Badge */}
       <div className="bg-gradient-to-r from-[#1E293B] to-[#334155] rounded-2xl p-6 text-white shadow-sm border border-slate-700">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-blue-500/20 text-blue-300 text-xs font-medium mb-2 border border-blue-400/30">
-              <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span>
-              Secure Patient Portal
+            <div className="flex flex-wrap items-center gap-2 mb-2">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-500/20 text-blue-300 text-xs font-medium border border-blue-400/30">
+                <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span>
+                Secure Patient Portal
+              </span>
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-mono font-bold border border-emerald-400/30">
+                <UserCheck className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Synced: {user?.fullName || currentPatient.name} ({user?.email || 'Active Account'})</span>
+              </span>
             </div>
             <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
-              Good morning, {PATIENT_INFO.name.split(' ')[0]}
+              Good morning, {currentPatient.name.split(' ')[0]}
             </h1>
             <p className="text-slate-300 text-sm mt-1">
-              Here is your personal health overview and your care team's latest guidance.
+              Here is your personal health overview, live clinical profile, and care team guidance.
             </p>
           </div>
           <div className="flex items-center gap-3">
             <button
               onClick={onOpenVirtualDoctor}
-              className="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-medium text-sm transition-colors shadow-sm"
+              className="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-medium text-sm transition-colors shadow-sm cursor-pointer"
             >
               <Video className="w-4 h-4" />
               <span>Talk to Virtual Specialist</span>
             </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Synchronized User Clinical Profile Card */}
+      <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
+        <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-100">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-sm border border-blue-100">
+              {currentPatient.name[0]}
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="font-bold text-slate-900 text-base">{currentPatient.name}</h3>
+                <span className="text-[11px] font-mono px-2 py-0.5 bg-slate-100 text-slate-700 rounded-md font-medium">
+                  {currentPatient.id}
+                </span>
+              </div>
+              <p className="text-xs text-slate-500">
+                {currentPatient.age} years old • {currentPatient.gender} • Blood Type: {currentPatient.bloodType} • Baseline: {currentPatient.status}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-bold px-3 py-1 bg-emerald-50 text-emerald-700 rounded-full border border-emerald-200 flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+              Health Score: {currentPatient.overallHealthScore}/100
+            </span>
+          </div>
+        </div>
+
+        {/* Clinical Profile Chips: Diagnoses, Medications, Allergies */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 text-xs">
+          {/* Active Conditions */}
+          <div className="bg-slate-50 rounded-xl p-3 border border-slate-100 space-y-2">
+            <span className="font-bold text-slate-700 flex items-center gap-1.5 uppercase text-[10px] tracking-wider">
+              <Activity className="w-3.5 h-3.5 text-blue-600" />
+              Active Conditions ({currentPatient.conditions.length})
+            </span>
+            <div className="flex flex-wrap gap-1.5">
+              {currentPatient.conditions.map((cond, idx) => (
+                <span key={idx} className="px-2 py-0.5 bg-white border border-slate-200 rounded-md text-slate-800 font-medium text-[11px]">
+                  {cond}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* Current Medications */}
+          <div className="bg-slate-50 rounded-xl p-3 border border-slate-100 space-y-2">
+            <span className="font-bold text-slate-700 flex items-center gap-1.5 uppercase text-[10px] tracking-wider">
+              <Pill className="w-3.5 h-3.5 text-purple-600" />
+              Active Prescriptions ({currentPatient.medications.length})
+            </span>
+            <div className="flex flex-wrap gap-1.5">
+              {currentPatient.medications.map((med, idx) => (
+                <span key={idx} className="px-2 py-0.5 bg-white border border-slate-200 rounded-md text-slate-800 font-medium text-[11px]">
+                  {med}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* Allergies & Primary Care */}
+          <div className="bg-slate-50 rounded-xl p-3 border border-slate-100 space-y-2">
+            <span className="font-bold text-slate-700 flex items-center gap-1.5 uppercase text-[10px] tracking-wider">
+              <ShieldAlert className="w-3.5 h-3.5 text-amber-600" />
+              Allergies & Primary Care
+            </span>
+            <div className="space-y-1">
+              <div className="flex flex-wrap gap-1">
+                {currentPatient.allergies.map((all, idx) => (
+                  <span key={idx} className="px-2 py-0.5 bg-rose-50 text-rose-700 border border-rose-200 rounded-md font-semibold text-[10px]">
+                    {all}
+                  </span>
+                ))}
+              </div>
+              <p className="text-[11px] text-slate-600 font-medium pt-1">
+                Primary: <strong>{currentPatient.primaryPhysician.split(' (')[0]}</strong>
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -66,7 +164,7 @@ export const PatientPortalDashboard: React.FC<PatientPortalDashboardProps> = ({
               <span>Your Health Overview</span>
             </h2>
             <span className="px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200">
-              2 items need attention
+              {isCardiorenalCase ? '2 items need attention' : '1 item under review'}
             </span>
           </div>
 
@@ -79,16 +177,18 @@ export const PatientPortalDashboard: React.FC<PatientPortalDashboardProps> = ({
                 </div>
                 <div>
                   <h3 className="text-sm font-semibold text-slate-900">
-                    Medication check
+                    Medication safety check
                   </h3>
                   <p className="text-xs text-slate-600 mt-0.5">
-                    Your recent kidney results changed.
+                    {isCardiorenalCase 
+                      ? 'Your recent kidney filtration results changed with concurrent anti-inflammatory therapy.' 
+                      : `Active monitoring established for ${currentPatient.medications[0] || 'daily medication schedule'}.`}
                   </p>
                 </div>
               </div>
               <button 
                 onClick={() => setShowExplainModal(true)}
-                className="shrink-0 text-xs font-semibold px-3 py-1.5 bg-amber-100 hover:bg-amber-200 text-amber-900 rounded-lg flex items-center gap-1 transition-colors"
+                className="shrink-0 text-xs font-semibold px-3 py-1.5 bg-amber-100 hover:bg-amber-200 text-amber-900 rounded-lg flex items-center gap-1 transition-colors cursor-pointer"
                 id="understand-why-btn"
               >
                 <span>Understand why</span>
@@ -104,16 +204,18 @@ export const PatientPortalDashboard: React.FC<PatientPortalDashboardProps> = ({
                 </div>
                 <div>
                   <h3 className="text-sm font-semibold text-slate-900">
-                    Blood pressure & hydration
+                    Vitals & longitudinal trend stability
                   </h3>
                   <p className="text-xs text-slate-600 mt-0.5">
-                    Your recent readings are being watched.
+                    {isCardiorenalCase
+                      ? 'Blood pressure and renal biomarkers are being tracked continuously.'
+                      : `Vitals trend baseline verified stable for ${currentPatient.conditions[0] || 'wellness'}.`}
                   </p>
                 </div>
               </div>
               <button 
                 onClick={() => onNavigateTab('timeline')}
-                className="shrink-0 text-xs font-semibold px-3 py-1.5 bg-blue-100 hover:bg-blue-200 text-blue-900 rounded-lg flex items-center gap-1 transition-colors"
+                className="shrink-0 text-xs font-semibold px-3 py-1.5 bg-blue-100 hover:bg-blue-200 text-blue-900 rounded-lg flex items-center gap-1 transition-colors cursor-pointer"
                 id="view-details-btn"
               >
                 <span>View details</span>
@@ -130,18 +232,26 @@ export const PatientPortalDashboard: React.FC<PatientPortalDashboardProps> = ({
               <ShieldCheck className="w-4 h-4 text-emerald-600" />
               <span>Assigned Care Team</span>
             </div>
-            <h3 className="text-base font-bold text-slate-900">Dr. Aris Thorne, MD</h3>
-            <p className="text-xs text-slate-500">Cardiorenal Care Specialist • St. Jude Health</p>
+            <h3 className="text-base font-bold text-slate-900">
+              {currentPatient.primaryPhysician.split(' (')[0]}
+            </h3>
+            <p className="text-xs text-slate-500">
+              {currentPatient.primaryPhysician.includes('(') 
+                ? currentPatient.primaryPhysician.split('(')[1].replace(')', '') 
+                : 'Primary Care Specialist'} • Verified Network Provider
+            </p>
             <div className="mt-3 p-3 bg-slate-50 rounded-xl border border-slate-100 text-xs text-slate-600">
               <span className="font-semibold block text-slate-800 mb-1">Doctor's latest note:</span>
-              "Eleanor is doing very well overall. Let's make sure we protect her kidney filtration by switching pain relief to topical therapy."
+              {isCardiorenalCase
+                ? `"${currentPatient.name.split(' ')[0]} is doing well overall. Let's make sure we protect her kidney filtration by switching pain relief to topical therapy."`
+                : `"${currentPatient.name.split(' ')[0]} has a verified clinical record. Continuing longitudinal tracking for ${currentPatient.conditions[0] || 'health baseline'}. Please log any daily symptoms or medication adjustments."`}
             </div>
           </div>
 
           <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
             <span className="flex items-center gap-1.5">
               <Calendar className="w-3.5 h-3.5 text-blue-600" />
-              <span>Next Routine Lab: Oct 15</span>
+              <span>Next Check-in: In 14 Days</span>
             </span>
             <span className="text-emerald-700 font-semibold flex items-center gap-1">
               <CheckCircle2 className="w-3.5 h-3.5" />
@@ -251,13 +361,13 @@ export const PatientPortalDashboard: React.FC<PatientPortalDashboardProps> = ({
                     Understanding Your Health Check
                   </h3>
                   <p className="text-xs text-slate-500">
-                    Plain-language guide prepared for Eleanor Vance
+                    Plain-language guide prepared for {currentPatient.name}
                   </p>
                 </div>
               </div>
               <button 
                 onClick={() => setShowExplainModal(false)}
-                className="w-8 h-8 rounded-full hover:bg-slate-200/70 flex items-center justify-center text-slate-400 hover:text-slate-600 transition-colors"
+                className="w-8 h-8 rounded-full hover:bg-slate-200/70 flex items-center justify-center text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
                 aria-label="Close dialog"
               >
                 <X className="w-5 h-5" />
@@ -270,7 +380,9 @@ export const PatientPortalDashboard: React.FC<PatientPortalDashboardProps> = ({
               <div className="space-y-1">
                 <span className="text-xs font-bold uppercase tracking-wider text-blue-700">What changed?</span>
                 <p className="text-slate-800 font-medium bg-blue-50/50 p-3 rounded-xl border border-blue-100">
-                  Your kidney function has changed compared with your previous results.
+                  {isCardiorenalCase
+                    ? 'Your kidney function has changed compared with your previous results.'
+                    : `Active health and vital monitoring is underway for ${currentPatient.conditions.join(', ')}.`}
                 </p>
               </div>
 
@@ -278,7 +390,9 @@ export const PatientPortalDashboard: React.FC<PatientPortalDashboardProps> = ({
               <div className="space-y-1">
                 <span className="text-xs font-bold uppercase tracking-wider text-amber-700">Why does it matter?</span>
                 <p className="text-slate-700 bg-amber-50/50 p-3 rounded-xl border border-amber-100">
-                  Some medicines can affect kidney function when combined with certain health conditions.
+                  {isCardiorenalCase
+                    ? 'Some medicines can affect kidney function when combined with certain health conditions.'
+                    : `Keeping track of prescribed medications helps ${currentPatient.primaryPhysician.split(' (')[0]} ensure optimal therapeutic efficacy and safety.`}
                 </p>
               </div>
 
@@ -286,7 +400,9 @@ export const PatientPortalDashboard: React.FC<PatientPortalDashboardProps> = ({
               <div className="space-y-1">
                 <span className="text-xs font-bold uppercase tracking-wider text-emerald-700">What should I do?</span>
                 <p className="text-slate-700 bg-emerald-50/50 p-3 rounded-xl border border-emerald-100">
-                  Your care team has recommended reviewing your medication and pausing over-the-counter pain pills (like Advil or Ibuprofen) until you discuss a gentler topical option with Dr. Thorne.
+                  {isCardiorenalCase
+                    ? `Your care team has recommended reviewing your medication and pausing over-the-counter pain pills (like Advil or Ibuprofen) until you discuss a gentler topical option with ${currentPatient.primaryPhysician.split(',')[0]}.`
+                    : `Take your scheduled medications (${currentPatient.medications.join(', ')}) as instructed, log your vitals regularly, and reach out to your clinical team with any questions.`}
                 </p>
               </div>
 
