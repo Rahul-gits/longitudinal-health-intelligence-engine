@@ -87,7 +87,7 @@ export class DailyMedSplService {
     let sampleDrugs: string[] = [];
     if (fs.existsSync(this.extractedJsonPath)) {
       try {
-        const raw = fs.readFileSync(this.extractedJsonPath, 'utf8');
+        const raw = fs.readFileSync(this.extractedJsonPath, 'utf8').replace(/^\uFEFF/, '');
         const parsed: SplDrugRecord[] = JSON.parse(raw);
         sampleDrugs = parsed.slice(0, 15).map(d => `${d.medicationName} (${d.activeIngredient})`);
         for (const item of parsed) {
@@ -148,7 +148,7 @@ export class DailyMedSplService {
       throw new Error(`Extracted SPL drugs file not found at: ${this.extractedJsonPath}. Please run extraction first.`);
     }
 
-    const raw = fs.readFileSync(this.extractedJsonPath, 'utf8');
+    const raw = fs.readFileSync(this.extractedJsonPath, 'utf8').replace(/^\uFEFF/, '');
     const records: SplDrugRecord[] = JSON.parse(raw);
 
     const domainDist: Record<string, number> = {};

@@ -1,6 +1,4 @@
 {
-    "archiveSizeGB":  3.22,
-    "archivePath":  "C:\\Users\\rahul\\OneDrive\\Desktop\\Heal Engine\\backend\\db\\dm_spl_release_human_rx_part1.zip",
     "loincSectionsIndexed":  [
                                  {
                                      "code":  "34067-9",
@@ -27,19 +25,27 @@
                                      "name":  "Use in Specific Populations (Renal/Hepatic)"
                                  }
                              ],
+    "archiveSizeGB":  3.22,
+    "archivePath":  "C:\\Users\\rahul\\OneDrive\\Desktop\\Heal Engine\\backend\\db\\dm_spl_release_human_rx_part1.zip",
+    "safetyMetrics":  {
+                          "drugsWithContraindications":  828,
+                          "drugsWithBlackBoxWarnings":  41,
+                          "drugsWithRenalPrecautions":  161
+                      },
     "totalSplPackages":  14984,
     "format":  "FDA Structured Product Labeling (HL7 SPL R4 XML / LOINC 34391-3)",
-    "lastUpdated":  "2026-09-29T15:12:10.8205551+05:30",
+    "scanDurationSeconds":  45.8,
+    "totalDistinctDrugsExtracted":  982,
     "archiveSizeBytes":  3221058241,
-    "extractedDrugsSampled":  60,
+    "lastUpdated":  "2026-09-29T15:23:54.9293278+05:30",
     "clinicalDomainsDistribution":  {
-                                        "CNS \u0026 Neurologic":  6,
-                                        "Metabolic":  5,
-                                        "Cardiology":  7,
-                                        "Analgesic":  13,
-                                        "General Medicine":  10,
-                                        "Nephrology":  6,
-                                        "Antimicrobial":  6,
-                                        "Pulmonology":  7
+                                        "CNS \u0026 Neurologic":  67,
+                                        "Metabolic":  49,
+                                        "Cardiology":  133,
+                                        "Analgesic":  88,
+                                        "General Medicine":  304,
+                                        "Nephrology":  190,
+                                        "Antimicrobial":  95,
+                                        "Pulmonology":  56
                                     }
 }
