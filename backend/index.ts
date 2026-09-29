@@ -17,6 +17,7 @@ import securityRoutes from './routes/securityRoutes';
 import usabilityRoutes from './routes/usabilityRoutes';
 import shadowRoutes from './routes/shadowRoutes';
 import governanceRoutes from './routes/governanceRoutes';
+import ragRoutes from './routes/ragRoutes';
 import {
   secureHeadersMiddleware,
   rateLimitMiddleware,
@@ -77,6 +78,7 @@ app.get('/api/health', async (_req: Request, res: Response) => {
       '/api/benchmarks',
       '/api/audit',
       '/api/validation',
+      '/api/rag',
       '/api/metrics'
     ]
   });
@@ -107,6 +109,7 @@ app.use('/api/security', securityRoutes);
 app.use('/api/usability', usabilityRoutes);
 app.use('/api/shadow', shadowRoutes);
 app.use('/api/governance', governanceRoutes);
+app.use('/api/rag', ragRoutes);
 
 // 404 Handler
 app.use((_req: Request, res: Response) => {

@@ -1,4 +1,5 @@
 import dotenv from 'dotenv';
+import { vectorDatabase } from '../db/vectorDatabase';
 dotenv.config();
 
 export interface LlmInferenceRequest {
@@ -198,7 +199,15 @@ export class LlmGatewayService {
       };
     }
 
-    // 2. Prepare structured system context with patient profile
+    // 2. Query Vector Database for relevant Evidence RAG chunks
+    const ragQuery = `${req.userMessage} ${(req.conditions || []).join(' ')} ${(req.medications || []).join(' ')}`;
+    const retrievedEvidence = vectorDatabase.searchEvidence(ragQuery, { topK: 3, minSimilarity: 0.28 });
+    const ragContext = vectorDatabase.buildRagPromptContext(retrievedEvidence);
+    const ragObservationChips = retrievedEvidence.map(e =>
+      `[RAG Evidence]: ${e.chunk.sourceOrganization} (${(e.similarityScore * 100).toFixed(0)}% match) - ${e.chunk.title.substring(0, 48)}`
+    );
+
+    // 3. Prepare structured system context with patient profile & retrieved RAG evidence
     const systemPrompt = `You are Dr. Maya, MD, a compassionate, expert Virtual Clinical Specialist at HEAL Engine.
 Your goal is to converse with the patient, understand their symptoms, worries, or questions, and provide clear, empathetic, plain-language guidance.
 
@@ -208,6 +217,8 @@ PATIENT PROFILE:
 - Active Diagnoses: ${(req.conditions && req.conditions.length > 0) ? req.conditions.join(', ') : 'None documented'}
 - Active Prescriptions: ${(req.medications && req.medications.length > 0) ? req.medications.join(', ') : 'None documented'}
 - Known Allergies: ${(req.allergies && req.allergies.length > 0) ? req.allergies.join(', ') : 'None reported'}
+
+${ragContext}
 
 CRITICAL CLINICAL RULES:
 1. Speak in friendly, reassuring plain English (no jargon like "hemodynamics" or "etiology").
@@ -222,7 +233,7 @@ CRITICAL CLINICAL RULES:
   "safetyGateTriggered": boolean
 }`;
 
-    // 3. Attempt Gemini API if configured
+    // 4. Attempt Gemini API if configured
     const activeGeminiKey = this.getEffectiveGeminiKey();
     if (activeGeminiKey) {
       try {
@@ -239,7 +250,7 @@ CRITICAL CLINICAL RULES:
             provider: 'GEMINI',
             model: 'gemini-1.5-flash',
             doctorResponse: audited.sanitizedText,
-            clinicalObservations: geminiRes.clinicalObservations || ['AI clinical dialogue recorded'],
+            clinicalObservations: [...(geminiRes.clinicalObservations || ['AI clinical dialogue recorded']), ...ragObservationChips],
             suggestedReplies: geminiRes.suggestedReplies || ['I understand, thank you', 'Tell me more', 'I have another question'],
             riskLevel: geminiRes.riskLevel || 'LOW',
             requiresEmergency: false,
@@ -254,7 +265,7 @@ CRITICAL CLINICAL RULES:
       }
     }
 
-    // 4. Attempt OpenAI API if configured
+    // 5. Attempt OpenAI API if configured
     const activeOpenAiKey = this.getEffectiveOpenAiKey();
     if (activeOpenAiKey) {
       try {
@@ -271,7 +282,7 @@ CRITICAL CLINICAL RULES:
             provider: 'OPENAI',
             model: this.model || 'gpt-4o-mini',
             doctorResponse: audited.sanitizedText,
-            clinicalObservations: openaiRes.clinicalObservations || ['AI clinical dialogue recorded'],
+            clinicalObservations: [...(openaiRes.clinicalObservations || ['AI clinical dialogue recorded']), ...ragObservationChips],
             suggestedReplies: openaiRes.suggestedReplies || ['I understand, thank you', 'Tell me more', 'I have another question'],
             riskLevel: openaiRes.riskLevel || 'LOW',
             requiresEmergency: false,
@@ -286,7 +297,7 @@ CRITICAL CLINICAL RULES:
       }
     }
 
-    // 5. Attempt Anthropic API if configured
+    // 6. Attempt Anthropic API if configured
     const activeAnthropicKey = this.getEffectiveAnthropicKey();
     if (activeAnthropicKey) {
       try {
@@ -303,7 +314,7 @@ CRITICAL CLINICAL RULES:
             provider: 'ANTHROPIC',
             model: this.model.includes('claude') ? this.model : 'claude-3-5-sonnet-20241022',
             doctorResponse: audited.sanitizedText,
-            clinicalObservations: anthropicRes.clinicalObservations || ['AI clinical dialogue recorded'],
+            clinicalObservations: [...(anthropicRes.clinicalObservations || ['AI clinical dialogue recorded']), ...ragObservationChips],
             suggestedReplies: anthropicRes.suggestedReplies || ['I understand, thank you', 'Tell me more', 'I have another question'],
             riskLevel: anthropicRes.riskLevel || 'LOW',
             requiresEmergency: false,
@@ -318,8 +329,12 @@ CRITICAL CLINICAL RULES:
       }
     }
 
-    // 6. Intelligent Built-in Clinical LLM Engine (Domain Expert Synthesizer)
-    return this.synthesizeClinicalSpecialistResponse(req, startTime);
+    // 7. Intelligent Built-in Clinical LLM Engine (Domain Expert Synthesizer)
+    const localSynth = this.synthesizeClinicalSpecialistResponse(req, startTime);
+    return {
+      ...localSynth,
+      clinicalObservations: [...localSynth.clinicalObservations, ...ragObservationChips]
+    };
   }
 
   /**
