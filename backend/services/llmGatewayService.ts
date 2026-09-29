@@ -61,20 +61,25 @@ export interface VirtualSpecialistChatResponse {
 }
 
 export class LlmGatewayService {
-  private provider: string;
+  private provider: string = 'HEAL_CLINICAL_LLM';
   private apiKey?: string;
   private geminiApiKey?: string;
   private openaiApiKey?: string;
   private anthropicApiKey?: string;
-  private model: string;
+  private model: string = 'gemini-1.5-flash';
   private endpoint?: string;
 
   constructor() {
+    this.refreshConfig();
+  }
+
+  public refreshConfig(): void {
+    dotenv.config();
     this.geminiApiKey = process.env.GEMINI_API_KEY || (process.env.LLM_PROVIDER === 'GEMINI' ? process.env.LLM_API_KEY : undefined);
     this.openaiApiKey = process.env.OPENAI_API_KEY || (process.env.LLM_PROVIDER === 'OPENAI' ? process.env.LLM_API_KEY : undefined);
     this.anthropicApiKey = process.env.ANTHROPIC_API_KEY || (process.env.LLM_PROVIDER === 'ANTHROPIC' ? process.env.LLM_API_KEY : undefined);
     
-    // Default to GEMINI if key present, else OPENAI, else fallback to built-in HEAL clinical LLM
+    // Determine active provider
     if (this.geminiApiKey) {
       this.provider = 'GEMINI';
     } else if (this.openaiApiKey) {
@@ -86,8 +91,20 @@ export class LlmGatewayService {
     }
 
     this.apiKey = this.geminiApiKey || this.openaiApiKey || this.anthropicApiKey || process.env.LLM_API_KEY;
-    this.model = process.env.LLM_MODEL || (this.provider === 'GEMINI' ? 'gemini-1.5-flash' : this.provider === 'OPENAI' ? 'gpt-4o-mini' : 'heal-clinical-v2');
+    this.model = process.env.LLM_MODEL || (this.provider === 'GEMINI' ? 'gemini-1.5-flash' : this.provider === 'OPENAI' ? 'gpt-4o-mini' : this.provider === 'ANTHROPIC' ? 'claude-3-5-sonnet-20241022' : 'heal-clinical-v2');
     this.endpoint = process.env.LLM_ENDPOINT;
+  }
+
+  private getEffectiveGeminiKey(): string | undefined {
+    return process.env.GEMINI_API_KEY || (process.env.LLM_PROVIDER === 'GEMINI' ? process.env.LLM_API_KEY : undefined) || this.geminiApiKey;
+  }
+
+  private getEffectiveOpenAiKey(): string | undefined {
+    return process.env.OPENAI_API_KEY || (process.env.LLM_PROVIDER === 'OPENAI' ? process.env.LLM_API_KEY : undefined) || this.openaiApiKey;
+  }
+
+  private getEffectiveAnthropicKey(): string | undefined {
+    return process.env.ANTHROPIC_API_KEY || (process.env.LLM_PROVIDER === 'ANTHROPIC' ? process.env.LLM_API_KEY : undefined) || this.anthropicApiKey;
   }
 
   /**
@@ -206,9 +223,10 @@ CRITICAL CLINICAL RULES:
 }`;
 
     // 3. Attempt Gemini API if configured
-    if (this.geminiApiKey) {
+    const activeGeminiKey = this.getEffectiveGeminiKey();
+    if (activeGeminiKey) {
       try {
-        const geminiRes = await this.callGeminiApi(systemPrompt, req.userMessage);
+        const geminiRes = await this.callGeminiApi(systemPrompt, req.userMessage, activeGeminiKey);
         if (geminiRes) {
           const audited = this.auditGeneratedText(geminiRes.doctorResponse, {
             egfr: req.recentVitals?.egfr || 52,
@@ -237,9 +255,10 @@ CRITICAL CLINICAL RULES:
     }
 
     // 4. Attempt OpenAI API if configured
-    if (this.openaiApiKey) {
+    const activeOpenAiKey = this.getEffectiveOpenAiKey();
+    if (activeOpenAiKey) {
       try {
-        const openaiRes = await this.callOpenAiApi(systemPrompt, req.userMessage, req.dialogueHistory);
+        const openaiRes = await this.callOpenAiApi(systemPrompt, req.userMessage, activeOpenAiKey, req.dialogueHistory);
         if (openaiRes) {
           const audited = this.auditGeneratedText(openaiRes.doctorResponse, {
             egfr: req.recentVitals?.egfr || 52,
@@ -267,15 +286,79 @@ CRITICAL CLINICAL RULES:
       }
     }
 
-    // 5. Intelligent Built-in Clinical LLM Engine (Domain Expert Synthesizer)
+    // 5. Attempt Anthropic API if configured
+    const activeAnthropicKey = this.getEffectiveAnthropicKey();
+    if (activeAnthropicKey) {
+      try {
+        const anthropicRes = await this.callAnthropicApi(systemPrompt, req.userMessage, activeAnthropicKey);
+        if (anthropicRes) {
+          const audited = this.auditGeneratedText(anthropicRes.doctorResponse, {
+            egfr: req.recentVitals?.egfr || 52,
+            hardStops: ['ORAL_NSAIDS_IN_CKD'],
+            guidelinesCited: ['KDIGO 2024'],
+            recommendedAlternatives: ['Topical Diclofenac 1% gel', 'Acetaminophen']
+          });
+
+          return {
+            provider: 'ANTHROPIC',
+            model: this.model.includes('claude') ? this.model : 'claude-3-5-sonnet-20241022',
+            doctorResponse: audited.sanitizedText,
+            clinicalObservations: anthropicRes.clinicalObservations || ['AI clinical dialogue recorded'],
+            suggestedReplies: anthropicRes.suggestedReplies || ['I understand, thank you', 'Tell me more', 'I have another question'],
+            riskLevel: anthropicRes.riskLevel || 'LOW',
+            requiresEmergency: false,
+            safetyGateTriggered: anthropicRes.safetyGateTriggered || audited.violated,
+            safetyDetails: audited.violated ? audited.reason : undefined,
+            latencyMs: Date.now() - startTime,
+            timestamp: new Date().toISOString()
+          };
+        }
+      } catch (err: any) {
+        console.warn('[LLM-GATEWAY] Anthropic API invocation error, using clinical reasoning engine:', err.message);
+      }
+    }
+
+    // 6. Intelligent Built-in Clinical LLM Engine (Domain Expert Synthesizer)
     return this.synthesizeClinicalSpecialistResponse(req, startTime);
+  }
+
+  /**
+   * Anthropic Messages API connector
+   */
+  private async callAnthropicApi(systemPrompt: string, userMessage: string, key: string): Promise<any> {
+    const url = 'https://api.anthropic.com/v1/messages';
+    const payload = {
+      model: this.model.includes('claude') ? this.model : 'claude-3-5-sonnet-20241022',
+      max_tokens: 800,
+      system: `${systemPrompt}\n\nReturn strictly raw JSON format without markdown code blocks.`,
+      messages: [
+        { role: 'user', content: userMessage }
+      ]
+    };
+
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': key,
+        'anthropic-version': '2023-06-01'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (!res.ok) throw new Error(`Anthropic HTTP error ${res.status}`);
+    const data = await res.json() as any;
+    const text = data.content?.[0]?.text;
+    if (!text) return null;
+    const cleaned = text.replace(/```json/gi, '').replace(/```/g, '').trim();
+    return JSON.parse(cleaned);
   }
 
   /**
    * Google Gemini API connector
    */
-  private async callGeminiApi(systemPrompt: string, userMessage: string): Promise<any> {
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${this.geminiApiKey}`;
+  private async callGeminiApi(systemPrompt: string, userMessage: string, key: string): Promise<any> {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`;
     const payload = {
       contents: [
         {
@@ -306,7 +389,7 @@ CRITICAL CLINICAL RULES:
   /**
    * OpenAI Chat Completions API connector
    */
-  private async callOpenAiApi(systemPrompt: string, userMessage: string, history?: { speaker: string; text: string }[]): Promise<any> {
+  private async callOpenAiApi(systemPrompt: string, userMessage: string, key: string, history?: { speaker: string; text: string }[]): Promise<any> {
     const messages: any[] = [
       { role: 'system', content: systemPrompt }
     ];
@@ -326,7 +409,7 @@ CRITICAL CLINICAL RULES:
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${this.openaiApiKey}`
+        'Authorization': `Bearer ${key}`
       },
       body: JSON.stringify({
         model: this.model || 'gpt-4o-mini',
