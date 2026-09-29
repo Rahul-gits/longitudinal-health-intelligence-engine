@@ -20,6 +20,34 @@ interface DoctorAnimatedAvatarProps {
   onSelectPosture?: (posture: DoctorPostureMode) => void;
 }
 
+export type VisemeShape = 'SIL' | 'OH' | 'EE' | 'MBP' | 'FV' | 'LDT' | 'REST_TALK';
+
+function computeVisemeFromWord(word: string, tick: number): VisemeShape {
+  if (!word || !word.trim()) {
+    const osc = Math.sin(tick / 90);
+    return osc > 0.25 ? 'REST_TALK' : 'SIL';
+  }
+  const clean = word.toLowerCase().replace(/[^a-z]/g, '');
+  if (!clean) return 'REST_TALK';
+
+  // Bilabials (lips closed): M, B, P
+  if (/^[mbp]/.test(clean) || /(mb|mp|bb|pp)$/.test(clean)) return 'MBP';
+
+  // Labiodentals: F, V
+  if (/^[fv]/.test(clean) || clean.includes('ph')) return 'FV';
+
+  // Rounded open vowels: O, U, OO, OW, AW
+  if (/(oo|ou|ow|aw|au|[ou])/.test(clean)) return 'OH';
+
+  // Wide smile vowels / stretch: EE, EA, I, E
+  if (/(ee|ea|ai|ay|ey|[ie])/.test(clean)) return 'EE';
+
+  // Alveolar / Dental: L, D, T, N, S, Z, TH
+  if (/^[ldtnsz]/.test(clean) || clean.includes('th') || clean.includes('ch') || clean.includes('sh')) return 'LDT';
+
+  return 'REST_TALK';
+}
+
 export const DoctorAnimatedAvatar: React.FC<DoctorAnimatedAvatarProps> = ({
   persona,
   posture,
@@ -30,8 +58,10 @@ export const DoctorAnimatedAvatar: React.FC<DoctorAnimatedAvatarProps> = ({
 }) => {
   const [blink, setBlink] = useState<boolean>(false);
   const [mouthOpen, setMouthOpen] = useState<number>(0); // 0 to 1
+  const [currentViseme, setCurrentViseme] = useState<VisemeShape>('SIL');
   const [breathPhase, setBreathPhase] = useState<number>(0);
   const [audioMeterLevel, setAudioMeterLevel] = useState<number>(0);
+  const [audioBands, setAudioBands] = useState<number[]>([15, 25, 35, 45, 30, 20, 10, 5]);
 
   // Periodic blinking cycle
   useEffect(() => {
@@ -52,23 +82,47 @@ export const DoctorAnimatedAvatar: React.FC<DoctorAnimatedAvatarProps> = ({
     return () => clearInterval(breathInterval);
   }, []);
 
-  // Lip-sync / Mouth opening oscillation when speaking
+  // High-Fidelity Viseme & Lip-Sync Engine
   useEffect(() => {
     if (!isSpeaking || isMuted) {
       setMouthOpen(0);
+      setCurrentViseme('SIL');
       setAudioMeterLevel(0);
+      setAudioBands([5, 8, 5, 8, 5, 5, 3, 2]);
       return;
     }
 
+    let tick = 0;
     const mouthInterval = setInterval(() => {
-      // Dynamic mouth opening with slight random variation to simulate syllables
-      const randomFactor = Math.sin(Date.now() / 90) * 0.4 + 0.6;
-      setMouthOpen(Math.max(0.15, Math.min(1, randomFactor)));
-      setAudioMeterLevel(Math.floor(Math.random() * 80) + 20);
-    }, 90);
+      tick += 1;
+      const viseme = computeVisemeFromWord(activeWord, Date.now());
+      setCurrentViseme(viseme);
+
+      // Amplitude varies by viseme
+      let targetOpen = 0.5;
+      if (viseme === 'MBP') targetOpen = 0.05; // almost closed
+      else if (viseme === 'OH') targetOpen = 0.95; // tall open
+      else if (viseme === 'EE') targetOpen = 0.45; // wide horizontal
+      else if (viseme === 'FV') targetOpen = 0.35; // upper teeth resting on lip
+      else if (viseme === 'LDT') targetOpen = 0.65; // medium open with tongue
+      else targetOpen = Math.sin(Date.now() / 85) * 0.35 + 0.55;
+
+      setMouthOpen(targetOpen);
+      setAudioMeterLevel(Math.floor(Math.random() * 65) + 35);
+      setAudioBands([
+        Math.floor(Math.random() * 70) + 25,
+        Math.floor(Math.random() * 85) + 15,
+        Math.floor(Math.random() * 90) + 10,
+        Math.floor(Math.random() * 95) + 15,
+        Math.floor(Math.random() * 80) + 20,
+        Math.floor(Math.random() * 75) + 15,
+        Math.floor(Math.random() * 60) + 10,
+        Math.floor(Math.random() * 50) + 5
+      ]);
+    }, 70);
 
     return () => clearInterval(mouthInterval);
-  }, [isSpeaking, isMuted]);
+  }, [isSpeaking, isMuted, activeWord]);
 
   // Derive subtle posture shifts
   const getHeadTilt = () => {
@@ -108,8 +162,14 @@ export const DoctorAnimatedAvatar: React.FC<DoctorAnimatedAvatarProps> = ({
           </span>
         </div>
 
-        {/* Posture Mode Badge */}
+        {/* Posture Mode & Lip-Sync Viseme Badge */}
         <div className="flex items-center space-x-2">
+          {isSpeaking && !isMuted && (
+            <span className="hidden md:flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 font-bold animate-pulse">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+              LIP-SYNC: [{currentViseme}] {activeWord ? `"${activeWord}"` : 'ON'}
+            </span>
+          )}
           <span className="text-[10px] font-black uppercase font-mono px-2 py-0.5 border border-black shadow-[2px_2px_0px_0px_#000] text-black"
                 style={{ backgroundColor: persona.badgeBg }}>
             POSTURE: {posture.toUpperCase()}
@@ -286,32 +346,64 @@ export const DoctorAnimatedAvatar: React.FC<DoctorAnimatedAvatarProps> = ({
               {/* Nose */}
               <path d="M 130 102 L 126 122 L 134 122" fill="none" stroke="#D97706" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
 
-              {/* Animated Mouth (Lip Sync) */}
-              <g id="mouth">
-                {isSpeaking && !isMuted && mouthOpen > 0 ? (
-                  // Open mouth talking with teeth/tongue
-                  <g>
-                    <ellipse 
-                      cx="130" 
-                      cy="142" 
-                      rx={10 + mouthOpen * 4} 
-                      ry={4 + mouthOpen * 7} 
-                      fill="#7F1D1D" 
-                      stroke="#000000" 
-                      strokeWidth="2" 
-                    />
-                    {/* Upper teeth */}
-                    <path 
-                      d={`M ${122 - mouthOpen * 2} 139 Q 130 142 ${138 + mouthOpen * 2} 139`} 
-                      fill="#FFFFFF" 
-                      stroke="#FFFFFF" 
-                      strokeWidth="2" 
-                    />
-                    {/* Tongue */}
-                    <ellipse cx="130" cy={144 + mouthOpen * 2} rx="6" ry="3" fill="#EF4444" />
-                  </g>
+              {/* Animated Mouth with Complete Viseme Lip Sync */}
+              <g id="mouth" className="transition-all duration-75">
+                {isSpeaking && !isMuted ? (
+                  currentViseme === 'MBP' ? (
+                    // MBP: Bilabial closed lips pressed tightly together
+                    <g>
+                      <path d="M 119 142 Q 130 140 141 142" stroke="#881337" strokeWidth="3.5" strokeLinecap="round" />
+                      <path d="M 123 141 Q 130 139 137 141" fill="none" stroke="#FDA4AF" strokeWidth="1.2" />
+                    </g>
+                  ) : currentViseme === 'FV' ? (
+                    // FV: Labiodental - Upper incisors resting on lower lip
+                    <g>
+                      <ellipse cx="130" cy="142" rx="11" ry="4" fill="#4C0519" stroke="#000000" strokeWidth="1.5" />
+                      {/* Upper teeth overlapping lower lip */}
+                      <rect x="124" y="139" width="12" height="3.5" rx="1" fill="#FFFFFF" stroke="#E2E8F0" strokeWidth="0.5" />
+                      <path d="M 121 143 Q 130 146 139 143" fill="none" stroke="#991B1B" strokeWidth="2" strokeLinecap="round" />
+                    </g>
+                  ) : currentViseme === 'OH' ? (
+                    // OH: Tall rounded mouth cavity
+                    <g>
+                      <ellipse cx="130" cy="144" rx={9 + mouthOpen * 2} ry={9 + mouthOpen * 6} fill="#3B0712" stroke="#000000" strokeWidth="2" />
+                      {/* Upper teeth arch */}
+                      <path d="M 124 139 Q 130 141 136 139" fill="none" stroke="#FFFFFF" strokeWidth="2.5" />
+                      {/* Tongue */}
+                      <ellipse cx="130" cy={147 + mouthOpen * 3} rx="6" ry="3.5" fill="#F43F5E" />
+                      {/* Round lips ring */}
+                      <ellipse cx="130" cy="144" rx={10 + mouthOpen * 2} ry={10 + mouthOpen * 6} fill="none" stroke="#991B1B" strokeWidth="2.5" />
+                    </g>
+                  ) : currentViseme === 'EE' ? (
+                    // EE: Wide smile slit, upper and lower teeth prominently exposed
+                    <g>
+                      <ellipse cx="130" cy="142" rx={16 + mouthOpen * 3} ry={4 + mouthOpen * 3} fill="#4C0519" stroke="#000000" strokeWidth="1.5" />
+                      {/* Upper teeth */}
+                      <path d="M 117 139 Q 130 142 143 139" fill="#FFFFFF" stroke="#E2E8F0" strokeWidth="1.5" />
+                      {/* Lower teeth */}
+                      <path d="M 119 144 Q 130 142 141 144" fill="#FFFFFF" stroke="#CBD5E1" strokeWidth="1.5" />
+                      {/* Lip corners */}
+                      <path d="M 113 140 Q 130 147 147 140" fill="none" stroke="#991B1B" strokeWidth="2.5" strokeLinecap="round" />
+                    </g>
+                  ) : currentViseme === 'LDT' ? (
+                    // LDT: Medium open with tongue tip touching upper palate
+                    <g>
+                      <ellipse cx="130" cy="143" rx={12 + mouthOpen * 2} ry={6 + mouthOpen * 4} fill="#450A0A" stroke="#000000" strokeWidth="2" />
+                      {/* Upper teeth line */}
+                      <path d="M 121 140 Q 130 142 139 140" fill="#FFFFFF" stroke="#FFFFFF" strokeWidth="2" />
+                      {/* Elevated Tongue tip */}
+                      <ellipse cx="130" cy={141} rx="5" ry="3" fill="#FB7185" stroke="#E11D48" strokeWidth="1" />
+                    </g>
+                  ) : (
+                    // REST_TALK: Dynamic open talk
+                    <g>
+                      <ellipse cx="130" cy="143" rx={11 + mouthOpen * 3} ry={5 + mouthOpen * 5} fill="#450A0A" stroke="#000000" strokeWidth="2" />
+                      <path d={`M ${122 - mouthOpen * 2} 140 Q 130 142 ${138 + mouthOpen * 2} 140`} fill="#FFFFFF" stroke="#FFFFFF" strokeWidth="2" />
+                      <ellipse cx="130" cy={144 + mouthOpen * 2} rx="6" ry="3" fill="#F43F5E" />
+                    </g>
+                  )
                 ) : (
-                  // Closed warm smile / neutral mouth
+                  // Closed warm smile / neutral posture
                   <path 
                     d={posture === 'alerting' ? "M 122 144 Q 130 141 138 144" : "M 120 140 Q 130 148 140 140"} 
                     fill="none" 

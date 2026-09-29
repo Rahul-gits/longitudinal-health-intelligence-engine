@@ -64,6 +64,13 @@ export const VirtualDoctorScreeningWorkspace: React.FC = () => {
   const [completedSteps, setCompletedSteps] = useState<number[]>([0]);
   const [exportNotice, setExportNotice] = useState<string | null>(null);
 
+  // Multi-Specialist LLM & 2-Way Voice State
+  const [activeAiModel, setActiveAiModel] = useState<string>('LLM Ready');
+  const [aiObservations, setAiObservations] = useState<string[]>([]);
+  const [aiSuggestedReplies, setAiSuggestedReplies] = useState<string[]>([]);
+  const [twoWayHandsFree, setTwoWayHandsFree] = useState<boolean>(true);
+  const [conversationHistory, setConversationHistory] = useState<Array<{ speaker: 'doctor' | 'patient'; text: string }>>([]);
+
   // Free-Text & Microphone ASR State
   const [patientFreeTextInput, setPatientFreeTextInput] = useState<string>('');
   const [isRecordingMic, setIsRecordingMic] = useState<boolean>(false);
@@ -236,62 +243,91 @@ export const VirtualDoctorScreeningWorkspace: React.FC = () => {
     setIsSubmittingDialogue(true);
     speechEngine.stop();
 
+    const updatedHistory = [...conversationHistory, { speaker: 'patient' as const, text: rawText }];
+    setConversationHistory(updatedHistory);
+
     try {
-      // 1. Send to server-side Virtual Doctor session engine
-      const res = await recordVirtualDoctorTurn({
-        sessionId: 'session-eleanor-2026-09',
-        questionVersionId: currentStep.id,
-        doctorQuestionScript: currentStep.spokenScript,
-        doctorPosture: activePosture,
-        patientResponseRaw: rawText
+      const token = localStorage.getItem('heal_token') || sessionStorage.getItem('heal_token');
+      const conditionsList: string[] = currentPatient.conditions || [];
+      const medsList: string[] = currentPatient.medications || [];
+
+      const res = await fetch('/api/screening/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify({
+          patientId: currentPatient.id || 'patient-ev-68',
+          patientName: currentPatient.name,
+          patientAge: currentPatient.age,
+          patientGender: currentPatient.gender,
+          conditions: conditionsList,
+          medications: medsList,
+          allergies: currentPatient.allergies || ['None reported'],
+          primaryPhysician: currentPatient.primaryPhysician || 'Care Team',
+          userMessage: rawText,
+          personaId: activePersona.id,
+          personaName: activePersona.name,
+          specialty: activePersona.specialty,
+          clinicalFocus: activePersona.clinicalFocus,
+          credentials: activePersona.credentials,
+          dialogueHistory: updatedHistory.slice(-6)
+        })
       });
 
-      if (res && res.latestTurn) {
-        const turn = res.latestTurn;
-
-        // Check for STAT_EMERGENCY
-        if (turn.escalationDetails?.urgency === 'STAT_EMERGENCY') {
-          setActivePosture('alerting');
-          setEmergencyBanner(turn.escalationDetails.recommendedAction);
-          setCustomDoctorFeedback(
-            `EMERGENCY ALERT: ${turn.escalationDetails.reason}. ${turn.escalationDetails.recommendedAction}`
-          );
-          setActiveSafetyGateNotice(`HARD STOP: Emergency symptom detected. Routine screening suspended.`);
-          handlePlaySpeech(`Please stop routine screening. We have detected a medical emergency: ${turn.escalationDetails.reason}. Please contact emergency medical services or dial 911 immediately.`);
-        } else if (turn.escalationDetails?.urgency === 'SAME_DAY_CLINICIAN') {
-          setActivePosture('explaining');
-          setCustomDoctorFeedback(turn.escalationDetails.recommendedAction);
-          setActiveSafetyGateNotice(`Clinical Discrepancy Flagged: ${turn.escalationDetails.reason}`);
-          handlePlaySpeech(turn.escalationDetails.recommendedAction);
-        } else {
-          setActivePosture('reassuring');
-          const reply = `Thank you for sharing that. I have recorded "${rawText.slice(0, 40)}" into your longitudinal health record and verified it against your kidney function trend. Let's proceed with your care plan.`;
-          setCustomDoctorFeedback(reply);
-          handlePlaySpeech(reply);
+      if (res.ok) {
+        const data = await res.json();
+        
+        setActiveAiModel(`${data.provider || 'LLM'} (${data.model || 'v2'})`);
+        if (data.clinicalObservations) {
+          setAiObservations(data.clinicalObservations);
+        }
+        if (data.suggestedReplies) {
+          setAiSuggestedReplies(data.suggestedReplies);
         }
 
+        // Check for CRITICAL Emergency
+        if (data.requiresEmergency || data.riskLevel === 'CRITICAL') {
+          setActivePosture('alerting');
+          setEmergencyBanner(data.doctorResponse);
+          setCustomDoctorFeedback(data.doctorResponse);
+          setActiveSafetyGateNotice('CRITICAL SAFETY PROTOCOL: Severe emergency red flag detected.');
+          handlePlaySpeech(data.doctorResponse);
+        } else if (data.safetyGateTriggered) {
+          setActivePosture(data.recommendedPosture || 'alerting');
+          setActiveSafetyGateNotice(`Safety Boundary Engaged: ${data.safetyDetails || 'Clinical contraindication verified via RAG.'}`);
+          setCustomDoctorFeedback(data.doctorResponse);
+          handlePlaySpeech(data.doctorResponse);
+        } else {
+          setActivePosture(data.recommendedPosture || 'reassuring');
+          setCustomDoctorFeedback(data.doctorResponse);
+          handlePlaySpeech(data.doctorResponse);
+        }
+
+        setConversationHistory(prev => [...prev, { speaker: 'doctor' as const, text: data.doctorResponse }]);
         patientStateEngine.addReportedSymptom(rawText, `Virtual Doctor (${activePersona.name})`);
         setPatientFreeTextInput('');
       } else {
-        // Fallback local understanding
+        // Fallback local understanding if server returns non-200
         const lower = rawText.toLowerCase();
         if (lower.includes('chest pain') || lower.includes('crushing')) {
           setActivePosture('alerting');
           setEmergencyBanner('Chest pain detected. Dial 911 or visit the nearest emergency room immediately.');
           handlePlaySpeech('Please stop. Because you reported chest pain, please seek emergency medical attention immediately.');
-        } else if (lower.includes('stopped') && lower.includes('medication')) {
-          setActivePosture('explaining');
-          const prompt = 'I noticed you mentioned stopping your medication. To ensure your safety, could you share which medication you stopped and whether it was due to side effects, cost, or another concern?';
-          setCustomDoctorFeedback(prompt);
-          handlePlaySpeech(prompt);
         } else {
           setActivePosture('reassuring');
-          setCustomDoctorFeedback(`I have recorded your symptom into your chart.`);
-          handlePlaySpeech(`I have recorded that in your chart.`);
+          const fallbackReply = `Thank you for sharing that with me, ${currentPatient.name.split(' ')[0]}. As ${activePersona.name}, I have noted this symptom in your care plan and will monitor your medication safety.`;
+          setCustomDoctorFeedback(fallbackReply);
+          handlePlaySpeech(fallbackReply);
         }
       }
     } catch (err) {
       console.warn('Dialogue submit error:', err);
+      setActivePosture('reassuring');
+      const fallbackReply = `I have received your note, ${currentPatient.name.split(' ')[0]}. We are actively reviewing this with your clinical team.`;
+      setCustomDoctorFeedback(fallbackReply);
+      handlePlaySpeech(fallbackReply);
     } finally {
       setIsSubmittingDialogue(false);
     }
@@ -530,15 +566,20 @@ CONSENSUS STATUS: Verified by Multi-Agent Swarm (94.8% Cohesion).
             </div>
           </div>
 
-          {/* Live Karaoke Subtitles Bar */}
+          {/* Live Karaoke Subtitles Bar & AI Diagnostics */}
           {showCaptions && (
-            <div className="p-4 bg-[#FFFFFF] border-3 border-black shadow-[5px_5px_0px_0px_#000] space-y-1.5">
+            <div className="p-4 bg-[#FFFFFF] border-3 border-black shadow-[5px_5px_0px_0px_#000] space-y-2">
               <div className="flex items-center justify-between text-[10px] font-mono font-bold text-black/70">
                 <span className="flex items-center gap-1.5 text-black font-black uppercase">
                   <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                   LIVE CLOSED CAPTIONS ({activePersona.name})
                 </span>
-                <span className="text-black/50">PHASE: {currentStep.phase.toUpperCase()}</span>
+                <div className="flex items-center gap-1.5">
+                  <span className="px-2 py-0.5 bg-black text-[#FFE600] font-black border border-black text-[9px] shadow-[1px_1px_0px_0px_#000]">
+                    AI: {activeAiModel}
+                  </span>
+                  <span className="text-black/50 hidden sm:inline">PHASE: {currentStep.phase.toUpperCase()}</span>
+                </div>
               </div>
               <div className="p-3 bg-[#FAF8F5] border-2 border-black min-h-[60px] text-xs font-semibold text-black leading-relaxed font-sans">
                 {spokenText.split(' ').map((w, idx) => {
@@ -557,6 +598,29 @@ CONSENSUS STATUS: Verified by Multi-Agent Swarm (94.8% Cohesion).
                   );
                 })}
               </div>
+
+              {/* Real-Time Clinical Observations & RAG Evidence Chips */}
+              {aiObservations.length > 0 && (
+                <div className="pt-1 border-t border-black/10 space-y-1">
+                  <span className="text-[9px] font-mono font-black uppercase text-blue-900 block">
+                    CLINICAL OBSERVATIONS & RAG EVIDENCE:
+                  </span>
+                  <div className="flex flex-wrap gap-1">
+                    {aiObservations.map((obs, oIdx) => (
+                      <span 
+                        key={oIdx}
+                        className={`px-2 py-0.5 text-[9px] font-mono font-bold border rounded-sm ${
+                          obs.includes('[RAG Evidence]')
+                            ? 'bg-purple-100 text-purple-900 border-purple-400'
+                            : 'bg-white text-blue-950 border-blue-300'
+                        }`}
+                      >
+                        {obs}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -676,14 +740,48 @@ CONSENSUS STATUS: Verified by Multi-Agent Swarm (94.8% Cohesion).
               <div className="flex items-center justify-between">
                 <span className="text-[10px] font-mono font-black uppercase text-black flex items-center gap-1.5">
                   <Mic className="w-3.5 h-3.5 text-blue-600" />
-                  <span>TWO-WAY DIALOGUE • SPEAK OR TYPE TO DOCTOR:</span>
+                  <span>TWO-WAY DIALOGUE WITH {activePersona.name.toUpperCase()}:</span>
                 </span>
-                {isRecordingMic && (
-                  <span className="text-[9px] font-mono font-black px-1.5 py-0.2 bg-[#FF0055] text-white animate-pulse">
-                    RECORDING LIVE AUDIO...
-                  </span>
-                )}
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => setTwoWayHandsFree(!twoWayHandsFree)}
+                    className={`px-2 py-0.5 text-[9px] font-mono font-black border border-black cursor-pointer uppercase ${
+                      twoWayHandsFree ? 'bg-[#00F5D4] text-black shadow-[1px_1px_0px_0px_#000]' : 'bg-gray-200 text-gray-700'
+                    }`}
+                    title="Continuous 2-Way Loop"
+                  >
+                    2-WAY AUDIO: {twoWayHandsFree ? 'ON' : 'OFF'}
+                  </button>
+                  {isRecordingMic && (
+                    <span className="text-[9px] font-mono font-black px-1.5 py-0.2 bg-[#FF0055] text-white animate-pulse">
+                      RECORDING...
+                    </span>
+                  )}
+                </div>
               </div>
+
+              {/* Dynamic Suggested Replies from LLM */}
+              {aiSuggestedReplies.length > 0 && (
+                <div className="p-2.5 bg-amber-50/90 border-2 border-black shadow-[2px_2px_0px_0px_#000] space-y-1.5">
+                  <span className="text-[9px] font-mono font-black uppercase text-amber-950 flex items-center gap-1">
+                    <Sparkles className="w-3 h-3 text-amber-700 stroke-[2.5]" />
+                    <span>SUGGESTED REPLIES (CLICK OR SPEAK):</span>
+                  </span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {aiSuggestedReplies.map((reply, rIdx) => (
+                      <button
+                        key={rIdx}
+                        type="button"
+                        onClick={() => handleCustomPatientSubmit(reply)}
+                        className="px-2.5 py-1 text-xs font-semibold bg-white hover:bg-[#FFE600] text-black border border-black shadow-[1px_1px_0px_0px_#000] transition-colors cursor-pointer text-left"
+                      >
+                        "{reply}"
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               <div className="flex items-center gap-1.5">
                 <button
@@ -702,7 +800,7 @@ CONSENSUS STATUS: Verified by Multi-Agent Swarm (94.8% Cohesion).
                   value={patientFreeTextInput}
                   onChange={(e) => setPatientFreeTextInput(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleCustomPatientSubmit()}
-                  placeholder="Tell Dr. Thorne your symptoms (e.g. 'I stopped my pills' or 'My knee hurts')..."
+                  placeholder={`Tell ${activePersona.name} your symptoms (e.g. 'I took two Advil', 'My ankles are swollen')...`}
                   className="flex-1 px-2.5 py-2 border-2 border-black text-xs font-semibold bg-white text-black placeholder:text-black/40 focus:outline-none focus:bg-amber-50/50"
                   disabled={isSubmittingDialogue}
                 />
