@@ -10,10 +10,11 @@
     "build": "tsc -p frontend/tsconfig.json && vite build frontend",
     "lint": "tsc -p frontend/tsconfig.json",
     "lint:server": "tsc -p backend/tsconfig.json",
-    "test": "npm run test:security && npm run test:clinical && npm run test:chaos",
+    "test": "npm run test:security && npm run test:clinical && npm run test:chaos && npm run test:stress",
     "test:security": "tsx -e \"import { securityRbacTestSuite } from './backend/tests/securityRbacTestSuite'; const res = securityRbacTestSuite.runAllSecurityTests(); if (!res.allPassed) { console.error('Security assertions failed'); process.exit(1); } else { console.log('✓ Security assertions 100% passed'); }\"",
     "test:clinical": "tsx -e \"import { clinicalScenarioTestSuite } from './backend/services/clinicalScenarioTestSuite'; clinicalScenarioTestSuite.runAllScenarios().then(r => { if (!r.allPassed) { console.error('Clinical safety assertions failed'); process.exit(1); } else { console.log('✓ Clinical safety scenarios 100% passed (' + r.passedCount + '/' + r.totalScenarios + ')'); } });\"",
     "test:chaos": "tsx -e \"import { FailureChaosTestingService } from './backend/services/failureChaosTestingService'; const rep = FailureChaosTestingService.runChaosSuite(); if (!rep.allPassed) { console.error('Chaos assertions failed'); process.exit(1); } else { console.log('✓ Chaos & Failure resilience 100% passed (' + rep.passedCount + '/' + rep.totalChaosTests + ')'); }\"",
+    "test:stress": "tsx backend/tests/realWorldAndInvalidInputStressTest.ts",
     "preview": "vite preview frontend"
   },
   "dependencies": {
