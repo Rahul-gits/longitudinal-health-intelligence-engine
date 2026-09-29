@@ -206,7 +206,16 @@ export class VectorDatabase {
    */
   public ingest(payload: IngestDocumentPayload): VectorEvidenceChunk {
     const docId = payload.documentId || `DOC-${crypto.randomBytes(4).toString('hex').toUpperCase()}`;
-    const chunkId = `CHUNK-${crypto.randomBytes(6).toString('hex').toUpperCase()}`;
+    let chunkId: string | undefined;
+    for (const [id, c] of this.chunks.entries()) {
+      if (c.documentId === docId) {
+        chunkId = id;
+        break;
+      }
+    }
+    if (!chunkId) {
+      chunkId = `CHUNK-${crypto.randomBytes(6).toString('hex').toUpperCase()}`;
+    }
     const combinedText = `${payload.title} ${payload.section || ''} ${payload.content} ${payload.recommendation || ''}`;
     const embedding = ClinicalEmbeddingEngine.embed(combinedText);
 
