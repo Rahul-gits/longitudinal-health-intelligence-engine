@@ -5,22 +5,30 @@
   "type": "module",
   "scripts": {
     "dev": "concurrently \"npm run server\" \"npm run client\" --names \"BACKEND,FRONTEND\" --prefix-colors \"cyan,yellow\"",
-    "server": "tsx watch server/index.ts",
-    "client": "vite",
-    "build": "tsc && vite build",
-    "lint": "tsc --noEmit",
-    "preview": "vite preview"
+    "server": "tsx watch backend/index.ts",
+    "client": "vite frontend",
+    "build": "tsc -p frontend/tsconfig.json && vite build frontend",
+    "lint": "tsc -p frontend/tsconfig.json",
+    "lint:server": "tsc -p backend/tsconfig.json",
+    "test": "npm run test:security && npm run test:clinical && npm run test:chaos",
+    "test:security": "tsx -e \"import { securityRbacTestSuite } from './backend/tests/securityRbacTestSuite'; const res = securityRbacTestSuite.runAllSecurityTests(); if (!res.allPassed) { console.error('Security assertions failed'); process.exit(1); } else { console.log('✓ Security assertions 100% passed'); }\"",
+    "test:clinical": "tsx -e \"import { clinicalScenarioTestSuite } from './backend/services/clinicalScenarioTestSuite'; clinicalScenarioTestSuite.runAllScenarios().then(r => { if (!r.allPassed) { console.error('Clinical safety assertions failed'); process.exit(1); } else { console.log('✓ Clinical safety scenarios 100% passed (' + r.passedCount + '/' + r.totalScenarios + ')'); } });\"",
+    "test:chaos": "tsx -e \"import { FailureChaosTestingService } from './backend/services/failureChaosTestingService'; const rep = FailureChaosTestingService.runChaosSuite(); if (!rep.allPassed) { console.error('Chaos assertions failed'); process.exit(1); } else { console.log('✓ Chaos & Failure resilience 100% passed (' + rep.passedCount + '/' + rep.totalChaosTests + ')'); }\"",
+    "preview": "vite preview frontend"
   },
   "dependencies": {
+    "@qdrant/js-client-rest": "^1.19.0",
     "clsx": "^2.1.1",
     "cors": "^2.8.6",
     "dotenv": "^18.0.3",
     "express": "^5.2.1",
+    "ioredis": "^6.0.0",
     "lucide-react": "^0.380.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "recharts": "^2.12.7",
-    "tailwind-merge": "^2.3.0"
+    "tailwind-merge": "^2.3.0",
+    "tsx": "^4.23.15"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",

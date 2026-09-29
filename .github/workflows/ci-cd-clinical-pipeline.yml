@@ -26,8 +26,10 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      - name: TypeScript Static Compilation Check
-        run: npx tsc --noEmit
+      - name: TypeScript Static Compilation Check (Frontend & Server)
+        run: |
+          npm run lint
+          npm run lint:server
 
   # ============================================================================
   # Stage 2: Automated Security & RBAC Boundary Evaluation
@@ -50,16 +52,7 @@ jobs:
         run: npm ci
 
       - name: Run Automated Security Test Suite (SEC-001 - SEC-004)
-        run: |
-          npx ts-node -e "
-            import { securityRbacTestSuite } from './server/tests/securityRbacTestSuite';
-            const res = securityRbacTestSuite.runAllSecurityTests();
-            console.log('Security Score:', res.securityScore + '%');
-            if (!res.allPassed) {
-              console.error('Security assertions failed!');
-              process.exit(1);
-            }
-          "
+        run: npm run test:security
 
   # ============================================================================
   # Stage 3: Automated Clinical Scenario Validation (12 Core Tests)
@@ -82,18 +75,7 @@ jobs:
         run: npm ci
 
       - name: Run Clinical Scenarios (SCENARIO-001 - SCENARIO-012)
-        run: |
-          npx ts-node -e "
-            import { clinicalScenarioTestSuite } from './server/services/clinicalScenarioTestSuite';
-            clinicalScenarioTestSuite.runAllScenarios().then(res => {
-              console.log('Clinical Safety Score:', res.overallClinicalSafetyScore + '%');
-              console.log('Passed:', res.passedCount, 'Failed:', res.failedCount);
-              if (!res.allPassed) {
-                console.error('Clinical safety regression detected!');
-                process.exit(1);
-              }
-            });
-          "
+        run: npm run test:clinical
 
   # ============================================================================
   # Stage 4: Production Build & Multi-Stage Docker Container Packaging
@@ -124,6 +106,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
+          file: devops/Dockerfile
           push: false
           tags: heal-engine/core:latest
           cache-from: type=gha
