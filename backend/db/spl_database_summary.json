@@ -1,0 +1,45 @@
+{
+    "archiveSizeGB":  3.22,
+    "archivePath":  "C:\\Users\\rahul\\OneDrive\\Desktop\\Heal Engine\\backend\\db\\dm_spl_release_human_rx_part1.zip",
+    "loincSectionsIndexed":  [
+                                 {
+                                     "code":  "34067-9",
+                                     "name":  "Indications and Usage"
+                                 },
+                                 {
+                                     "code":  "34070-3",
+                                     "name":  "Contraindications"
+                                 },
+                                 {
+                                     "code":  "34066-1",
+                                     "name":  "Boxed Warnings"
+                                 },
+                                 {
+                                     "code":  "34071-1",
+                                     "name":  "Warnings \u0026 Precautions"
+                                 },
+                                 {
+                                     "code":  "34073-7",
+                                     "name":  "Drug Interactions"
+                                 },
+                                 {
+                                     "code":  "43684-0",
+                                     "name":  "Use in Specific Populations (Renal/Hepatic)"
+                                 }
+                             ],
+    "totalSplPackages":  14984,
+    "format":  "FDA Structured Product Labeling (HL7 SPL R4 XML / LOINC 34391-3)",
+    "lastUpdated":  "2026-09-29T15:12:10.8205551+05:30",
+    "archiveSizeBytes":  3221058241,
+    "extractedDrugsSampled":  60,
+    "clinicalDomainsDistribution":  {
+                                        "CNS \u0026 Neurologic":  6,
+                                        "Metabolic":  5,
+                                        "Cardiology":  7,
+                                        "Analgesic":  13,
+                                        "General Medicine":  10,
+                                        "Nephrology":  6,
+                                        "Antimicrobial":  6,
+                                        "Pulmonology":  7
+                                    }
+}

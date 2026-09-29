@@ -317,4 +317,61 @@ router.get('/pipeline/review-packets', (_req: Request, res: Response) => {
   }
 });
 
+import { dailyMedSplService } from '../services/dailyMedSplService';
+
+/**
+ * GET /api/rag/spl/summary
+ * Returns comprehensive statistical and clinical summary of dm_spl_release_human_rx_part1.zip
+ */
+router.get('/spl/summary', (_req: Request, res: Response) => {
+  try {
+    const summary = dailyMedSplService.getDatabaseSummary();
+    res.json({
+      status: 'success',
+      data: summary
+    });
+  } catch (err: any) {
+    res.status(500).json({ status: 'error', message: err.message });
+  }
+});
+
+/**
+ * POST /api/rag/spl/ingest
+ * Trigger ingestion of extracted DailyMed SPL drug packages into vector database
+ */
+router.post('/spl/ingest', (_req: Request, res: Response) => {
+  try {
+    const result = dailyMedSplService.ingestExtractedSplToVectorDb();
+    res.json({
+      status: 'success',
+      message: `Successfully ingested ${result.ingestedCount} FDA SPL drug labels into vector database.`,
+      data: result
+    });
+  } catch (err: any) {
+    res.status(500).json({ status: 'error', message: err.message });
+  }
+});
+
+/**
+ * POST /api/rag/spl/search
+ * Search specifically across FDA SPL drug labeling vector chunks
+ */
+router.post('/spl/search', (req: Request, res: Response) => {
+  try {
+    const { query, topK } = req.body;
+    if (!query || typeof query !== 'string') {
+      return res.status(400).json({ status: 'error', message: 'Text "query" is required.' });
+    }
+    const results = dailyMedSplService.searchSplDrugs(query, topK ? parseInt(topK, 10) : 5);
+    res.json({
+      status: 'success',
+      query,
+      matchCount: results.length,
+      data: results
+    });
+  } catch (err: any) {
+    res.status(500).json({ status: 'error', message: err.message });
+  }
+});
+
 export default router;

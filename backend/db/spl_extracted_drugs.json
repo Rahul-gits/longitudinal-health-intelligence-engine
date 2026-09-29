@@ -1,0 +1,1922 @@
+[
+    {
+        "actionableContraindication":  true,
+        "packageZip":  "prescription/20060131_ABD6ECF0-DC8E-41DE-89F2-1E36ED9D6535.zip",
+        "recommendation":  "FDA Contraindications for Renese: Anuria. Hypersensitivity to this or other sulfonamide derived drugs.",
+        "metadata":  {
+                         "hasDrugInteractions":  false,
+                         "labeler":  "Pfizer Labs",
+                         "hasBlackBoxWarning":  false,
+                         "hasRenalPrecautions":  true
+                     },
+        "medicationName":  "Renese",
+        "clinicalDomain":  "Nephrology",
+        "section":  "FDA Approved Prescribing Information",
+        "recommendedAlternatives":  [
+
+                                    ],
+        "sourceOrganization":  "FDA DailyMed",
+        "evidenceClass":  "FDA Approved Label (Regulatory Level A)",
+        "contraindicatedMedications":  [
+
+                                       ],
+        "pageOrParagraph":  "Package Insert (LOINC 34391-3)",
+        "publicationDate":  "2024 (Verified Official Label)",
+        "guidelineVersion":  "FDA Human Rx SPL Part 1",
+        "content":  "FDA Drug Label: Renese (polythiazide). Indications: Renese is indicated as adjunctive therapy in edema associated with congestive heart failure, hepatic cirrhosis, and corticosteroid and estrogen therapy.Renese has also been found useful in edema due to various forms of renal dysfunction as: Nephrotic syndrome; Acute glomerulonephritis; and Chronic renal failure.Renese is indicated in the management of hypertension either as the sole therapeutic agent or to enhance the effectiveness of other antihypertensive drugs in the more severe forms of hypertension. Contraindications: Anuria. Hypersensitivity to this or other sulfonamide derived drugs. Warnings: Thiazides should be used with caution in severe renal disease. In patients with renal disease, thiazides may precipitate azotemia. Cumulative effects of the drug may develop in patients with impaired renal function.Thiazides should be used with caution in patients with impaired hepatic function or progressive liver disease, since minor alterations of fluid and electrolyte balance may precipitate hepatic coma.Thiazides may add to or potentiate the action of other antihypertensive drugs. Potentiation occurs with ganglionic or peripheral adrenergic blocking drugs.Sensitivity reactions may occur in patients with a history of allergy or bronchial asthma.The possibility of exacerbation or activation of systemic lupus erythematosus has been reported. Drug Interactions:  Renal \u0026 Specific Populations: ",
+        "contraindicatedConditions":  [
+
+                                      ],
+        "activeIngredient":  "polythiazide",
+        "documentId":  "DOC-FDA-SPL-0",
+        "indexInZip":  0
+    },
+    {
+        "actionableContraindication":  true,
+        "packageZip":  "prescription/20070301_290C3E9C-C0C6-440A-1A9C-46E3E2B07A77.zip",
+        "recommendation":  "FDA Contraindications for Endrate: Endrate (Edetate Disodium Injection, USP) is contraindicated in anuric patients. It is not indicated for the treatment of generalized arteriosclerosis associated with advancing age.",
+        "metadata":  {
+                         "hasDrugInteractions":  false,
+                         "labeler":  "FDA Registered Labeler",
+                         "hasBlackBoxWarning":  false,
+                         "hasRenalPrecautions":  false
+                     },
+        "medicationName":  "Endrate",
+        "clinicalDomain":  "Cardiology",
+        "section":  "FDA Approved Prescribing Information",
+        "recommendedAlternatives":  [
+
+                                    ],
+        "sourceOrganization":  "FDA DailyMed",
+        "evidenceClass":  "FDA Approved Label (Regulatory Level A)",
+        "contraindicatedMedications":  [
+
+                                       ],
+        "pageOrParagraph":  "Package Insert (LOINC 34391-3)",
+        "publicationDate":  "2024 (Verified Official Label)",
+        "guidelineVersion":  "FDA Human Rx SPL Part 1",
+        "content":  "FDA Drug Label: Endrate (Edetic acid). Indications: Endrate (Edetate Disodium Injection, USP) is indicated in selected patients for the emergency treatment of hypercalcemia and for the control of ventricular arrhythmias associated with digitalis toxicity. Contraindications: Endrate (Edetate Disodium Injection, USP) is contraindicated in anuric patients. It is not indicated for the treatment of generalized arteriosclerosis associated with advancing age. Warnings: WARNINGThe use of this drug in any particular patient is recommended only when the severity of the clinical condition justifies the aggressive measures associated with this type of therapy. Drug Interactions:  Renal \u0026 Specific Populations: ",
+        "contraindicatedConditions":  [
+
+                                      ],
+        "activeIngredient":  "Edetic acid",
+        "documentId":  "DOC-FDA-SPL-99",
+        "indexInZip":  99
+    },
+    {
+        "actionableContraindication":  true,
+        "packageZip":  "prescription/20080208_1f0f5fb3-5292-4d04-b590-3c90a663eec8.zip",
+        "recommendation":  "FDA Contraindications for Propranolol Hydrochloride: Propranolol is contraindicated in 1) cardiogenic shock; 2) sinus bradycardia and greater than first-degree block; 3) bronchial asthma; and 4) in patients with known hypersensitivity to propranolol hydrochloride.",
+        "metadata":  {
+                         "hasDrugInteractions":  false,
+                         "labeler":  "Baxter Healthcare Corporation",
+                         "hasBlackBoxWarning":  false,
+                         "hasRenalPrecautions":  false
+                     },
+        "medicationName":  "Propranolol Hydrochloride",
+        "clinicalDomain":  "Pulmonology",
+        "section":  "FDA Approved Prescribing Information",
+        "recommendedAlternatives":  [
+
+                                    ],
+        "sourceOrganization":  "FDA DailyMed",
+        "evidenceClass":  "FDA Approved Label (Regulatory Level A)",
+        "contraindicatedMedications":  [
+
+                                       ],
+        "pageOrParagraph":  "Package Insert (LOINC 34391-3)",
+        "publicationDate":  "2024 (Verified Official Label)",
+        "guidelineVersion":  "FDA Human Rx SPL Part 1",
+        "content":  "FDA Drug Label: Propranolol Hydrochloride (Propranolol). Indications:  Contraindications: Propranolol is contraindicated in 1) cardiogenic shock; 2) sinus bradycardia and greater than first-degree block; 3) bronchial asthma; and 4) in patients with known hypersensitivity to propranolol hydrochloride. Warnings:  Drug Interactions:  Renal \u0026 Specific Populations: ",
+        "contraindicatedConditions":  [
+
+                                      ],
+        "activeIngredient":  "Propranolol",
+        "documentId":  "DOC-FDA-SPL-198",
+        "indexInZip":  198
+    },
+    {
+        "actionableContraindication":  true,
+        "packageZip":  "prescription/20090109_B6C35A62-A7EA-4C1D-A00A-24D82CDC65BE.zip",
+        "recommendation":  "FDA Contraindications for Vasovist: History of a prior allergic reaction to a gadolinium-based contrast agent.",
+        "metadata":  {
+                         "hasDrugInteractions":  true,
+                         "labeler":  "Bayer Healthcare, Inc.",
+                         "hasBlackBoxWarning":  false,
+                         "hasRenalPrecautions":  true
+                     },
+        "medicationName":  "Vasovist",
+        "clinicalDomain":  "Nephrology",
+        "section":  "FDA Approved Prescribing Information",
+        "recommendedAlternatives":  [
+
+                                    ],
+        "sourceOrganization":  "FDA DailyMed",
+        "evidenceClass":  "FDA Approved Label (Regulatory Level A)",
+        "contraindicatedMedications":  [
+
+                                       ],
+        "pageOrParagraph":  "Package Insert (LOINC 34391-3)",
+        "publicationDate":  "2024 (Verified Official Label)",
+        "guidelineVersion":  "FDA Human Rx SPL Part 1",
+        "content":  "FDA Drug Label: Vasovist (gadofosveset). Indications: VASOVIST is indicated for use as a contrast agent in magnetic resonance angiography (MRA) to evaluate aortoiliac occlusive disease (AIOD) in adults with known or suspected peripheral vascular disease [see Clinical Studies (14)]. Contraindications: History of a prior allergic reaction to a gadolinium-based contrast agent. Warnings: Gadolinium-based contrast agents increase the risk for nephrogenic systemic fibrosis (NSF) in patients with:acute or chronic severe renal insufficiency (glomerular filtration rate \u003c30 mL/min/1.73m2), oracute renal insufficiency of any severity due to the hepato-renal syndrome or in the perioperative liver transplantation period.In these patients, avoid use of gadolinium-based contrast agents unless the diagnostic information is essential and not available with non-contrast enhanced magnetic resonance imaging (MRI). NSF may result in fatal or debilitating systemic fibrosis affecting the skin, muscle, and internal organs. Screen all patients for renal dysfunction by obtaining a history and/or laboratory tests. When administering a gadolinium-based contrast agent, do not exceed the recommende... Drug Interactions: Following injection, VASOVIST binds to blood albumin and has the potential to alter the binding of other drugs that also bind to albumin. No drug interaction reactions were observed in clinical trials. Consider the possibility of VASOVIST interaction with concomitantly administered medications that bind to albumin. An interaction may enhance or decrease the activity of the concomitant medication [see Clinical Pharmacology (12.3)]. Renal \u0026 Specific Populations: ",
+        "contraindicatedConditions":  [
+
+                                      ],
+        "activeIngredient":  "gadofosveset",
+        "documentId":  "DOC-FDA-SPL-297",
+        "indexInZip":  297
+    },
+    {
+        "actionableContraindication":  true,
+        "packageZip":  "prescription/20091218_0fb71326-54c9-4139-befe-06ca832d02c8.zip",
+        "recommendation":  "FDA Contraindications for Cotton: Allergenic extracts should not be used if the patient has asthma, cardiovascular disease, emphysema, diabetes, bleeding diathesis or pregnancy, unless a specific diagnosis of type 1 allergic disease is made based on skin testing and the benefits of treatment outweigh the risks of an adverse reaction during testing or treatment. Allergenic extracts are not indicated for use in patients who are not clinically allergic or who are not skin reactive to an allergen. Allergenic extracts should be discontinued or the concentration of potency substantially reduced in patients who experience unacceptable adverse reactions.",
+        "metadata":  {
+                         "hasDrugInteractions":  false,
+                         "labeler":  "Nelco Laboratories, Inc.",
+                         "hasBlackBoxWarning":  false,
+                         "hasRenalPrecautions":  false
+                     },
+        "medicationName":  "Cotton",
+        "clinicalDomain":  "Metabolic",
+        "section":  "FDA Approved Prescribing Information",
+        "recommendedAlternatives":  [
+
+                                    ],
+        "sourceOrganization":  "FDA DailyMed",
+        "evidenceClass":  "FDA Approved Label (Regulatory Level A)",
+        "contraindicatedMedications":  [
+
+                                       ],
+        "pageOrParagraph":  "Package Insert (LOINC 34391-3)",
+        "publicationDate":  "2024 (Verified Official Label)",
+        "guidelineVersion":  "FDA Human Rx SPL Part 1",
+        "content":  "FDA Drug Label: Cotton (COTTON). Indications: Allergenic extracts are indicated for use in diagnostic testing and as part of a treatment regime for allergic disease, as established by allergy history and skin test reactivity. Allergenic extracts are indicated for the treatment of allergen specific allergic disease for use as hyposensitization or immunotherapy when avoidance of specific allergens can not be attained. The use of allergenic extracts for therapeutic purpose has been established by well-controlled clinical studies. Allergenic extracts may be used as adjunctive therapy along with pharmacotherapy which includes antihistamines, corticosteroids, and cromoglycate, and avoidance measures. Allergenic extracts for therapeutic use should be given using only the allergen selection to which the patient is allergic, has a history of e... Contraindications: Allergenic extracts should not be used if the patient has asthma, cardiovascular disease, emphysema, diabetes, bleeding diathesis or pregnancy, unless a specific diagnosis of type 1 allergic disease is made based on skin testing and the benefits of treatment outweigh the risks of an adverse reaction during testing or treatment. Allergenic extracts are not indicated for use in patients who are not clinically allergic or who are not skin reactive to an allergen. Allergenic extracts should be discontinued or the concentration of potency substantially reduced in patients who experience unacceptable adverse reactions. Warnings: Diagnostic and therapeutic allergenic extracts are intended to be administered by a physician who is an allergy specialist and experienced in allergenic diagnostic testing and immunotherapy and the emergency care of anaphylaxis. This product should not be injected intravenously. Deep subcutaneous routes have been safe. Sensitive patients may experience severe anaphylactic reactions resulting in respiratory obstruction, shock, coma and/or death. (See Adverse Reactions)Serious adverse reactions should be reported to Nelco Laboratories immediately and a report filed to: MedWatch, The FDA Medical Product Problem Reporting Program, at 5600 Fishers Lane, Rockville, Md. 20852-9787, call 1-800-FDA-1088.Extreme caution should be taken when using allergenic extracts for patients who are taking beta-... Drug Interactions:  Renal \u0026 Specific Populations: ",
+        "contraindicatedConditions":  [
+
+                                      ],
+        "activeIngredient":  "COTTON",
+        "documentId":  "DOC-FDA-SPL-396",
+        "indexInZip":  396
+    },
+    {
+        "actionableContraindication":  true,
+        "packageZip":  "prescription/20100226_b808f809-40fa-43c6-a33f-2ec21a293051.zip",
+        "recommendation":  "FDA Contraindications for Citalopram Hydrobromide: Concomitant use in patients taking monoamine oxidase inhibitors (MAOI’s) is contraindicated (see WARNINGS). Concomitant use in patients taking pimozide is contraindicated (see PRECAUTIONS).Citalopram HBr is contraindicated in patients with a hypersensitivity to citalopram or any of the inactive ingredients in citalopram tablets USP.",
+        "metadata":  {
+                         "hasDrugInteractions":  true,
+                         "labeler":  "Contract Pharmacy Services-PA",
+                         "hasBlackBoxWarning":  false,
+                         "hasRenalPrecautions":  false
+                     },
+        "medicationName":  "Citalopram Hydrobromide",
+        "clinicalDomain":  "CNS \u0026 Neurologic",
+        "section":  "FDA Approved Prescribing Information",
+        "recommendedAlternatives":  [
+
+                                    ],
+        "sourceOrganization":  "FDA DailyMed",
+        "evidenceClass":  "FDA Approved Label (Regulatory Level A)",
+        "contraindicatedMedications":  [
+
+                                       ],
+        "pageOrParagraph":  "Package Insert (LOINC 34391-3)",
+        "publicationDate":  "2024 (Verified Official Label)",
+        "guidelineVersion":  "FDA Human Rx SPL Part 1",
+        "content":  "FDA Drug Label: Citalopram Hydrobromide (CITALOPRAM). Indications: Citalopram HBr is indicated for the treatment of depression.The efficacy of citalopram HBr in the treatment of depression was established in 4-6 week controlled trials of outpatients whose diagnosis corresponded most closely to the DSM-III and DSM-III-R category of major depressive disorder (see CLINICAL PHARMACOLOGY).A major depressive episode (DSM-IV) implies a prominent and relatively persistent (nearly every day for at least 2 weeks) depressed or dysphoric mood that usually interferes with daily functioning, and includes at least five of the following nine symptoms: depressed mood, loss of interest in usual activities, significant change in weight and/or appetite, insomnia or hypersomnia, psychomotor agitation or retardation, increased fatigue, feelings of guilt or worthlessness, slowe... Contraindications: Concomitant use in patients taking monoamine oxidase inhibitors (MAOI’s) is contraindicated (see WARNINGS). Concomitant use in patients taking pimozide is contraindicated (see PRECAUTIONS).Citalopram HBr is contraindicated in patients with a hypersensitivity to citalopram or any of the inactive ingredients in citalopram tablets USP. Warnings: Antidepressants increased the risk compared to placebo of suicidal thinking and behavior (suicidality) in children, adolescents, and young adults in short-term studies of major depressive disorder (MDD) and other psychiatric disorders. Anyone considering the use of citalopram or any other antidepressant in a child, adolescent, or young adult must balance this risk with the clinical need. Short-term studies did not show an increase in the risk of suicidality with antidepressants compared to placebo in adults beyond age 24; there was a reduction in risk with antidepressants compared to placebo in adults aged 65 and older. Depression and certain other psychiatric disorders are themselves associated with increases in the risk of suicide. Patients of all ages who are started on antidepressant t... Drug Interactions: CNS Drugs – Given the primary CNS effects of citalopram, caution should be used when it is taken in combination with other centrally acting drugs.Alcohol – Although citalopram did not potentiate the cognitive and motor effects of alcohol in a clinical trial, as with other psychotropic medications, the use of alcohol by depressed patients taking citalopram is not recommended.Monoamine Oxidase Inhibitors (MAOI’s) – See CONTRAINDICATIONS and WARNINGS.Drugs That Interfere With Hemostasis (NSAIDs, Aspirin, Warfarin, etc.) – Serotonin release by platelets plays an important role in hemostasis. Epidemiological studies of the case-control and cohort design that have demonstrated an association between use of psychotropic drugs that interfere with serotonin reuptake and the occurrence of upper gast... Renal \u0026 Specific Populations: ",
+        "contraindicatedConditions":  [
+
+                                      ],
+        "activeIngredient":  "CITALOPRAM",
+        "documentId":  "DOC-FDA-SPL-594",
+        "indexInZip":  594
+    },
+    {
+        "actionableContraindication":  true,
+        "packageZip":  "prescription/20100514_4306730b-e894-45ca-b4e9-3fe7f65b7b1d.zip",
+        "recommendation":  "FDA Contraindications for Cefadroxil: Cefadroxil monohydrate is contraindicated in patients with known allergy to the cephalosporin group of antibiotics.",
+        "metadata":  {
+                         "hasDrugInteractions":  false,
+                         "labeler":  "Physicians Total Care, Inc.",
+                         "hasBlackBoxWarning":  false,
+                         "hasRenalPrecautions":  false
+                     },
+        "medicationName":  "Cefadroxil",
+        "clinicalDomain":  "Antimicrobial",
+        "section":  "FDA Approved Prescribing Information",
+        "recommendedAlternatives":  [
+
+                                    ],
+        "sourceOrganization":  "FDA DailyMed",
+        "evidenceClass":  "FDA Approved Label (Regulatory Level A)",
+        "contraindicatedMedications":  [
+
+                                       ],
+        "pageOrParagraph":  "Package Insert (LOINC 34391-3)",
+        "publicationDate":  "2024 (Verified Official Label)",
+        "guidelineVersion":  "FDA Human Rx SPL Part 1",
+        "content":  "FDA Drug Label: Cefadroxil (CEFADROXIL). Indications: Cefadroxil monohydrate is indicated for the treatment of patients with infection caused by susceptible strains of the designated organisms in the following diseases:Urinary tract infections caused by E. coli, P. mirabilis, and Klebsiella species.Skin and skin structure infections caused by staphylococci and/or streptococci.Pharyngitis and/or tonsillitis caused by Streptococcus pyogenes (Group A beta-hemolytic streptococci).Note: Only penicillin by the intramuscular route of administration has been shown to be effective in the prophylaxis of rheumatic fever. Cefadroxil monohydrate is generally effective in the eradication of streptococci from the oropharynx. However, data establishing the efficacy of cefadroxil monohydrate for the prophylaxis of subsequent rheumatic fever are not available.... Contraindications: Cefadroxil monohydrate is contraindicated in patients with known allergy to the cephalosporin group of antibiotics. Warnings: To reduce the development of drug-resistant bacteria and maintain the effectiveness of cefadroxil for oral suspension and other antibacterial drugs, cefadroxil for oral suspension should be used only to treat or prevent infections that are proven or strongly suspected to be caused by bacteria. Drug Interactions:  Renal \u0026 Specific Populations: ",
+        "contraindicatedConditions":  [
+
+                                      ],
+        "activeIngredient":  "CEFADROXIL",
+        "documentId":  "DOC-FDA-SPL-792",
+        "indexInZip":  792
+    },
+    {
+        "actionableContraindication":  true,
+        "packageZip":  "prescription/20100611_d1a0aa24-0f81-498a-8c25-5095b2bb8f57.zip",
+        "recommendation":  "FDA Contraindications for Verapamil Hydrochloride: Verapamil Hydrochloride Extended-Release Tablets are contraindicated in:Severe left ventricular dysfunction (see WARNINGS).Hypotension (systolic pressure less than 90 mm Hg) or cardiogenic shock.Sick sinus syndrome (except in patients with a functioning artificial ventricular pacemaker).Second- or third-degree AV block (except in patients with a functioning artificial ventricular pacemaker).Patients with atrial flutter or atrial fibrillation and an accessory bypass tract (e.g., Wolff-Parkinson-White, Lown-Ganong-Levine syndromes) (see WARNINGS).Patients with known hypersensitivity to verapamil hydrochloride.",
+        "metadata":  {
+                         "hasDrugInteractions":  false,
+                         "labeler":  "State of Florida DOH Central Pharmacy",
+                         "hasBlackBoxWarning":  false,
+                         "hasRenalPrecautions":  false
+                     },
+        "medicationName":  "Verapamil Hydrochloride",
+        "clinicalDomain":  "Cardiology",
+        "section":  "FDA Approved Prescribing Information",
+        "recommendedAlternatives":  [
+
+                                    ],
+        "sourceOrganization":  "FDA DailyMed",
+        "evidenceClass":  "FDA Approved Label (Regulatory Level A)",
+        "contraindicatedMedications":  [
+
+                                       ],
+        "pageOrParagraph":  "Package Insert (LOINC 34391-3)",
+        "publicationDate":  "2024 (Verified Official Label)",
+        "guidelineVersion":  "FDA Human Rx SPL Part 1",
+        "content":  "FDA Drug Label: Verapamil Hydrochloride (VERAPAMIL). Indications: Verapamil HCl Extended-Release Tablets are indicated for the management of essential hypertension. Contraindications: Verapamil Hydrochloride Extended-Release Tablets are contraindicated in:Severe left ventricular dysfunction (see WARNINGS).Hypotension (systolic pressure less than 90 mm Hg) or cardiogenic shock.Sick sinus syndrome (except in patients with a functioning artificial ventricular pacemaker).Second- or third-degree AV block (except in patients with a functioning artificial ventricular pacemaker).Patients with atrial flutter or atrial fibrillation and an accessory bypass tract (e.g., Wolff-Parkinson-White, Lown-Ganong-Levine syndromes) (see WARNINGS).Patients with known hypersensitivity to verapamil hydrochloride. Warnings:  Drug Interactions:  Renal \u0026 Specific Populations: ",
+        "contraindicatedConditions":  [
+
+                                      ],
+        "activeIngredient":  "VERAPAMIL",
+        "documentId":  "DOC-FDA-SPL-891",
+        "indexInZip":  891
+    },
+    {
+        "actionableContraindication":  true,
+        "packageZip":  "prescription/20100810_340a7760-50b1-4825-9766-eaaad0dd7712.zip",
+        "recommendation":  "FDA Contraindications for Tramadol Hydrochloride: Tramadol hydrochloride should not be administered to patients who have previously demonstrated hypersensitivity to tramadol, any other component of this product or opioids. Tramadol hydrochloride is contraindicated in any situation where opioids are contraindicated, including acute intoxication with any of the following: alcohol, hypnotics, narcotics, centrally acting analgesics, opioids or psychotropic drugs. Tramadol hydrochloride may worsen central nervous system and respiratory depression in these patients.",
+        "metadata":  {
+                         "hasDrugInteractions":  false,
+                         "labeler":  "Keltman Pharmaceuticals Inc.",
+                         "hasBlackBoxWarning":  false,
+                         "hasRenalPrecautions":  false
+                     },
+        "medicationName":  "Tramadol Hydrochloride",
+        "clinicalDomain":  "Analgesic",
+        "section":  "FDA Approved Prescribing Information",
+        "recommendedAlternatives":  [
+
+                                    ],
+        "sourceOrganization":  "FDA DailyMed",
+        "evidenceClass":  "FDA Approved Label (Regulatory Level A)",
+        "contraindicatedMedications":  [
+
+                                       ],
+        "pageOrParagraph":  "Package Insert (LOINC 34391-3)",
+        "publicationDate":  "2024 (Verified Official Label)",
+        "guidelineVersion":  "FDA Human Rx SPL Part 1",
+        "content":  "FDA Drug Label: Tramadol Hydrochloride (TRAMADOL). Indications: Tramadol hydrochloride is indicated for the management of moderate to moderately severe pain in adults. Contraindications: Tramadol hydrochloride should not be administered to patients who have previously demonstrated hypersensitivity to tramadol, any other component of this product or opioids. Tramadol hydrochloride is contraindicated in any situation where opioids are contraindicated, including acute intoxication with any of the following: alcohol, hypnotics, narcotics, centrally acting analgesics, opioids or psychotropic drugs. Tramadol hydrochloride may worsen central nervous system and respiratory depression in these patients. Warnings:  Drug Interactions:  Renal \u0026 Specific Populations: ",
+        "contraindicatedConditions":  [
+
+                                      ],
+        "activeIngredient":  "TRAMADOL",
+        "documentId":  "DOC-FDA-SPL-1287",
+        "indexInZip":  1287
+    },
+    {
+        "actionableContraindication":  true,
+        "packageZip":  "prescription/20100825_a7a7ba28-78c5-453e-a101-61c6afa40216.zip",
+        "recommendation":  "FDA Contraindications for OXYCODONE HYDROCHLORIDE: Oxycodone hydrochloride tablets are contraindicated in patients with known hypersensitivity to oxycodone, or in any situation where opioids are contraindicated. This includes patients with significant respiratory depression (in unmonitored settings or the absence of resuscitative equipment) and patients with acute or severe bronchial asthma or hypercarbia. Oxycodone hydrochloride tablets are contraindicated in any patient who has or is suspected of having paralytic ileus.",
+        "metadata":  {
+                         "hasDrugInteractions":  true,
+                         "labeler":  "Blenheim Pharmacal, Inc.",
+                         "hasBlackBoxWarning":  false,
+                         "hasRenalPrecautions":  false
+                     },
+        "medicationName":  "OXYCODONE HYDROCHLORIDE",
+        "clinicalDomain":  "Analgesic",
+        "section":  "FDA Approved Prescribing Information",
+        "recommendedAlternatives":  [
+
+                                    ],
+        "sourceOrganization":  "FDA DailyMed",
+        "evidenceClass":  "FDA Approved Label (Regulatory Level A)",
+        "contraindicatedMedications":  [
+
+                                       ],
+        "pageOrParagraph":  "Package Insert (LOINC 34391-3)",
+        "publicationDate":  "2024 (Verified Official Label)",
+        "guidelineVersion":  "FDA Human Rx SPL Part 1",
+        "content":  "FDA Drug Label: OXYCODONE HYDROCHLORIDE (OXYCODONE). Indications: Oxycodone hydrochloride tablets are an immediate-release oral formulation of oxycodone hydrochloride indicated for the management of moderate to severe pain where the use of an opioid analgesic is appropriate. Contraindications: Oxycodone hydrochloride tablets are contraindicated in patients with known hypersensitivity to oxycodone, or in any situation where opioids are contraindicated. This includes patients with significant respiratory depression (in unmonitored settings or the absence of resuscitative equipment) and patients with acute or severe bronchial asthma or hypercarbia. Oxycodone hydrochloride tablets are contraindicated in any patient who has or is suspected of having paralytic ileus. Warnings:  Drug Interactions: Oxycodone is metabolized in part to oxymorphone via the cytochrome p450 isoenzyme CYP2D6. While this pathway may be blocked by a variety of drugs (e.g., certain cardiovascular drugs and antidepressants), such blockade has not yet been shown to be of clinical significance with this agent. However, clinicians should be aware of this possible interaction. Renal \u0026 Specific Populations: ",
+        "contraindicatedConditions":  [
+
+                                      ],
+        "activeIngredient":  "OXYCODONE",
+        "documentId":  "DOC-FDA-SPL-1386",
+        "indexInZip":  1386
+    },
+    {
+        "actionableContraindication":  true,
+        "packageZip":  "prescription/20101004_5845e789-8191-46f9-bbd0-79fb0c716601.zip",
+        "recommendation":  "FDA Contraindications for Esterified Estrogens and Methyltestosterone: Estrogens should not be used in women with any of the following conditions:Known or suspected cancer of the breast except in appropriately selected patients being treated for metastatic disease.Known or suspected estrogen-dependent neoplasia.Known or suspected pregnancy (See Boxed Warning).Undiagnosed abnormal genital bleeding.Active thrombophlebitis or thromboembolic disorders.A past history of thrombophlebitis, thrombosis, or thromboembolic disorders associated with previous estrogen use (except when in treatment of breast malignancy).Methyltestosterone should not be used in:The presence of severe liver damage.Pregnancy and in breast-feeding mothers because of the possibility of masculinization of the female fetus or breast-fed infant.",
+        "metadata":  {
+                         "hasDrugInteractions":  false,
+                         "labeler":  "Tal Pharma LLC",
+                         "hasBlackBoxWarning":  false,
+                         "hasRenalPrecautions":  false
+                     },
+        "medicationName":  "Esterified Estrogens and Methyltestosterone",
+        "clinicalDomain":  "CNS \u0026 Neurologic",
+        "section":  "FDA Approved Prescribing Information",
+        "recommendedAlternatives":  [
+
+                                    ],
+        "sourceOrganization":  "FDA DailyMed",
+        "evidenceClass":  "FDA Approved Label (Regulatory Level A)",
+        "contraindicatedMedications":  [
+
+                                       ],
+        "pageOrParagraph":  "Package Insert (LOINC 34391-3)",
+        "publicationDate":  "2024 (Verified Official Label)",
+        "guidelineVersion":  "FDA Human Rx SPL Part 1",
+        "content":  "FDA Drug Label: Esterified Estrogens and Methyltestosterone (ESTRONE). Indications: ESTERIFIED ESTROGENS AND METHYLTESTOSTERONE TABLETS Full Strength and Half Strength are indicated in the treatment of: Moderate to severe vasomotor symptoms associated with the menopause in those patients not improved by estrogens alone. (There is no evidence that estrogens are effective for nervous symptoms or depression without associated vasomotor symptoms, and they should not be used to treat such conditions.)ESTERIFIED ESTROGENS AND METHYLTESTOSTERONE TABLETS Full Strength and Half Strength HAVE NOT BEEN SHOWN TO BE EFFECTIVE FOR ANY PURPOSE DURING PREGNANCY AND ITS USE MAY CAUSE SEVERE HARM TO THE FETUS (SEE BOXED WARNING). Contraindications: Estrogens should not be used in women with any of the following conditions:Known or suspected cancer of the breast except in appropriately selected patients being treated for metastatic disease.Known or suspected estrogen-dependent neoplasia.Known or suspected pregnancy (See Boxed Warning).Undiagnosed abnormal genital bleeding.Active thrombophlebitis or thromboembolic disorders.A past history of thrombophlebitis, thrombosis, or thromboembolic disorders associated with previous estrogen use (except when in treatment of breast malignancy).Methyltestosterone should not be used in:The presence of severe liver damage.Pregnancy and in breast-feeding mothers because of the possibility of masculinization of the female fetus or breast-fed infant. Warnings: 1. ESTROGENS HAVE BEEN REPORTED TO INCREASE THE RISK OF ENDOMETRIAL CARCINOMA.Three independent case control studies have reported an increased risk of endometrial cancer in postmenopausal women exposed to exogenous estrogens for prolonged periods.1-3 This risk was independent of the other known risk factors for endometrial cancer. These studies are further supported by the finding that incidence rates of endometrial cancer have increased sharply since 1969 in eight different areas of the United States with population-based cancer reporting systems, an increase which may be related to the rapidly expanding use of estrogens during the last decade.4The three case control studies reported that the risk of endometrial cancer in estrogen users was about 4.5 to 13.9 times greater than in nonuser... Drug Interactions:  Renal \u0026 Specific Populations: ",
+        "contraindicatedConditions":  [
+
+                                      ],
+        "activeIngredient":  "ESTRONE",
+        "documentId":  "DOC-FDA-SPL-1485",
+        "indexInZip":  1485
+    },
+    {
+        "actionableContraindication":  true,
+        "packageZip":  "prescription/20101108_5e211b18-8cdc-42ab-8756-4ce2dd94925c.zip",
+        "recommendation":  "FDA Contraindications for Indomethacin: Indomethacin extended-release capsules is contraindicated in patients with known hypersensitivity to indomethacin.Indomethacin extended-release capsules should not be given to patients who have experienced asthma, urticaria or allergic-type reactions after taking aspirin or other NSAIDs. Severe, rarely fatal, anaphylactic-like reactions to NSAIDs have been reported in such patients (see WARNINGS, Anaphylactoid Reactions and PRECAUTIONS, Preexisting Asthma).Indomethacin extended-release capsules is contraindicated for the treatment of peri-operative pain in the setting of coronary artery bypass graft (CABG) surgery (see WARNINGS).",
+        "metadata":  {
+                         "hasDrugInteractions":  false,
+                         "labeler":  "Physicians Total Care, Inc.",
+                         "hasBlackBoxWarning":  false,
+                         "hasRenalPrecautions":  false
+                     },
+        "medicationName":  "Indomethacin",
+        "clinicalDomain":  "Analgesic",
+        "section":  "FDA Approved Prescribing Information",
+        "recommendedAlternatives":  [
+
+                                    ],
+        "sourceOrganization":  "FDA DailyMed",
+        "evidenceClass":  "FDA Approved Label (Regulatory Level A)",
+        "contraindicatedMedications":  [
+
+                                       ],
+        "pageOrParagraph":  "Package Insert (LOINC 34391-3)",
+        "publicationDate":  "2024 (Verified Official Label)",
+        "guidelineVersion":  "FDA Human Rx SPL Part 1",
+        "content":  "FDA Drug Label: Indomethacin (INDOMETHACIN). Indications: Carefully consider the potential benefits and risks of indomethacin extended-release capsules and other treatment options before deciding to use indomethacin extended-release capsules. Use the lowest effective dose for the shortest duration consistent with individual patient treatment goals (see WARNINGS).Indomethacin extended-release capsules have been found effective in active stages of the following:1. Moderate to severe rheumatoid arthritis including acute flares of chronic disease.2. Moderate to severe ankylosing spondylitis.3. Moderate to severe osteoarthritis.4. Acute painful shoulder (bursitis and/or tendinitis).Indomethacin extended-release capsules is not recommended for the treatment of acute gouty arthritis.Indomethacin may enable the reduction of steroid dosage in patients rec... Contraindications: Indomethacin extended-release capsules is contraindicated in patients with known hypersensitivity to indomethacin.Indomethacin extended-release capsules should not be given to patients who have experienced asthma, urticaria or allergic-type reactions after taking aspirin or other NSAIDs. Severe, rarely fatal, anaphylactic-like reactions to NSAIDs have been reported in such patients (see WARNINGS, Anaphylactoid Reactions and PRECAUTIONS, Preexisting Asthma).Indomethacin extended-release capsules is contraindicated for the treatment of peri-operative pain in the setting of coronary artery bypass graft (CABG) surgery (see WARNINGS). Warnings: Cardiovascular Risk• NSAIDs may cause an increased risk of serious cardiovascular thrombotic events, myocardial infarction and stroke, which can be fatal. This risk may increase with duration of use. Patients with cardiovascular disease or risk factors for cardiovascular disease may be at greater risk (see WARNINGS).• Indomethacin is contraindicated for the treatment of peri-operative pain in the setting of coronary artery bypass graft (CABG) surgery (see WARNINGS).Gastrointestinal Risk• NSAIDs cause an increased risk of serious gastrointestinal adverse events including bleeding, ulceration and perforation of the stomach or intestines, which can be fatal. These events can occur at any time during use and without warning symptoms. Elderly patients are at greater risk for serious gastrointes... Drug Interactions:  Renal \u0026 Specific Populations: ",
+        "contraindicatedConditions":  [
+
+                                      ],
+        "activeIngredient":  "INDOMETHACIN",
+        "documentId":  "DOC-FDA-SPL-1584",
+        "indexInZip":  1584
+    },
+    {
+        "actionableContraindication":  true,
+        "packageZip":  "prescription/20101201_1cb783ed-5496-4b4d-995b-e81157f9f8d1.zip",
+        "recommendation":  "FDA Contraindications for ROPINIROLE HYDROCHLORIDE: Ropinirole hydrochloride tablets are contraindicated for patients known to have hypersensitivity reaction ( including urticaria, angioedema, rash, pruritus) to ropinirole or to any of the excipients.",
+        "metadata":  {
+                         "hasDrugInteractions":  false,
+                         "labeler":  "Rebel Distributors Corp",
+                         "hasBlackBoxWarning":  false,
+                         "hasRenalPrecautions":  false
+                     },
+        "medicationName":  "ROPINIROLE HYDROCHLORIDE",
+        "clinicalDomain":  "General Medicine",
+        "section":  "FDA Approved Prescribing Information",
+        "recommendedAlternatives":  [
+
+                                    ],
+        "sourceOrganization":  "FDA DailyMed",
+        "evidenceClass":  "FDA Approved Label (Regulatory Level A)",
+        "contraindicatedMedications":  [
+
+                                       ],
+        "pageOrParagraph":  "Package Insert (LOINC 34391-3)",
+        "publicationDate":  "2024 (Verified Official Label)",
+        "guidelineVersion":  "FDA Human Rx SPL Part 1",
+        "content":  "FDA Drug Label: ROPINIROLE HYDROCHLORIDE (ROPINIROLE). Indications:  Contraindications: Ropinirole hydrochloride tablets are contraindicated for patients known to have hypersensitivity reaction ( including urticaria, angioedema, rash, pruritus) to ropinirole or to any of the excipients. Warnings:  Drug Interactions:  Renal \u0026 Specific Populations: ",
+        "contraindicatedConditions":  [
+
+                                      ],
+        "activeIngredient":  "ROPINIROLE",
+        "documentId":  "DOC-FDA-SPL-1683",
+        "indexInZip":  1683
+    },
+    {
+        "actionableContraindication":  true,
+        "packageZip":  "prescription/20101220_4b546121-ef6b-458c-ae0c-ce5bba3dc9a3.zip",
+        "recommendation":  "FDA Contraindications for Clarinex: CLARINEX Tablets 5 mg are contraindicated in patients who are hypersensitive to this medication or to any of its ingredients, or to loratadine.",
+        "metadata":  {
+                         "hasDrugInteractions":  false,
+                         "labeler":  "Physicians Total Care, Inc.",
+                         "hasBlackBoxWarning":  false,
+                         "hasRenalPrecautions":  false
+                     },
+        "medicationName":  "Clarinex",
+        "clinicalDomain":  "General Medicine",
+        "section":  "FDA Approved Prescribing Information",
+        "recommendedAlternatives":  [
+
+                                    ],
+        "sourceOrganization":  "FDA DailyMed",
+        "evidenceClass":  "FDA Approved Label (Regulatory Level A)",
+        "contraindicatedMedications":  [
+
+                                       ],
+        "pageOrParagraph":  "Package Insert (LOINC 34391-3)",
+        "publicationDate":  "2024 (Verified Official Label)",
+        "guidelineVersion":  "FDA Human Rx SPL Part 1",
+        "content":  "FDA Drug Label: Clarinex (DESLORATADINE). Indications: Seasonal Allergic RhinitisCLARINEX is indicated for the relief of the nasal and non-nasal symptoms of seasonal allergic rhinitis in patients 2 years of age and older.Perennial Allergic RhinitisCLARINEX is indicated for the relief of the nasal and non-nasal symptoms of perennial allergic rhinitis in patients 6 months of age and older.Chronic Idiopathic UrticariaCLARINEX is indicated for the symptomatic relief of pruritus, reduction in the number of hives, and size of hives, in patients with chronic idiopathic urticaria 6 months of age and older. Contraindications: CLARINEX Tablets 5 mg are contraindicated in patients who are hypersensitive to this medication or to any of its ingredients, or to loratadine. Warnings:  Drug Interactions:  Renal \u0026 Specific Populations: ",
+        "contraindicatedConditions":  [
+
+                                      ],
+        "activeIngredient":  "DESLORATADINE",
+        "documentId":  "DOC-FDA-SPL-1782",
+        "indexInZip":  1782
+    },
+    {
+        "actionableContraindication":  true,
+        "packageZip":  "prescription/20110111_dbfa7ae4-35af-4ed3-bca4-7900cd92047c.zip",
+        "recommendation":  "FDA Contraindications for Aciphex: Enter section text here",
+        "metadata":  {
+                         "hasDrugInteractions":  true,
+                         "labeler":  "Physicians Total Care, Inc.",
+                         "hasBlackBoxWarning":  false,
+                         "hasRenalPrecautions":  false
+                     },
+        "medicationName":  "Aciphex",
+        "clinicalDomain":  "General Medicine",
+        "section":  "FDA Approved Prescribing Information",
+        "recommendedAlternatives":  [
+
+                                    ],
+        "sourceOrganization":  "FDA DailyMed",
+        "evidenceClass":  "FDA Approved Label (Regulatory Level A)",
+        "contraindicatedMedications":  [
+
+                                       ],
+        "pageOrParagraph":  "Package Insert (LOINC 34391-3)",
+        "publicationDate":  "2024 (Verified Official Label)",
+        "guidelineVersion":  "FDA Human Rx SPL Part 1",
+        "content":  "FDA Drug Label: Aciphex (RABEPRAZOLE). Indications: Enter section text here Contraindications: Enter section text here Warnings:  Drug Interactions: Enter section text here Renal \u0026 Specific Populations: Enter section text here",
+        "contraindicatedConditions":  [
+
+                                      ],
+        "activeIngredient":  "RABEPRAZOLE",
+        "documentId":  "DOC-FDA-SPL-1881",
+        "indexInZip":  1881
+    },
+    {
+        "actionableContraindication":  false,
+        "packageZip":  "prescription/20110202_32ae8f5a-ea78-4e64-a58a-856ed8cf4f78.zip",
+        "recommendation":  "FDA Prescribing Warning for AZITHROMYCIN: Serious allergic reactions, including angioedema, anaphylaxis, and dermatologic reactions including Stevens Johnson Syndrome and toxic epidermal necrolysis have been reported rarely in patients on azithromycin therapy. Although rare, fatalities have been reported. (See CONTRAINDICATIONS.) Despite initially successful symptomatic treatment of the allergic symptoms, when symptomatic therapy was discontinued, the allergic symptoms recurred soon thereafter in some patients without further azithromycin exposure. These patients required prolonged periods of observation and symptomatic treatment. The relationship of these episodes to the long tissue half-life of azithromycin and subsequent prolonged exposure to antigen is unknown at present.If an allergic reaction occurs, the drug should be disco...",
+        "metadata":  {
+                         "hasDrugInteractions":  false,
+                         "labeler":  "STAT RX USA LLC",
+                         "hasBlackBoxWarning":  false,
+                         "hasRenalPrecautions":  false
+                     },
+        "medicationName":  "AZITHROMYCIN",
+        "clinicalDomain":  "Antimicrobial",
+        "section":  "FDA Approved Prescribing Information",
+        "recommendedAlternatives":  [
+
+                                    ],
+        "sourceOrganization":  "FDA DailyMed",
+        "evidenceClass":  "FDA Approved Label (Regulatory Level A)",
+        "contraindicatedMedications":  [
+
+                                       ],
+        "pageOrParagraph":  "Package Insert (LOINC 34391-3)",
+        "publicationDate":  "2024 (Verified Official Label)",
+        "guidelineVersion":  "FDA Human Rx SPL Part 1",
+        "content":  "FDA Drug Label: AZITHROMYCIN (AZITHROMYCIN). Indications: Azithromycin tablets are indicated for the treatment of patients with mild to moderate infections (pneumonia: see WARNINGS) caused by susceptible strains of the designated microorganisms in the specific conditions listed below. As recommended dosages, durations of therapy and applicable patient populations vary among these infections, please see DOSAGE AND ADMINISTRATION for specific dosing recommendations. Contraindications:  Warnings: Serious allergic reactions, including angioedema, anaphylaxis, and dermatologic reactions including Stevens Johnson Syndrome and toxic epidermal necrolysis have been reported rarely in patients on azithromycin therapy. Although rare, fatalities have been reported. (See CONTRAINDICATIONS.) Despite initially successful symptomatic treatment of the allergic symptoms, when symptomatic therapy was discontinued, the allergic symptoms recurred soon thereafter in some patients without further azithromycin exposure. These patients required prolonged periods of observation and symptomatic treatment. The relationship of these episodes to the long tissue half-life of azithromycin and subsequent prolonged exposure to antigen is unknown at present.If an allergic reaction occurs, the drug should be disco... Drug Interactions:  Renal \u0026 Specific Populations: ",
+        "contraindicatedConditions":  [
+
+                                      ],
+        "activeIngredient":  "AZITHROMYCIN",
+        "documentId":  "DOC-FDA-SPL-1980",
+        "indexInZip":  1980
+    },
+    {
+        "actionableContraindication":  true,
+        "packageZip":  "prescription/20110321_b59504cb-dfdd-4c5c-9686-1af6d97306c8.zip",
+        "recommendation":  "FDA Contraindications for Ketoconazole: Ketoconazole Shampoo, 2% is contraindicated in persons who have known hypersensitivity to the active ingredient or excipients of this formulation.",
+        "metadata":  {
+                         "hasDrugInteractions":  false,
+                         "labeler":  "Physicians Total Care, Inc.",
+                         "hasBlackBoxWarning":  false,
+                         "hasRenalPrecautions":  false
+                     },
+        "medicationName":  "Ketoconazole",
+        "clinicalDomain":  "Antimicrobial",
+        "section":  "FDA Approved Prescribing Information",
+        "recommendedAlternatives":  [
+
+                                    ],
+        "sourceOrganization":  "FDA DailyMed",
+        "evidenceClass":  "FDA Approved Label (Regulatory Level A)",
+        "contraindicatedMedications":  [
+
+                                       ],
+        "pageOrParagraph":  "Package Insert (LOINC 34391-3)",
+        "publicationDate":  "2024 (Verified Official Label)",
+        "guidelineVersion":  "FDA Human Rx SPL Part 1",
+        "content":  "FDA Drug Label: Ketoconazole (KETOCONAZOLE). Indications: Ketoconazole Shampoo, 2% is indicated for the treatment of tinea (pityriasis) versicolor caused by or presumed to be caused by Pityrosporum orbiculare (also known as Malassezia furfur or M. orbiculare). Note: Tinea (pityriasis) versicolor may give rise to hyperpigmented or hypopigmented patches on the trunk which may extend to the neck, arms and upper thighs. Treatment of the infection may not immediately result in normalization of pigment to the affected sites. Normalization of pigment following successful therapy is variable and may take months, depending on individual skin type and incidental sun exposure. Although tinea versicolor is not contagious, it may recur because the organism that causes the disease is part of the normal skin flora. Contraindications: Ketoconazole Shampoo, 2% is contraindicated in persons who have known hypersensitivity to the active ingredient or excipients of this formulation. Warnings:  Drug Interactions:  Renal \u0026 Specific Populations: ",
+        "contraindicatedConditions":  [
+
+                                      ],
+        "activeIngredient":  "KETOCONAZOLE",
+        "documentId":  "DOC-FDA-SPL-2079",
+        "indexInZip":  2079
+    },
+    {
+        "actionableContraindication":  true,
+        "packageZip":  "prescription/20110420_403f109d-618d-404d-9ce6-11192e6e1796.zip",
+        "recommendation":  "FDA Contraindications for ACETAMINOPHEN AND CODEINE PHOSPHATE: This product should not be administered to patients who have previously exhibited hypersensitivity to codeine or acetaminophen.",
+        "metadata":  {
+                         "hasDrugInteractions":  true,
+                         "labeler":  "Blenheim Pharmacal, Inc.",
+                         "hasBlackBoxWarning":  false,
+                         "hasRenalPrecautions":  false
+                     },
+        "medicationName":  "ACETAMINOPHEN AND CODEINE PHOSPHATE",
+        "clinicalDomain":  "Analgesic",
+        "section":  "FDA Approved Prescribing Information",
+        "recommendedAlternatives":  [
+
+                                    ],
+        "sourceOrganization":  "FDA DailyMed",
+        "evidenceClass":  "FDA Approved Label (Regulatory Level A)",
+        "contraindicatedMedications":  [
+
+                                       ],
+        "pageOrParagraph":  "Package Insert (LOINC 34391-3)",
+        "publicationDate":  "2024 (Verified Official Label)",
+        "guidelineVersion":  "FDA Human Rx SPL Part 1",
+        "content":  "FDA Drug Label: ACETAMINOPHEN AND CODEINE PHOSPHATE (ACETAMINOPHEN). Indications: Acetaminophen and codeine phosphate tablets are indicated for the relief of mild to moderately severe pain. Contraindications: This product should not be administered to patients who have previously exhibited hypersensitivity to codeine or acetaminophen. Warnings: In the presence of head injury or other intracranial lesions, the respiratory depressant effects of codeine and other narcotics may be markedly enhanced, as well as their capacity for elevating cerebrospinal fluid pressure. Narcotics also produce other CNS depressant effects, such as drowsiness, that may further obscure the clinical course of the patients with head injuries.Codeine or other narcotics may obscure signs on which to judge the diagnosis or clinical course of patients with acute abdominal conditions.Codeine is habit-forming and potentially abusable. Consequently, the extended use of this product is not recommended. Drug Interactions: This drug may enhance the effects of other narcotic analgesics, alcohol, general anesthetics, tranquilizers such as chlordiazepoxide, sedative-hypnotics, or other CNS depressants, causing increased CNS depression. Renal \u0026 Specific Populations: ",
+        "contraindicatedConditions":  [
+
+                                      ],
+        "activeIngredient":  "ACETAMINOPHEN",
+        "documentId":  "DOC-FDA-SPL-2178",
+        "indexInZip":  2178
+    },
+    {
+        "actionableContraindication":  true,
+        "packageZip":  "prescription/20110531_7a7ff864-f4e4-48da-94c2-6ccbc30de49c.zip",
+        "recommendation":  "FDA Contraindications for Diphenoxylate Hydrochloride and Atropine Sulfate: Diphenoxylate hydrochloride and atropine sulfate tablets are contraindicated in patients withKnown hypersensitivity to diphenoxylate or atropine,Obstructive jaundice,Diarrhea associated with pseudomembranous enterocolitis or enterotoxin-producing bacteria.",
+        "metadata":  {
+                         "hasDrugInteractions":  true,
+                         "labeler":  "RedPharm Drug, Inc.",
+                         "hasBlackBoxWarning":  false,
+                         "hasRenalPrecautions":  false
+                     },
+        "medicationName":  "Diphenoxylate Hydrochloride and Atropine Sulfate",
+        "clinicalDomain":  "Pulmonology",
+        "section":  "FDA Approved Prescribing Information",
+        "recommendedAlternatives":  [
+
+                                    ],
+        "sourceOrganization":  "FDA DailyMed",
+        "evidenceClass":  "FDA Approved Label (Regulatory Level A)",
+        "contraindicatedMedications":  [
+
+                                       ],
+        "pageOrParagraph":  "Package Insert (LOINC 34391-3)",
+        "publicationDate":  "2024 (Verified Official Label)",
+        "guidelineVersion":  "FDA Human Rx SPL Part 1",
+        "content":  "FDA Drug Label: Diphenoxylate Hydrochloride and Atropine Sulfate (DIPHENOXYLATE). Indications: Diphenoxylate hydrochloride and atropine sulfate tablets are effective as adjunctive therapy in the management of diarrhea. Contraindications: Diphenoxylate hydrochloride and atropine sulfate tablets are contraindicated in patients withKnown hypersensitivity to diphenoxylate or atropine,Obstructive jaundice,Diarrhea associated with pseudomembranous enterocolitis or enterotoxin-producing bacteria. Warnings: THIS IS NOT AN INNOCUOUS DRUG AND DOSAGE RECOMMENDATIONS SHOULD BE STRICTLY ADHERED TO, ESPECIALLY IN CHILDREN. DIPHENOXYLATE HYDROCHLORIDE AND ATROPINE SULFATE IS NOT RECOMMENDED FOR CHILDREN UNDER 2 YEARS OF AGE. OVERDOSAGE MAY RESULT IN SEVERE RESPIRATORY DEPRESSION AND COMA, POSSIBLY LEADING TO PERMANENT BRAIN DAMAGE OR DEATH (See OVERDOSAGE). THEREFORE, KEEP THIS MEDICATION OUT OF THE REACH OF CHILDREN. THE USE OF DIPHENOXYLATE HYDROCHLORIDE AND ATROPINE SULFATE SHOULD BE ACCOMPANIED BY APPROPRIATE FLUID AND ELECTROLYTE THERAPY, WHEN INDICATED. IF SEVERE DEHYDRATION OR ELECTROLYTE IMBALANCE IS PRESENT, THIS PRODUCT SHOULD BE WITHHELD UNTIL APPROPRIATE CORRECTIVE THERAPY HAS BEEN INITIATED. DRUG-INDUCED INHIBITION OF PERISTALSIS MAY RESULT IN FLUID RETENTION IN THE INTESTINE, WHICH MAY... Drug Interactions: Known drug interactions include barbiturates, tranquilizers, and alcohol. Diphenoxylate hydrochloride and atropine sulfate may interact with MAO inhibitors (see WARNINGS).In studies with male rats, diphenoxylate hydrochloride was found to inhibit the hepatic microsomal enzyme system at a dose of 2 mg/kg/day. Therefore, diphenoxylate has the potential to prolong the biological half-lives of drugs for which the rate of elimination is dependent on the microsomal drug metabolizing enzyme system. Renal \u0026 Specific Populations: ",
+        "contraindicatedConditions":  [
+
+                                      ],
+        "activeIngredient":  "DIPHENOXYLATE",
+        "documentId":  "DOC-FDA-SPL-2277",
+        "indexInZip":  2277
+    },
+    {
+        "actionableContraindication":  true,
+        "packageZip":  "prescription/20110630_26b65fec-9a5d-4b9b-9b87-c3d328c58cd0.zip",
+        "recommendation":  "FDA Contraindications for Divalproex Sodium: Divalproex sodium extended-release tablets should not be administered to patients with hepatic disease or significant hepatic dysfunction. [see Warnings and Precautions (5.1)].Divalproex sodium extended-release tablets are contraindicated in patients with known hypersensitivity to the drug. [see Warnings and Precautions (510)].Divalproex sodium extended-release tablets are contraindicated in patients with known urea cycle disorders [see Warnings and Precautions (5.4)].",
+        "metadata":  {
+                         "hasDrugInteractions":  false,
+                         "labeler":  "Physicians Total Care, Inc.",
+                         "hasBlackBoxWarning":  false,
+                         "hasRenalPrecautions":  false
+                     },
+        "medicationName":  "Divalproex Sodium",
+        "clinicalDomain":  "Metabolic",
+        "section":  "FDA Approved Prescribing Information",
+        "recommendedAlternatives":  [
+
+                                    ],
+        "sourceOrganization":  "FDA DailyMed",
+        "evidenceClass":  "FDA Approved Label (Regulatory Level A)",
+        "contraindicatedMedications":  [
+
+                                       ],
+        "pageOrParagraph":  "Package Insert (LOINC 34391-3)",
+        "publicationDate":  "2024 (Verified Official Label)",
+        "guidelineVersion":  "FDA Human Rx SPL Part 1",
+        "content":  "FDA Drug Label: Divalproex Sodium (VALPROIC ACID). Indications:  Contraindications: Divalproex sodium extended-release tablets should not be administered to patients with hepatic disease or significant hepatic dysfunction. [see Warnings and Precautions (5.1)].Divalproex sodium extended-release tablets are contraindicated in patients with known hypersensitivity to the drug. [see Warnings and Precautions (510)].Divalproex sodium extended-release tablets are contraindicated in patients with known urea cycle disorders [see Warnings and Precautions (5.4)]. Warnings: HepatotoxicityHepatic failure resulting in fatalities has occurred in patients receiving valproic acid and its derivatives. Children under the age of two years are at a considerably increased risk of developing fatal hepatotoxicity, especially those on multiple anticonvulsants, those with congenital metabolic disorders, those with severe seizure disorders accompanied by mental retardation, and those with organic brain disease. When divalproex sodium extended-release tablets are used in this patient group, it should be used with extreme caution and as a sole agent. The benefits of therapy should be weighed against the risks. The incidence of fatal hepatotoxicity decreases considerably in progressively older patient groups.These incidents usually have occurred during the first six months of ... Drug Interactions:  Renal \u0026 Specific Populations: ",
+        "contraindicatedConditions":  [
+
+                                      ],
+        "activeIngredient":  "VALPROIC ACID",
+        "documentId":  "DOC-FDA-SPL-2376",
+        "indexInZip":  2376
+    },
+    {
+        "actionableContraindication":  true,
+        "packageZip":  "prescription/20110729_f3b5094e-5dcb-48d0-8c1a-c8d2e83a8ad9.zip",
+        "recommendation":  "FDA Contraindications for Lisinopril: Lisinopril is contraindicated in patients who are hypersensitive to this product and in patients with a history of angioedema related to previous treatment with an angiotensin converting enzyme inhibitor and in patients with hereditary or idiopathic angioedema.",
+        "metadata":  {
+                         "hasDrugInteractions":  true,
+                         "labeler":  "RedPharm Drug Inc.",
+                         "hasBlackBoxWarning":  false,
+                         "hasRenalPrecautions":  false
+                     },
+        "medicationName":  "Lisinopril",
+        "clinicalDomain":  "General Medicine",
+        "section":  "FDA Approved Prescribing Information",
+        "recommendedAlternatives":  [
+
+                                    ],
+        "sourceOrganization":  "FDA DailyMed",
+        "evidenceClass":  "FDA Approved Label (Regulatory Level A)",
+        "contraindicatedMedications":  [
+
+                                       ],
+        "pageOrParagraph":  "Package Insert (LOINC 34391-3)",
+        "publicationDate":  "2024 (Verified Official Label)",
+        "guidelineVersion":  "FDA Human Rx SPL Part 1",
+        "content":  "FDA Drug Label: Lisinopril (LISINOPRIL). Indications:  Contraindications: Lisinopril is contraindicated in patients who are hypersensitive to this product and in patients with a history of angioedema related to previous treatment with an angiotensin converting enzyme inhibitor and in patients with hereditary or idiopathic angioedema. Warnings: USE IN PREGNANCYWhen used in pregnancy during the second and third trimesters, ACE inhibitors can cause injury and even death to the developing fetus. When pregnancy is detected, lisinopril should be discontinued as soon as possible. See WARNINGS, Fetal/Neonatal Morbidity and Mortality. Drug Interactions: Hypotension - Patients on Diuretic Therapy: Patients on diuretics and especially those in whom diuretic therapy was recently instituted, may occasionally experience an excessive reduction of blood pressure after initiation of therapy with lisinopril. The possibility of hypotensive effects with lisinopril can be minimized by either discontinuing the diuretic or increasing the salt intake prior to initiation of treatment with lisinopril. If it is necessary to continue the diuretic, initiate therapy with lisinopril at a dose of 5 mg daily, and provide close medical supervision after the initial dose until blood pressure has stabilized. (See WARNINGS, and DOSAGE AND ADMINISTRATION.) When a diuretic is added to the therapy of a patient receiving lisinopril, an additional antihypertensive effect... Renal \u0026 Specific Populations: ",
+        "contraindicatedConditions":  [
+
+                                      ],
+        "activeIngredient":  "LISINOPRIL",
+        "documentId":  "DOC-FDA-SPL-2475",
+        "indexInZip":  2475
+    },
+    {
+        "actionableContraindication":  true,
+        "packageZip":  "prescription/20110817_b00b296d-6c34-48c8-9cfb-71ccc5c9a908.zip",
+        "recommendation":  "FDA Contraindications for Promethazine VC: Promethazine is contraindicated in comatose states, and in individuals known to be hypersensitive or to have had an idiosyncratic reaction to promethazine or to other phenothiazines.Antihistamines are contraindicated for use in the treatment of lower respiratory tract symptoms, including asthma.Phenylephrine is contraindicated in patients with hypertension or with peripheral vascular insufficiency (ischemia may result with risk of gangrene or thrombosis of compromised vascular beds). Phenylephrine should not be used in patients known to be hypersensitive to the drug or in those receiving a monoamine oxidase inhibitor (MAOI).",
+        "metadata":  {
+                         "hasDrugInteractions":  false,
+                         "labeler":  "Preferred  Pharmaceuticals, Inc",
+                         "hasBlackBoxWarning":  false,
+                         "hasRenalPrecautions":  false
+                     },
+        "medicationName":  "Promethazine VC",
+        "clinicalDomain":  "Cardiology",
+        "section":  "FDA Approved Prescribing Information",
+        "recommendedAlternatives":  [
+
+                                    ],
+        "sourceOrganization":  "FDA DailyMed",
+        "evidenceClass":  "FDA Approved Label (Regulatory Level A)",
+        "contraindicatedMedications":  [
+
+                                       ],
+        "pageOrParagraph":  "Package Insert (LOINC 34391-3)",
+        "publicationDate":  "2024 (Verified Official Label)",
+        "guidelineVersion":  "FDA Human Rx SPL Part 1",
+        "content":  "FDA Drug Label: Promethazine VC (PROMETHAZINE). Indications: Promethazine hydrochloride and phenylephrine hydrochloride syrup is indicated for the temporary relief of upper respiratory symptoms, including nasal congestion, associated with allergy or the common cold. Contraindications: Promethazine is contraindicated in comatose states, and in individuals known to be hypersensitive or to have had an idiosyncratic reaction to promethazine or to other phenothiazines.Antihistamines are contraindicated for use in the treatment of lower respiratory tract symptoms, including asthma.Phenylephrine is contraindicated in patients with hypertension or with peripheral vascular insufficiency (ischemia may result with risk of gangrene or thrombosis of compromised vascular beds). Phenylephrine should not be used in patients known to be hypersensitive to the drug or in those receiving a monoamine oxidase inhibitor (MAOI). Warnings:  Drug Interactions:  Renal \u0026 Specific Populations: ",
+        "contraindicatedConditions":  [
+
+                                      ],
+        "activeIngredient":  "PROMETHAZINE",
+        "documentId":  "DOC-FDA-SPL-2574",
+        "indexInZip":  2574
+    },
+    {
+        "actionableContraindication":  false,
+        "packageZip":  "prescription/20110923_9e5bb949-c9be-48cd-b0a2-6b7fd536e777.zip",
+        "recommendation":  "FDA Prescribing Warning for AZITHROMYCIN: Serious allergic reactions, including angioedema, anaphylaxis, and dermatologic reactions including Stevens Johnson Syndrome and toxic epidermal necrolysis have been reported rarely in patients on azithromycin therapy. Although rare, fatalities have been reported. (See CONTRAINDICATIONS.) Despite initially successful symptomatic treatment of the allergic symptoms, when symptomatic therapy was discontinued, the allergic symptoms recurred soon thereafter in some patients without further azithromycin exposure. These patients required prolonged periods of observation and symptomatic treatment. The relationship of these episodes to the long tissue half-life of azithromycin and subsequent prolonged exposure to antigen is unknown at present.If an allergic reaction occurs, the drug should be disco...",
+        "metadata":  {
+                         "hasDrugInteractions":  false,
+                         "labeler":  "Dispensing Solutions, Inc.",
+                         "hasBlackBoxWarning":  false,
+                         "hasRenalPrecautions":  false
+                     },
+        "medicationName":  "AZITHROMYCIN",
+        "clinicalDomain":  "Antimicrobial",
+        "section":  "FDA Approved Prescribing Information",
+        "recommendedAlternatives":  [
+
+                                    ],
+        "sourceOrganization":  "FDA DailyMed",
+        "evidenceClass":  "FDA Approved Label (Regulatory Level A)",
+        "contraindicatedMedications":  [
+
+                                       ],
+        "pageOrParagraph":  "Package Insert (LOINC 34391-3)",
+        "publicationDate":  "2024 (Verified Official Label)",
+        "guidelineVersion":  "FDA Human Rx SPL Part 1",
+        "content":  "FDA Drug Label: AZITHROMYCIN (AZITHROMYCIN). Indications: Azithromycin tablets are indicated for the treatment of patients with mild to moderate infections (pneumonia: see WARNINGS) caused by susceptible strains of the designated microorganisms in the specific conditions listed below. As recommended dosages, durations of therapy and applicable patient populations vary among these infections, please see DOSAGE AND ADMINISTRATION for specific dosing recommendations. Contraindications:  Warnings: Serious allergic reactions, including angioedema, anaphylaxis, and dermatologic reactions including Stevens Johnson Syndrome and toxic epidermal necrolysis have been reported rarely in patients on azithromycin therapy. Although rare, fatalities have been reported. (See CONTRAINDICATIONS.) Despite initially successful symptomatic treatment of the allergic symptoms, when symptomatic therapy was discontinued, the allergic symptoms recurred soon thereafter in some patients without further azithromycin exposure. These patients required prolonged periods of observation and symptomatic treatment. The relationship of these episodes to the long tissue half-life of azithromycin and subsequent prolonged exposure to antigen is unknown at present.If an allergic reaction occurs, the drug should be disco... Drug Interactions:  Renal \u0026 Specific Populations: ",
+        "contraindicatedConditions":  [
+
+                                      ],
+        "activeIngredient":  "AZITHROMYCIN",
+        "documentId":  "DOC-FDA-SPL-2673",
+        "indexInZip":  2673
+    },
+    {
+        "actionableContraindication":  true,
+        "packageZip":  "prescription/20111103_b906d325-27f1-4fb4-86ab-a2c896470e1e.zip",
+        "recommendation":  "FDA Contraindications for Sulindac: Sulindac tablets are contraindicated in patients with known hypersensitivity to sulindac or the excipients (see DESCRIPTION).Sulindac tablets should not be given to patients who have experienced asthma, urticaria, or allergic-type reactions after taking aspirin or other NSAIDs. Severe, rarely fatal, anaphylactic/anaphylactoid reactions to NSAIDs have been reported in such patients (see WARNINGS – Anaphylactic/Anaphylactoid Reactions, and PRECAUTIONS – Preexisting Asthma).Sulindac tablets are contraindicated for the treatment of peri-operative pain in the setting of coronary artery bypass graft (CABG) surgery (see WARNINGS).",
+        "metadata":  {
+                         "hasDrugInteractions":  true,
+                         "labeler":  "Physicians Total Care, Inc.",
+                         "hasBlackBoxWarning":  false,
+                         "hasRenalPrecautions":  false
+                     },
+        "medicationName":  "Sulindac",
+        "clinicalDomain":  "Analgesic",
+        "section":  "FDA Approved Prescribing Information",
+        "recommendedAlternatives":  [
+
+                                    ],
+        "sourceOrganization":  "FDA DailyMed",
+        "evidenceClass":  "FDA Approved Label (Regulatory Level A)",
+        "contraindicatedMedications":  [
+
+                                       ],
+        "pageOrParagraph":  "Package Insert (LOINC 34391-3)",
+        "publicationDate":  "2024 (Verified Official Label)",
+        "guidelineVersion":  "FDA Human Rx SPL Part 1",
+        "content":  "FDA Drug Label: Sulindac (SULINDAC). Indications: Carefully consider the potential benefits and risks of sulindac and other treatment options before deciding to use sulindac. Use the lowest effective dose for the shortest duration consistent with individual patient treatment goals (see WARNINGS).Sulindac tablets are indicated for acute long-term use in the relief of signs and symptoms of the following:OsteoarthritisRheumatoid arthritis*Ankylosing spondylitisAcute painful shoulder (Acute subacromial bursitis/supraspinatus tendinitis)Acute gouty arthritis * The safety and effectiveness of sulindac have not been established in rheumatoid arthritis patients who are designated in the American Rheumatism Association classification as Functional Class IV (incapacitated, largely or wholly bedridden, or confined to wheelchair; little or no self-ca... Contraindications: Sulindac tablets are contraindicated in patients with known hypersensitivity to sulindac or the excipients (see DESCRIPTION).Sulindac tablets should not be given to patients who have experienced asthma, urticaria, or allergic-type reactions after taking aspirin or other NSAIDs. Severe, rarely fatal, anaphylactic/anaphylactoid reactions to NSAIDs have been reported in such patients (see WARNINGS – Anaphylactic/Anaphylactoid Reactions, and PRECAUTIONS – Preexisting Asthma).Sulindac tablets are contraindicated for the treatment of peri-operative pain in the setting of coronary artery bypass graft (CABG) surgery (see WARNINGS). Warnings: Cardiovascular RiskNSAIDs may cause an increased risk of serious cardiovascular thrombotic events, myocardial infarction, and stroke, which can be fatal. This risk may increase with duration of use. Patients with cardiovascular disease or risk factors for cardiovascular disease may be at greater risk. (See WARNINGS.)Sulindac tablets are contraindicated for the treatment of peri-operative pain in the setting of coronary artery bypass graft (CABG) surgery. (See WARNINGS.)Gastrointestinal RiskNSAIDs cause an increased risk of serious gastrointestinal adverse events including bleeding, ulceration, and perforation of the stomach or intestines, which can be fatal. These events can occur at any time during use and without warning symptoms. Elderly patients are at greater risk for serious gastroin... Drug Interactions: ACE-Inhibitors and Angiotensin II AntagonistsReports suggest that NSAIDs may diminish the antihypertensive effect of ACE-inhibitors and angiotensin II antagonists. These interactions should be given consideration in patients taking NSAIDs concomitantly with ACE-inhibitors or angiotensin II antagonists. In some patients with compromised renal function, the co-administration of an NSAID and an ACE-inhibitor or an angiotensin II antagonist may result in further deterioration of renal function, including possible acute renal failure, which is usually reversible.AcetaminophenAcetaminophen had no effect on the plasma levels of sulindac or its sulfide metabolite.AspirinThe concomitant administration of aspirin with sulindac significantly depressed the plasma levels of the active sulfide metabolit... Renal \u0026 Specific Populations: ",
+        "contraindicatedConditions":  [
+
+                                      ],
+        "activeIngredient":  "SULINDAC",
+        "documentId":  "DOC-FDA-SPL-2772",
+        "indexInZip":  2772
+    },
+    {
+        "actionableContraindication":  true,
+        "packageZip":  "prescription/20111206_cc8258c3-6265-4b26-a1bf-df6476cc962a.zip",
+        "recommendation":  "FDA Contraindications for Simvastatin: Simvastatin tablets are contraindicated in the following conditions: Hypersensitivity to any component of this medication [see Adverse Reactions (6.2)]. Active liver disease, which may include unexplained persistent elevations in hepatic transaminase levels [see Warnings and Precautions (5.2)]. Women who are pregnant or may become pregnant. Serum cholesterol and triglycerides increase during normal pregnancy, and cholesterol or cholesterol derivatives are essential for fetal development. Because HMG-CoA reductase inhibitors (statins) decrease cholesterol synthesis and possibly the synthesis of other biologically active substances derived from cholesterol, simvastatin tablets may cause fetal harm when administered to a pregnant woman. Atherosclerosis is a chronic process and the discontinua...",
+        "metadata":  {
+                         "hasDrugInteractions":  false,
+                         "labeler":  "MedVantx, Inc.",
+                         "hasBlackBoxWarning":  false,
+                         "hasRenalPrecautions":  false
+                     },
+        "medicationName":  "Simvastatin",
+        "clinicalDomain":  "Cardiology",
+        "section":  "FDA Approved Prescribing Information",
+        "recommendedAlternatives":  [
+
+                                    ],
+        "sourceOrganization":  "FDA DailyMed",
+        "evidenceClass":  "FDA Approved Label (Regulatory Level A)",
+        "contraindicatedMedications":  [
+
+                                       ],
+        "pageOrParagraph":  "Package Insert (LOINC 34391-3)",
+        "publicationDate":  "2024 (Verified Official Label)",
+        "guidelineVersion":  "FDA Human Rx SPL Part 1",
+        "content":  "FDA Drug Label: Simvastatin (SIMVASTATIN). Indications: Therapy with lipid-altering agents should be only one component of multiple risk factor intervention in individuals at significantly increased risk for atherosclerotic vascular disease due to hypercholesterolemia. Drug therapy is indicated as an adjunct to diet when the response to a diet restricted in saturated fat and cholesterol and other nonpharmacologic measures alone has been inadequate. In patients with coronary heart disease (CHD) or at high risk of CHD, simvastatin tablets can be started simultaneously with diet. Contraindications: Simvastatin tablets are contraindicated in the following conditions: Hypersensitivity to any component of this medication [see Adverse Reactions (6.2)]. Active liver disease, which may include unexplained persistent elevations in hepatic transaminase levels [see Warnings and Precautions (5.2)]. Women who are pregnant or may become pregnant. Serum cholesterol and triglycerides increase during normal pregnancy, and cholesterol or cholesterol derivatives are essential for fetal development. Because HMG-CoA reductase inhibitors (statins) decrease cholesterol synthesis and possibly the synthesis of other biologically active substances derived from cholesterol, simvastatin tablets may cause fetal harm when administered to a pregnant woman. Atherosclerosis is a chronic process and the discontinua... Warnings:  Drug Interactions:  Renal \u0026 Specific Populations: ",
+        "contraindicatedConditions":  [
+
+                                      ],
+        "activeIngredient":  "SIMVASTATIN",
+        "documentId":  "DOC-FDA-SPL-2871",
+        "indexInZip":  2871
+    },
+    {
+        "actionableContraindication":  true,
+        "packageZip":  "prescription/20111222_27ca999f-2678-4c7d-8f7d-895d0fe77a9f.zip",
+        "recommendation":  "FDA Contraindications for Sulfamethoxazole and Trimethoprim: Sulfamethoxazole and trimethoprim is contraindicated in patients with a known hypersensitivity to trimethoprim or sulfonamides and in patients with documented megaloblastic anemia due to folate deficiency. Sulfamethoxazole and trimethoprim is also contraindicated in pregnant patients and nursing mothers, because sulfonamides pass the placenta and are excreted in the milk and may cause kernicterus. Sulfamethoxazole and trimethoprim is contraindicated in pediatric patients less than 2 months of age. Sulfamethoxazole and trimethoprim is also contraindicated in patients with marked hepatic damage or with severe renal insufficiency when renal function status cannot be monitored.",
+        "metadata":  {
+                         "hasDrugInteractions":  false,
+                         "labeler":  "H.J. Harkins Company, Inc.",
+                         "hasBlackBoxWarning":  false,
+                         "hasRenalPrecautions":  false
+                     },
+        "medicationName":  "Sulfamethoxazole and Trimethoprim",
+        "clinicalDomain":  "Nephrology",
+        "section":  "FDA Approved Prescribing Information",
+        "recommendedAlternatives":  [
+
+                                    ],
+        "sourceOrganization":  "FDA DailyMed",
+        "evidenceClass":  "FDA Approved Label (Regulatory Level A)",
+        "contraindicatedMedications":  [
+
+                                       ],
+        "pageOrParagraph":  "Package Insert (LOINC 34391-3)",
+        "publicationDate":  "2024 (Verified Official Label)",
+        "guidelineVersion":  "FDA Human Rx SPL Part 1",
+        "content":  "FDA Drug Label: Sulfamethoxazole and Trimethoprim (SULFAMETHOXAZOLE). Indications: To reduce the development of drug-resistant bacteria and maintain the effectiveness of sulfamethoxazole and trimethoprim tablets and other antibacterial drugs, sulfamethoxazole and trimethoprim tablets should be used only to treat or prevent infections that are proven or strongly suspected to be caused by susceptible bacteria. When culture and susceptibility information are available, they should be considered in selecting or modifying antibacterial therapy. In the absence of such data, local epidemiology and susceptibility patterns may contribute to the empiric selection of therapy.Urinary Tract Infections For the treatment of urinary tract infections due to susceptible strains of the following organisms: Escherichia coli, Klebsiella species, Enterobacter species, Morganella morganii, Pro... Contraindications: Sulfamethoxazole and trimethoprim is contraindicated in patients with a known hypersensitivity to trimethoprim or sulfonamides and in patients with documented megaloblastic anemia due to folate deficiency. Sulfamethoxazole and trimethoprim is also contraindicated in pregnant patients and nursing mothers, because sulfonamides pass the placenta and are excreted in the milk and may cause kernicterus. Sulfamethoxazole and trimethoprim is contraindicated in pediatric patients less than 2 months of age. Sulfamethoxazole and trimethoprim is also contraindicated in patients with marked hepatic damage or with severe renal insufficiency when renal function status cannot be monitored. Warnings: FATALITIES ASSOCIATED WITH THE ADMINISTRATION OF SULFONAMIDES, ALTHOUGH RARE, HAVE OCCURRED DUE TO SEVERE REACTIONS, INCLUDING STEVENS-JOHNSON SYNDROME, TOXIC EPIDERMAL NECROLYSIS, FULMINANT HEPATIC NECROSIS, AGRANULOCYTOSIS, APLASTIC ANEMIA AND OTHER BLOOD DYSCRASIAS. SULFONAMIDES, INCLUDING SULFONAMIDE-CONTAINING PRODUCTS SUCH AS SULFAMETHOXAZOLE/TRIMETHOPRIM, SHOULD BE DISCONTINUED AT THE FIRST APPEARANCE OF SKIN RASH OR ANY SIGN OF ADVERSE REACTION. In rare instances, a skin rash may be followed by a more severe reaction, such as Stevens-Johnson syndrome, toxic epidermal necrolysis, hepatic necrosis, and serious blooddisorders (see PRECAUTIONS). Clinical signs, such as rash, sore throat, fever, arthralgia, pallor, purpura or jaundice may be early indications of serious reactions.Cough,... Drug Interactions:  Renal \u0026 Specific Populations: ",
+        "contraindicatedConditions":  [
+
+                                      ],
+        "activeIngredient":  "SULFAMETHOXAZOLE",
+        "documentId":  "DOC-FDA-SPL-2970",
+        "indexInZip":  2970
+    },
+    {
+        "actionableContraindication":  true,
+        "packageZip":  "prescription/20120119_264a3dc1-596c-43ab-a20c-65c80ab22f2a.zip",
+        "recommendation":  "FDA Contraindications for Carvedilol: Carvedilol tablets are contraindicated in the following conditions: Bronchial asthma or related bronchospastic conditions. Deaths from status asthmaticus have been reported following single doses of carvedilol tablets. Second- or third-degree AV block Sick sinus syndrome Severe bradycardia (unless a permanent pacemaker is in place) Patients with cardiogenic shock or who have decompensated heart failure requiring the use of intravenous inotropic therapy. Such patients should first be weaned from intravenous therapy before initiating carvedilol tablets. Patients with severe hepatic impairment Patients with a history of a serious hypersensitivity reaction (e.g., Stevens-Johnson syndrome, anaphylactic reaction, angioedema) to any component of this medication or other medications containing car...",
+        "metadata":  {
+                         "hasDrugInteractions":  false,
+                         "labeler":  "Physicians Total Care, Inc.",
+                         "hasBlackBoxWarning":  false,
+                         "hasRenalPrecautions":  false
+                     },
+        "medicationName":  "Carvedilol",
+        "clinicalDomain":  "Cardiology",
+        "section":  "FDA Approved Prescribing Information",
+        "recommendedAlternatives":  [
+
+                                    ],
+        "sourceOrganization":  "FDA DailyMed",
+        "evidenceClass":  "FDA Approved Label (Regulatory Level A)",
+        "contraindicatedMedications":  [
+
+                                       ],
+        "pageOrParagraph":  "Package Insert (LOINC 34391-3)",
+        "publicationDate":  "2024 (Verified Official Label)",
+        "guidelineVersion":  "FDA Human Rx SPL Part 1",
+        "content":  "FDA Drug Label: Carvedilol (CARVEDILOL). Indications:  Contraindications: Carvedilol tablets are contraindicated in the following conditions: Bronchial asthma or related bronchospastic conditions. Deaths from status asthmaticus have been reported following single doses of carvedilol tablets. Second- or third-degree AV block Sick sinus syndrome Severe bradycardia (unless a permanent pacemaker is in place) Patients with cardiogenic shock or who have decompensated heart failure requiring the use of intravenous inotropic therapy. Such patients should first be weaned from intravenous therapy before initiating carvedilol tablets. Patients with severe hepatic impairment Patients with a history of a serious hypersensitivity reaction (e.g., Stevens-Johnson syndrome, anaphylactic reaction, angioedema) to any component of this medication or other medications containing car... Warnings:  Drug Interactions:  Renal \u0026 Specific Populations: ",
+        "contraindicatedConditions":  [
+
+                                      ],
+        "activeIngredient":  "CARVEDILOL",
+        "documentId":  "DOC-FDA-SPL-3069",
+        "indexInZip":  3069
+    },
+    {
+        "actionableContraindication":  true,
+        "packageZip":  "prescription/20120214_b9df447c-b65b-45b9-873a-07a2ab6e2d1f.zip",
+        "recommendation":  "FDA Contraindications for Welchol: WELCHOL is contraindicated in patients withA history of bowel obstruction [See Warnings and Precautions (5.4)]Serum TG concentrations \u003e500 mg/dL [See Warnings and Precautions (5.2)]A history of hypertriglyceridemia-induced pancreatitis [See Warnings and Precautions (5.2)]",
+        "metadata":  {
+                         "hasDrugInteractions":  true,
+                         "labeler":  "Physicians Total Care, Inc.",
+                         "hasBlackBoxWarning":  false,
+                         "hasRenalPrecautions":  false
+                     },
+        "medicationName":  "Welchol",
+        "clinicalDomain":  "General Medicine",
+        "section":  "FDA Approved Prescribing Information",
+        "recommendedAlternatives":  [
+
+                                    ],
+        "sourceOrganization":  "FDA DailyMed",
+        "evidenceClass":  "FDA Approved Label (Regulatory Level A)",
+        "contraindicatedMedications":  [
+
+                                       ],
+        "pageOrParagraph":  "Package Insert (LOINC 34391-3)",
+        "publicationDate":  "2024 (Verified Official Label)",
+        "guidelineVersion":  "FDA Human Rx SPL Part 1",
+        "content":  "FDA Drug Label: Welchol (COLESEVELAM). Indications:  Contraindications: WELCHOL is contraindicated in patients withA history of bowel obstruction [See Warnings and Precautions (5.4)]Serum TG concentrations \u003e500 mg/dL [See Warnings and Precautions (5.2)]A history of hypertriglyceridemia-induced pancreatitis [See Warnings and Precautions (5.2)] Warnings:  Drug Interactions: Table 4 lists the drugs that have been tested in in vitro binding or in vivo drug interaction studies with colesevelam and/or drugs with postmarketing reports consistent with potential drug-drug interactions. Orally administered drugs that have not been tested for interaction with colesevelam, especially those with a narrow therapeutic index, should also be administered at least 4 hours prior to WELCHOL. Alternatively, the physician should monitor drug levels of the co-administered drug.Table 4 Drugs Tested in In Vitro Binding or In Vivo Drug Interaction Testing or With Post-Marketing Reportsa Should be administered at least 4 hours prior to WELCHOLb No significant alteration of warfarin drug levels with warfarin and WELCHOL coadministration in an in vivo study which did not evaluate warfa... Renal \u0026 Specific Populations: ",
+        "contraindicatedConditions":  [
+
+                                      ],
+        "activeIngredient":  "COLESEVELAM",
+        "documentId":  "DOC-FDA-SPL-3168",
+        "indexInZip":  3168
+    },
+    {
+        "actionableContraindication":  true,
+        "packageZip":  "prescription/20120306_2200ef58-d210-41e6-a535-e8c735507395.zip",
+        "recommendation":  "FDA Contraindications for Glyburide: Glyburide tablets, USP are contraindicated in patients with:Known hypersensitivity or allergy to the drug.Diabetic ketoacidosis, with or without coma. This condition should be treated with insulin.Type I diabetes mellitus.",
+        "metadata":  {
+                         "hasDrugInteractions":  true,
+                         "labeler":  "Physicians Total Care, Inc.",
+                         "hasBlackBoxWarning":  false,
+                         "hasRenalPrecautions":  false
+                     },
+        "medicationName":  "Glyburide",
+        "clinicalDomain":  "Metabolic",
+        "section":  "FDA Approved Prescribing Information",
+        "recommendedAlternatives":  [
+
+                                    ],
+        "sourceOrganization":  "FDA DailyMed",
+        "evidenceClass":  "FDA Approved Label (Regulatory Level A)",
+        "contraindicatedMedications":  [
+
+                                       ],
+        "pageOrParagraph":  "Package Insert (LOINC 34391-3)",
+        "publicationDate":  "2024 (Verified Official Label)",
+        "guidelineVersion":  "FDA Human Rx SPL Part 1",
+        "content":  "FDA Drug Label: Glyburide (GLYBURIDE). Indications: Glyburide tablets, USP are indicated as an adjunct to diet and exercise to improve glycemic control in adults with type 2 diabetes mellitus. Contraindications: Glyburide tablets, USP are contraindicated in patients with:Known hypersensitivity or allergy to the drug.Diabetic ketoacidosis, with or without coma. This condition should be treated with insulin.Type I diabetes mellitus. Warnings:  Drug Interactions: The hypoglycemic action of sulfonylureas may be potentiated by certain drugs including non-steroidal anti-inflammatory agents and other drugs that are highly protein bound, salicylates, sulfonamides, chloramphenicol, probenecid, coumarins, monoamine oxidase inhibitors, and beta adrenergic blocking agents. When such drugs are administered to a patient receiving glyburide, the patient should be observed closely for hypoglycemia. When such drugs are withdrawn from a patient receiving glyburide, the patient should be observed closely for loss of control.Certain drugs tend to produce hyperglycemia and may lead to loss of control. These drugs include the thiazides and other diuretics, corticosteroids, phenothiazines, thyroid products, estrogens, oral contraceptives, phenytoin, nicotinic acid, sy... Renal \u0026 Specific Populations: ",
+        "contraindicatedConditions":  [
+
+                                      ],
+        "activeIngredient":  "GLYBURIDE",
+        "documentId":  "DOC-FDA-SPL-3267",
+        "indexInZip":  3267
+    },
+    {
+        "actionableContraindication":  true,
+        "packageZip":  "prescription/20120328_cca1bdfb-3e40-4401-a2e2-78403c7237ba.zip",
+        "recommendation":  "FDA Contraindications for Meperidine Hydrochloride: Meperidine hydrochloride tablets are contraindicated in patients with hypersensitivity to meperidine or to any of its ingredients.Meperidine is contraindicated in patients who are receiving monoamine oxidase (MAO) inhibitors or those who have recently received such agents. Therapeutic doses of meperidine have occasionally precipitated unpredictable, severe, and occasionally fatal reactions in patients who have received such agents within 14 days. The mechanism of these reactions is unclear, but may be related to a preexisting hyperphenylalaninemia. Some have been characterized by coma, severe respiratory depression, cyanosis, and hypotension, and have resembled the syndrome of acute narcotic overdose. Serotonin syndrome with agitation, hyperthermia, diarrhea, tachycardia, sweating, tremors...",
+        "metadata":  {
+                         "hasDrugInteractions":  true,
+                         "labeler":  "Physicians Total Care, Inc.",
+                         "hasBlackBoxWarning":  false,
+                         "hasRenalPrecautions":  true
+                     },
+        "medicationName":  "Meperidine Hydrochloride",
+        "clinicalDomain":  "Analgesic",
+        "section":  "FDA Approved Prescribing Information",
+        "recommendedAlternatives":  [
+
+                                    ],
+        "sourceOrganization":  "FDA DailyMed",
+        "evidenceClass":  "FDA Approved Label (Regulatory Level A)",
+        "contraindicatedMedications":  [
+
+                                       ],
+        "pageOrParagraph":  "Package Insert (LOINC 34391-3)",
+        "publicationDate":  "2024 (Verified Official Label)",
+        "guidelineVersion":  "FDA Human Rx SPL Part 1",
+        "content":  "FDA Drug Label: Meperidine Hydrochloride (MEPERIDINE). Indications: Meperidine hydrochloride tablets are indicated for the relief of moderate to severe pain. Contraindications: Meperidine hydrochloride tablets are contraindicated in patients with hypersensitivity to meperidine or to any of its ingredients.Meperidine is contraindicated in patients who are receiving monoamine oxidase (MAO) inhibitors or those who have recently received such agents. Therapeutic doses of meperidine have occasionally precipitated unpredictable, severe, and occasionally fatal reactions in patients who have received such agents within 14 days. The mechanism of these reactions is unclear, but may be related to a preexisting hyperphenylalaninemia. Some have been characterized by coma, severe respiratory depression, cyanosis, and hypotension, and have resembled the syndrome of acute narcotic overdose. Serotonin syndrome with agitation, hyperthermia, diarrhea, tachycardia, sweating, tremors... Warnings: Meperidine should not be used for treatment of chronic pain. Meperidine should only be used in the treatment of acute episodes of moderate to severe pain. Prolonged meperidine use may increase the risk of toxicity (e.g., seizures) from the accumulation of the meperidine metabolite, normeperidine.Meperidine hydrochloride tablets are opioid agonists and a Schedule II controlled substance with an abuse liability similar to morphine.Meperidine hydrochloride tablets can be abused in a manner similar to other opioid agonists, legal or illicit. This should be considered when prescribing or dispensing meperidine hydrochloride tablets in situations where the physician or pharmacist is concerned about an increased risk of misuse, abuse, or diversion. Drug Interactions: Meperidine hydrochloride tablets should be used with caution and consideration should be given to starting with a reduced dosage in patients who are concurrently receiving other central nervous system depressants including sedatives or hypnotics, general anesthetics, phenothiazines, other tranquilizers, and alcohol. Drug-drug interactions may result in respiratory depression, hypotension, profound sedation, coma, or death if these drugs are taken in combination with the usual doses of meperidine hydrochloride tablets. Renal \u0026 Specific Populations: Meperidine should be given with caution and the initial dose should be reduced in certain patients such as the elderly or debilitated, and those with severe impairment of hepatic or renal function, Sickle Cell Anemia, hypothyroidism, Addison\u0027s disease, Pheochromocytoma and prostatic hypertrophy or urethral stricture. In patients with pheochromocytoma, meperidine has been reported to provoke hypertension.",
+        "contraindicatedConditions":  [
+
+                                      ],
+        "activeIngredient":  "MEPERIDINE",
+        "documentId":  "DOC-FDA-SPL-3366",
+        "indexInZip":  3366
+    },
+    {
+        "actionableContraindication":  true,
+        "packageZip":  "prescription/20120420_407a8f85-11c4-4404-8678-1c5e68860c8f.zip",
+        "recommendation":  "FDA Contraindications for Nitrofurantoin Macrocrystals: Anuria, oliguria, or significant impairment of renal function (creatinine clearance under 60 mL per minute or clinically significant elevated serum creatinine) are contraindications. Treatment of this type of patient carries an increased risk of toxicity because of impaired excretion of the drug.Because of the possibility of hemolytic anemia due to immature erythrocyte enzyme systems (glutathione instability), the drug is contraindicated in pregnant patients at term (38 to 42 weeks’ gestation), during labor and delivery, or when the onset of labor is imminent. For the same reason, the drug is contraindicated in neonates under one month of age.Nitrofurantoin macrocrystals is contraindicated in patients with a previous history of cholestatic jaundice/hepatic dysfunction associated with nitro...",
+        "metadata":  {
+                         "hasDrugInteractions":  true,
+                         "labeler":  "Rebel Distributors Corp",
+                         "hasBlackBoxWarning":  false,
+                         "hasRenalPrecautions":  false
+                     },
+        "medicationName":  "Nitrofurantoin Macrocrystals",
+        "clinicalDomain":  "Nephrology",
+        "section":  "FDA Approved Prescribing Information",
+        "recommendedAlternatives":  [
+
+                                    ],
+        "sourceOrganization":  "FDA DailyMed",
+        "evidenceClass":  "FDA Approved Label (Regulatory Level A)",
+        "contraindicatedMedications":  [
+
+                                       ],
+        "pageOrParagraph":  "Package Insert (LOINC 34391-3)",
+        "publicationDate":  "2024 (Verified Official Label)",
+        "guidelineVersion":  "FDA Human Rx SPL Part 1",
+        "content":  "FDA Drug Label: Nitrofurantoin Macrocrystals (NITROFURANTOIN). Indications: Nitrofurantoin macrocrystals is specifically indicated for the treatment of urinary tract infections when due to susceptible strains of Escherichia coli, enterococci, Staphylococcus aureus, and certain susceptible strains of Klebsiella and Enterobacter species.Nitrofurantoin is not indicated for the treatment of pyelonephritis or perinephric abscesses.To reduce the development of drug-resistant bacteria and maintain the effectiveness of nitrofurantoin macrocrystals and other antibacterial drugs, nitrofurantoin macrocrystals should be used only to treat or prevent infections that are proven or strongly suspected to be caused by susceptible bacteria. When culture and susceptibility information are available, they should be considered in selecting or modifying antibacterial therapy. In the ab... Contraindications: Anuria, oliguria, or significant impairment of renal function (creatinine clearance under 60 mL per minute or clinically significant elevated serum creatinine) are contraindications. Treatment of this type of patient carries an increased risk of toxicity because of impaired excretion of the drug.Because of the possibility of hemolytic anemia due to immature erythrocyte enzyme systems (glutathione instability), the drug is contraindicated in pregnant patients at term (38 to 42 weeks’ gestation), during labor and delivery, or when the onset of labor is imminent. For the same reason, the drug is contraindicated in neonates under one month of age.Nitrofurantoin macrocrystals is contraindicated in patients with a previous history of cholestatic jaundice/hepatic dysfunction associated with nitro... Warnings:  Drug Interactions: Antacids containing magnesium trisilicate, when administered concomitantly with nitrofurantoin, reduce both the rate and extent of absorption. The mechanism for this interaction probably is adsorption of nitrofurantoin onto the surface of magnesium trisilicate.Uricosuric drugs, such as probenecid and sulfinpyrazone, can inhibit renal tubular secretion of nitrofurantoin. The resulting increase in nitrofurantoin serum levels may increase toxicity, and the decreased urinary levels could lessen its efficacy as a urinary tract antibacterial. Renal \u0026 Specific Populations: ",
+        "contraindicatedConditions":  [
+
+                                      ],
+        "activeIngredient":  "NITROFURANTOIN",
+        "documentId":  "DOC-FDA-SPL-3465",
+        "indexInZip":  3465
+    },
+    {
+        "actionableContraindication":  true,
+        "packageZip":  "prescription/20120510_9f5a14c2-b460-402e-acb4-04402278e64b.zip",
+        "recommendation":  "FDA Contraindications for Citalopram: Concomitant use in patients taking monoamine oxidase inhibitors (MAOIs) is contraindicated (see WARNINGS). Citalopram tablets are contraindicated in patients with congenital long QT syndrome (see WARNINGS, PRECAUTIONS, and Drug Interactions). Concomitant use in patients taking pimozide is contraindicated (see PRECAUTIONS).Citalopram tablets are contraindicated in patients with a hypersensitivity to citalopram or any of the inactive ingredients in citalopram tablets.",
+        "metadata":  {
+                         "hasDrugInteractions":  true,
+                         "labeler":  "Aurolife Pharma LLC",
+                         "hasBlackBoxWarning":  false,
+                         "hasRenalPrecautions":  false
+                     },
+        "medicationName":  "Citalopram",
+        "clinicalDomain":  "CNS \u0026 Neurologic",
+        "section":  "FDA Approved Prescribing Information",
+        "recommendedAlternatives":  [
+
+                                    ],
+        "sourceOrganization":  "FDA DailyMed",
+        "evidenceClass":  "FDA Approved Label (Regulatory Level A)",
+        "contraindicatedMedications":  [
+
+                                       ],
+        "pageOrParagraph":  "Package Insert (LOINC 34391-3)",
+        "publicationDate":  "2024 (Verified Official Label)",
+        "guidelineVersion":  "FDA Human Rx SPL Part 1",
+        "content":  "FDA Drug Label: Citalopram (CITALOPRAM). Indications: Citalopram tablets, USP are indicated for the treatment of depression. The efficacy of citalopram tablets, USP in the treatment of depression was established in 4 to 6 week, controlled trials of outpatients whose diagnosis corresponded most closely to the DSM-III and DSM-III-R category of major depressive disorder (see CLINICAL PHARMACOLOGY).A major depressive episode (DSM-IV) implies a prominent and relatively persistent (nearly every day for at least 2 weeks) depressed or dysphoric mood that usually interferes with daily functioning, and includes at least five of the following nine symptoms: depressed mood, loss of interest in usual activities, significant change in weight and/or appetite, insomnia or hypersomnia, psychomotor agitation or retardation, increased fatigue, feelings of guilt... Contraindications: Concomitant use in patients taking monoamine oxidase inhibitors (MAOIs) is contraindicated (see WARNINGS). Citalopram tablets are contraindicated in patients with congenital long QT syndrome (see WARNINGS, PRECAUTIONS, and Drug Interactions). Concomitant use in patients taking pimozide is contraindicated (see PRECAUTIONS).Citalopram tablets are contraindicated in patients with a hypersensitivity to citalopram or any of the inactive ingredients in citalopram tablets. Warnings: Antidepressants increased the risk compared to placebo of suicidal thinking and behavior (suicidality) in children, adolescents, and young adults in short-term studies of major depressive disorder (MDD) and other psychiatric disorders. Anyone considering the use of citalopram or any other antidepressant in a child, adolescent, or young adult must balance this risk with the clinical need. Short-term studies did not show an increase in the risk of suicidality with antidepressants compared to placebo in adults beyond age 24; there was a reduction in risk with antidepressants compared to placebo in adults aged 65 and older. Depression and certain other psychiatric disorders are themselves associated with increases in the risk of suicide. Patients of all ages who are started on antidepressant t... Drug Interactions: Drugs that Prolong the QT Interval ECG monitoring is recommended with concomitant medications that have demonstrated prolongation of the QT interval (see WARNINGS - QT-Prolongation and Torsade de Pointes).Serotonergic DrugsBased on the mechanism of action of SNRIs and SSRIs including citalopram, and the potential for serotonin syndrome, caution is advised when citalopram is coadministered with other drugs that may affect the serotonergic neurotransmitter systems, such as triptans, linezolid (an antibiotic which is a reversible non-selective MAOI), lithium, tramadol, or St. John’s Wort (see WARNING - Serotonin Syndrome). The concomitant use of citalopram with other SSRIs, SNRIs or tryptophan is not recommended (see PRECAUTIONS- Drug Interactions).TriptansThere have been rare postmarketing r... Renal \u0026 Specific Populations: ",
+        "contraindicatedConditions":  [
+
+                                      ],
+        "activeIngredient":  "CITALOPRAM",
+        "documentId":  "DOC-FDA-SPL-3564",
+        "indexInZip":  3564
+    },
+    {
+        "actionableContraindication":  true,
+        "packageZip":  "prescription/20120619_2e0fa140-85a0-42db-ba15-a068120076b4.zip",
+        "recommendation":  "FDA Contraindications for PULMICORT RESPULES: The use of PULMICORT RESPULES is contraindicated in the following conditions:· Primary treatment of status asthmaticus or other acute episodes of asthma where intensive measures are required.· Hypersensitivity to budesonide or any of the ingredients of PULMICORT RESPULES [see Warnings and Precautions (5.3),Description (11) and Adverse Reactions, Post-marketing Experience (6.2)].",
+        "metadata":  {
+                         "hasDrugInteractions":  false,
+                         "labeler":  "Physicians Total Care, Inc.",
+                         "hasBlackBoxWarning":  false,
+                         "hasRenalPrecautions":  false
+                     },
+        "medicationName":  "PULMICORT RESPULES",
+        "clinicalDomain":  "Pulmonology",
+        "section":  "FDA Approved Prescribing Information",
+        "recommendedAlternatives":  [
+
+                                    ],
+        "sourceOrganization":  "FDA DailyMed",
+        "evidenceClass":  "FDA Approved Label (Regulatory Level A)",
+        "contraindicatedMedications":  [
+
+                                       ],
+        "pageOrParagraph":  "Package Insert (LOINC 34391-3)",
+        "publicationDate":  "2024 (Verified Official Label)",
+        "guidelineVersion":  "FDA Human Rx SPL Part 1",
+        "content":  "FDA Drug Label: PULMICORT RESPULES (BUDESONIDE). Indications:  Contraindications: The use of PULMICORT RESPULES is contraindicated in the following conditions:· Primary treatment of status asthmaticus or other acute episodes of asthma where intensive measures are required.· Hypersensitivity to budesonide or any of the ingredients of PULMICORT RESPULES [see Warnings and Precautions (5.3),Description (11) and Adverse Reactions, Post-marketing Experience (6.2)]. Warnings:  Drug Interactions:  Renal \u0026 Specific Populations: ",
+        "contraindicatedConditions":  [
+
+                                      ],
+        "activeIngredient":  "BUDESONIDE",
+        "documentId":  "DOC-FDA-SPL-3663",
+        "indexInZip":  3663
+    },
+    {
+        "actionableContraindication":  true,
+        "packageZip":  "prescription/20120814_acb83cfb-59c2-424a-9413-173ac5c29134.zip",
+        "recommendation":  "FDA Contraindications for Methocarbamol: Methocarbamol Tablets are contraindicated in patients hypersensitive to methocarbamol or to any of the tablet components.",
+        "metadata":  {
+                         "hasDrugInteractions":  true,
+                         "labeler":  "Aphena Pharma Solutions - Tennessee, Inc.",
+                         "hasBlackBoxWarning":  false,
+                         "hasRenalPrecautions":  false
+                     },
+        "medicationName":  "Methocarbamol",
+        "clinicalDomain":  "Analgesic",
+        "section":  "FDA Approved Prescribing Information",
+        "recommendedAlternatives":  [
+
+                                    ],
+        "sourceOrganization":  "FDA DailyMed",
+        "evidenceClass":  "FDA Approved Label (Regulatory Level A)",
+        "contraindicatedMedications":  [
+
+                                       ],
+        "pageOrParagraph":  "Package Insert (LOINC 34391-3)",
+        "publicationDate":  "2024 (Verified Official Label)",
+        "guidelineVersion":  "FDA Human Rx SPL Part 1",
+        "content":  "FDA Drug Label: Methocarbamol (METHOCARBAMOL). Indications: Methocarbamol Tablets are indicated as an adjunct to rest, physical therapy, and other measures for the relief of discomfort associated with acute, painful musculoskeletal conditions. The mode of action of methocarbamol has not been clearly identified, but may be related to its sedative properties. Methocarbamol does not directly relax tense skeletal muscles in man. Contraindications: Methocarbamol Tablets are contraindicated in patients hypersensitive to methocarbamol or to any of the tablet components. Warnings: Since methocarbamol may possess a general CNS depressant effect, patients receiving Methocarbamol Tablets should be cautioned about combined effects with alcohol and other CNS depressants. Safe use of Methocarbamol Tablets has not been established with regard to possible adverse effects upon fetal development. There have been reports of fetal and congenital abnormalities following in utero exposure to methocarbamol. Therefore, Methocarbamol Tablets should not be used in women who are or may become pregnant and particularly during early pregnancy unless in the judgment of the physician the potential benefits outweigh the possible hazards (see PRECAUTIONS: Pregnancy). Drug Interactions: See WARNINGS and PRECAUTIONS for interaction with CNS drugs and alcohol. Methocarbamol may inhibit the effect of pyridostigmine bromide. Therefore, methocarbamol should be used with caution in patients with myasthenia gravis receiving anticholinesterase agents. Renal \u0026 Specific Populations: ",
+        "contraindicatedConditions":  [
+
+                                      ],
+        "activeIngredient":  "METHOCARBAMOL",
+        "documentId":  "DOC-FDA-SPL-3762",
+        "indexInZip":  3762
+    },
+    {
+        "actionableContraindication":  true,
+        "packageZip":  "prescription/20120913_3ee0fa02-8fcc-4b56-98a7-1f636ae0bd74.zip",
+        "recommendation":  "FDA Contraindications for Atenolol: Atenolol is contraindicated in sinus bradycardia, heart block greater than first degree, cardiogenic shock, and overt cardiac failure (see WARNINGS).Atenolol is contraindicated in those patients with a history of hypersensitivity to the atenolol or any of the drug product’s components.",
+        "metadata":  {
+                         "hasDrugInteractions":  true,
+                         "labeler":  "Aidarex Pharmaceuticals LLC",
+                         "hasBlackBoxWarning":  false,
+                         "hasRenalPrecautions":  false
+                     },
+        "medicationName":  "Atenolol",
+        "clinicalDomain":  "Cardiology",
+        "section":  "FDA Approved Prescribing Information",
+        "recommendedAlternatives":  [
+
+                                    ],
+        "sourceOrganization":  "FDA DailyMed",
+        "evidenceClass":  "FDA Approved Label (Regulatory Level A)",
+        "contraindicatedMedications":  [
+
+                                       ],
+        "pageOrParagraph":  "Package Insert (LOINC 34391-3)",
+        "publicationDate":  "2024 (Verified Official Label)",
+        "guidelineVersion":  "FDA Human Rx SPL Part 1",
+        "content":  "FDA Drug Label: Atenolol (ATENOLOL). Indications:  Contraindications: Atenolol is contraindicated in sinus bradycardia, heart block greater than first degree, cardiogenic shock, and overt cardiac failure (see WARNINGS).Atenolol is contraindicated in those patients with a history of hypersensitivity to the atenolol or any of the drug product’s components. Warnings:  Drug Interactions: Catecholamine-depleting drugs (e.g., reserpine) may have an additive effect when given with beta-blocking agents. Patients treated with atenolol plus a catecholamine depletor should therefore be closely observed for evidence of hypotension and/or marked bradycardia which may produce vertigo, syncope, or postural hypotension.Calcium channel blockers may also have an additive effect when given with atenolol (see WARNINGS).Disopyramide is a Type I antiarrhythmic drug with potent negative inotropic and chronotropic effects. Disopyramide has been associated with severe bradycardia, asystole and heart failure when administered with beta-blockers.Amiodarone is an antiarrhythmic agent with negative chronotropic properties that may be additive to those seen with beta-blockers.Beta-blockers may exac... Renal \u0026 Specific Populations: ",
+        "contraindicatedConditions":  [
+
+                                      ],
+        "activeIngredient":  "ATENOLOL",
+        "documentId":  "DOC-FDA-SPL-3861",
+        "indexInZip":  3861
+    },
+    {
+        "actionableContraindication":  false,
+        "packageZip":  "prescription/20121005_2e8d1503-a431-40ca-95bc-285557795bf7.zip",
+        "recommendation":  "FDA Prescribing Warning for Clopidogrel: The effectiveness of clopidogrel is dependent on its activation to an active metabolite by the cytochrome P450 (CYP) system, principally CYP2C19 [see Warnings and Precautions (5.1)]. Clopidogrel at recommended doses forms less of that metabolite and has a smaller effect on platelet function in patients who are CYP2C19 poor metabolizers. Poor metabolizers with acute coronary syndrome or undergoing percutaneous coronary intervention treated with clopidogrel at recommended doses exhibit higher cardiovascular event rates than do patients with normal CYP2C19 function. Tests are available to identify a patient\u0027s CYP2C19 genotype; these tests can be used as an aid in determining therapeutic strategy [see Clinical Pharmacology (12.5)]. Consider alternative treatment or treatment strategies in pati...",
+        "metadata":  {
+                         "hasDrugInteractions":  false,
+                         "labeler":  "Legacy Pharmaceutical Packaging",
+                         "hasBlackBoxWarning":  false,
+                         "hasRenalPrecautions":  false
+                     },
+        "medicationName":  "Clopidogrel",
+        "clinicalDomain":  "General Medicine",
+        "section":  "FDA Approved Prescribing Information",
+        "recommendedAlternatives":  [
+
+                                    ],
+        "sourceOrganization":  "FDA DailyMed",
+        "evidenceClass":  "FDA Approved Label (Regulatory Level A)",
+        "contraindicatedMedications":  [
+
+                                       ],
+        "pageOrParagraph":  "Package Insert (LOINC 34391-3)",
+        "publicationDate":  "2024 (Verified Official Label)",
+        "guidelineVersion":  "FDA Human Rx SPL Part 1",
+        "content":  "FDA Drug Label: Clopidogrel (CLOPIDOGREL). Indications:  Contraindications:  Warnings: The effectiveness of clopidogrel is dependent on its activation to an active metabolite by the cytochrome P450 (CYP) system, principally CYP2C19 [see Warnings and Precautions (5.1)]. Clopidogrel at recommended doses forms less of that metabolite and has a smaller effect on platelet function in patients who are CYP2C19 poor metabolizers. Poor metabolizers with acute coronary syndrome or undergoing percutaneous coronary intervention treated with clopidogrel at recommended doses exhibit higher cardiovascular event rates than do patients with normal CYP2C19 function. Tests are available to identify a patient\u0027s CYP2C19 genotype; these tests can be used as an aid in determining therapeutic strategy [see Clinical Pharmacology (12.5)]. Consider alternative treatment or treatment strategies in pati... Drug Interactions:  Renal \u0026 Specific Populations: ",
+        "contraindicatedConditions":  [
+
+                                      ],
+        "activeIngredient":  "CLOPIDOGREL",
+        "documentId":  "DOC-FDA-SPL-3960",
+        "indexInZip":  3960
+    },
+    {
+        "actionableContraindication":  true,
+        "packageZip":  "prescription/20121120_4906457e-30ad-4da7-b3ac-bb9e6651a670.zip",
+        "recommendation":  "FDA Contraindications for Abstral: ABSTRAL is contraindicated in the management of pain in opioid non-tolerant patients, because life-threatening hypoventilation could occur at any dose in patients not already taking around-the-clock opioid therapy. Patients considered opioid tolerant are those who are taking at least 60 mg oral morphine/day, or at least 25 mcg transdermal fentanyl/hour, 30 mg oral oxycodone/day, 8 mg oral hydromorphone/day, 25 mg oral oxymorphone/day, or an equianalgesic dose of another opioid for a week or longer.ABSTRAL is contraindicated in the management of acute or postoperative pain, including headache/migraine, dental pain, or use in the emergency room.ABSTRAL is contraindicated in patients with known intolerance or hypersensitivity to any of its components or the drug fentanyl. Anaphylaxis and hype...",
+        "metadata":  {
+                         "hasDrugInteractions":  true,
+                         "labeler":  "ProStrakan, Inc.",
+                         "hasBlackBoxWarning":  false,
+                         "hasRenalPrecautions":  false
+                     },
+        "medicationName":  "Abstral",
+        "clinicalDomain":  "Analgesic",
+        "section":  "FDA Approved Prescribing Information",
+        "recommendedAlternatives":  [
+
+                                    ],
+        "sourceOrganization":  "FDA DailyMed",
+        "evidenceClass":  "FDA Approved Label (Regulatory Level A)",
+        "contraindicatedMedications":  [
+
+                                       ],
+        "pageOrParagraph":  "Package Insert (LOINC 34391-3)",
+        "publicationDate":  "2024 (Verified Official Label)",
+        "guidelineVersion":  "FDA Human Rx SPL Part 1",
+        "content":  "FDA Drug Label: Abstral (FENTANYL). Indications: ABSTRAL (fentanyl) sublingual tablets are indicated for the management of breakthrough pain in cancer patients 18 years of age and older who are already receiving and who are tolerant to opioid therapy for their underlying persistent cancer pain. Patients considered opioid tolerant are those who are taking around-the-clock medicine consisting of at least 60 mg of oral morphine daily, or at least 25 mcg of transdermal fentanyl/hour, or at least 30 mg of oral oxycodone daily, or at least 8 mg of oral hydromorphone daily or at least 25 mg oral oxymorphone daily, or an equianalgesic dose of another opioid medication daily for a week or longer. Patients must remain on around-the-clock opioids when taking ABSTRAL.ABSTRAL is contraindicated for patients who are not already tolerant to opioids bec... Contraindications: ABSTRAL is contraindicated in the management of pain in opioid non-tolerant patients, because life-threatening hypoventilation could occur at any dose in patients not already taking around-the-clock opioid therapy. Patients considered opioid tolerant are those who are taking at least 60 mg oral morphine/day, or at least 25 mcg transdermal fentanyl/hour, 30 mg oral oxycodone/day, 8 mg oral hydromorphone/day, 25 mg oral oxymorphone/day, or an equianalgesic dose of another opioid for a week or longer.ABSTRAL is contraindicated in the management of acute or postoperative pain, including headache/migraine, dental pain, or use in the emergency room.ABSTRAL is contraindicated in patients with known intolerance or hypersensitivity to any of its components or the drug fentanyl. Anaphylaxis and hype... Warnings: RESPIRATORY DEPRESSIONFatal respiratory depression has occurred in patients treated with immediate-release transmucosal fentanyl, including following use in opioid non-tolerant patients and improper dosing. The substitution of ABSTRAL for any other fentanyl product may result in fatal overdose.Due to the risk of respiratory depression, ABSTRAL is contraindicated in the management of acute or postoperative pain including headache/migraine and in opioid non-tolerant patients. [see Contraindications (4)]ABSTRAL must be kept out of reach of children. [see Patient Counseling Information (17.1) and How Supplied/Storage and Handling (16.1)]The concomitant use of ABSTRAL with CYP3A4 inhibitors may result in an increase in fentanyl plasma concentrations, and may cause potentially fatal respiratory ... Drug Interactions: Fentanyl is metabolized mainly via the human cytochrome P450 3A4 isoenzyme system (CYP3A4); therefore potential interactions may occur when ABSTRAL is given concurrently with agents that affect CYP3A4 activity.The concomitant use of ABSTRAL with CYP3A4 inhibitors (e.g., indinavir, nelfinavir, ritonavir, clarithromycin, itraconazole, ketoconazole, nefazodone, saquinavir, telithromycin, aprepitant, diltiazem, erythromycin, fluconazole, grapefruit juice, verapamil, or cimetidine) may result in a potentially dangerous increase in fentanyl plasma concentrations, which could increase or prolong adverse drug effects and may cause potentially fatal respiratory depression. Patients receiving ABSTRAL who begin therapy with, or increase the dose of, CYP3A4 inhibitors need to be carefully monitored fo... Renal \u0026 Specific Populations: ",
+        "contraindicatedConditions":  [
+
+                                      ],
+        "activeIngredient":  "FENTANYL",
+        "documentId":  "DOC-FDA-SPL-4059",
+        "indexInZip":  4059
+    },
+    {
+        "actionableContraindication":  true,
+        "packageZip":  "prescription/20130221_4b8f1462-d3f0-40f1-9f4a-7e54171fb8b8.zip",
+        "recommendation":  "FDA Contraindications for Hydrocodone Bitartrate and Acetaminophen: This product should not be administered to patients who have previously exhibited hypersensitivity to hydrocodone or acetaminophen, or any other component of this product.Patients known to be hypersensitive to other opioids may exhibit cross sensitivity to hydrocodone.",
+        "metadata":  {
+                         "hasDrugInteractions":  false,
+                         "labeler":  "Rebel Distributors Corp",
+                         "hasBlackBoxWarning":  false,
+                         "hasRenalPrecautions":  false
+                     },
+        "medicationName":  "Hydrocodone Bitartrate and Acetaminophen",
+        "clinicalDomain":  "Analgesic",
+        "section":  "FDA Approved Prescribing Information",
+        "recommendedAlternatives":  [
+
+                                    ],
+        "sourceOrganization":  "FDA DailyMed",
+        "evidenceClass":  "FDA Approved Label (Regulatory Level A)",
+        "contraindicatedMedications":  [
+
+                                       ],
+        "pageOrParagraph":  "Package Insert (LOINC 34391-3)",
+        "publicationDate":  "2024 (Verified Official Label)",
+        "guidelineVersion":  "FDA Human Rx SPL Part 1",
+        "content":  "FDA Drug Label: Hydrocodone Bitartrate and Acetaminophen (HYDROCODONE). Indications: Hydrocodone bitartrate and acetaminophen tablets, USP are indicated for the relief of moderate to moderately severe pain. Contraindications: This product should not be administered to patients who have previously exhibited hypersensitivity to hydrocodone or acetaminophen, or any other component of this product.Patients known to be hypersensitive to other opioids may exhibit cross sensitivity to hydrocodone. Warnings: HepatotoxicityAcetaminophen has been associated with cases of acute liver failure, at times resulting in liver transplant and death. Most of the cases of liver injury are associated with the use of acetaminophen at doses that exceed 4000 milligrams per day, and often involve more than one acetaminophen-containing product. The excessive intake of acetaminophen may be intentional to cause self-harm or unintentional as patients attempt to obtain more pain relief or unknowingly take other acetaminophen-containing products.The risk of acute liver failure is higher in individuals with underlying liver disease and in individuals who ingest alcohol while taking acetaminophen.Instruct patients to look for acetaminophen or APAP on package labels and not to use more than one product that contains ace... Drug Interactions:  Renal \u0026 Specific Populations: ",
+        "contraindicatedConditions":  [
+
+                                      ],
+        "activeIngredient":  "HYDROCODONE",
+        "documentId":  "DOC-FDA-SPL-4158",
+        "indexInZip":  4158
+    },
+    {
+        "actionableContraindication":  true,
+        "packageZip":  "prescription/20130411_8ee7be74-6442-5692-edab-5d8626a510dd.zip",
+        "recommendation":  "FDA Contraindications for CitraNatal Rx: This product is contraindicated in patients with a known hypersensitivity to any of the ingredients.",
+        "metadata":  {
+                         "hasDrugInteractions":  false,
+                         "labeler":  "Mission Pharmacal Company",
+                         "hasBlackBoxWarning":  false,
+                         "hasRenalPrecautions":  false
+                     },
+        "medicationName":  "CitraNatal Rx",
+        "clinicalDomain":  "General Medicine",
+        "section":  "FDA Approved Prescribing Information",
+        "recommendedAlternatives":  [
+
+                                    ],
+        "sourceOrganization":  "FDA DailyMed",
+        "evidenceClass":  "FDA Approved Label (Regulatory Level A)",
+        "contraindicatedMedications":  [
+
+                                       ],
+        "pageOrParagraph":  "Package Insert (LOINC 34391-3)",
+        "publicationDate":  "2024 (Verified Official Label)",
+        "guidelineVersion":  "FDA Human Rx SPL Part 1",
+        "content":  "FDA Drug Label: CitraNatal Rx (ASCORBIC ACID). Indications: CitraNatal® Rx is a multivitamin/multimineral prescription drug indicated for use in improving the nutritional status of women prior to conception, throughout pregnancy, and in the postnatal period for both lactating and nonlactating mothers. Contraindications: This product is contraindicated in patients with a known hypersensitivity to any of the ingredients. Warnings: Accidental overdose of iron-containing products is a leading cause of fatal poisoning in children under 6. KEEP THIS PRODUCT OUT OF THE REACH OF CHILDREN. In case of accidental overdose, call a doctor or poison control center immediately. Drug Interactions:  Renal \u0026 Specific Populations: ",
+        "contraindicatedConditions":  [
+
+                                      ],
+        "activeIngredient":  "ASCORBIC ACID",
+        "documentId":  "DOC-FDA-SPL-4257",
+        "indexInZip":  4257
+    },
+    {
+        "actionableContraindication":  true,
+        "packageZip":  "prescription/20130717_06833532-64c2-439a-a4ee-ed30989b61e4.zip",
+        "recommendation":  "FDA Contraindications for Methimazole: Methimazole is contraindicated in the presence of hypersensitivity to the drug and in nursing mothers because the drug is excreted in milk.",
+        "metadata":  {
+                         "hasDrugInteractions":  true,
+                         "labeler":  "Dispensing Solutions, Inc.",
+                         "hasBlackBoxWarning":  false,
+                         "hasRenalPrecautions":  false
+                     },
+        "medicationName":  "Methimazole",
+        "clinicalDomain":  "Metabolic",
+        "section":  "FDA Approved Prescribing Information",
+        "recommendedAlternatives":  [
+
+                                    ],
+        "sourceOrganization":  "FDA DailyMed",
+        "evidenceClass":  "FDA Approved Label (Regulatory Level A)",
+        "contraindicatedMedications":  [
+
+                                       ],
+        "pageOrParagraph":  "Package Insert (LOINC 34391-3)",
+        "publicationDate":  "2024 (Verified Official Label)",
+        "guidelineVersion":  "FDA Human Rx SPL Part 1",
+        "content":  "FDA Drug Label: Methimazole (METHIMAZOLE). Indications: Methimazole is indicated in the medical treatment of hyperthyroidism. Long-term therapy may lead to remission of the disease. Methimazole may be used to ameliorate hyperthyroidism in preparation for subtotal thyroidectomy or radioactive iodine therapy. Methimazole is also used when thyroidectomy is contraindicated or not advisable. Contraindications: Methimazole is contraindicated in the presence of hypersensitivity to the drug and in nursing mothers because the drug is excreted in milk. Warnings: Agranulocytosis is potentially a serious side effect. Patients should be instructed to report to their physicians any symptoms of agranulocytosis, such as fever or sore throat. Leukopenia, thrombocytopenia, and aplastic anemia (pancytopenia) may also occur. The drug should be discontinued in the presence of agranulocytosis, aplastic anemia (pancytopenia), hepatitis, or exfoliative dermatitis. The patient’s bone marrow function should be monitored.Due to the similar hepatic toxicity profiles of methimazole and propylthiouracil, attention is drawn to the severe hepatic reactions which have occurred with both drugs. There have been rare reports of fulminant hepatitis, hepatic necrosis, encephalopathy, and death. Symptoms suggestive of hepatic dysfunction (anorexia, pruritus, right upper quadr... Drug Interactions: Anticoagulants (oral)The activity of oral anticoagulants may be potentiated by anti-vitamin-K activity attributed to methimazole.ß-adrenergic blocking agentsHyperthyroidism may cause an increased clearance of beta blockers with a high extraction ratio. A dose reduction of beta-adrenergic blockers may be needed when a hyperthyroid patient becomes euthyroid.Digitalis glycosidesSerum digitalis levels may be increased when hyperthyroid patients on a stable digitalis glycoside regimen become euthyroid; a reduced dosage of digitalis glycosides may be required.TheophyllineTheophylline clearance may decrease when hyperthyroid patients on a stable theophylline regimen become euthyroid; a reduced dose of theophylline may be needed. Renal \u0026 Specific Populations: ",
+        "contraindicatedConditions":  [
+
+                                      ],
+        "activeIngredient":  "METHIMAZOLE",
+        "documentId":  "DOC-FDA-SPL-4356",
+        "indexInZip":  4356
+    },
+    {
+        "actionableContraindication":  true,
+        "packageZip":  "prescription/20130823_eac25cfc-92cb-411c-b109-25731815b936.zip",
+        "recommendation":  "FDA Contraindications for Cephalexin: Cephalexin capsules are contraindicated in patients with known allergy to the cephalosporin group of antibiotics.",
+        "metadata":  {
+                         "hasDrugInteractions":  true,
+                         "labeler":  "MedVantx, Inc.",
+                         "hasBlackBoxWarning":  false,
+                         "hasRenalPrecautions":  false
+                     },
+        "medicationName":  "Cephalexin",
+        "clinicalDomain":  "Pulmonology",
+        "section":  "FDA Approved Prescribing Information",
+        "recommendedAlternatives":  [
+
+                                    ],
+        "sourceOrganization":  "FDA DailyMed",
+        "evidenceClass":  "FDA Approved Label (Regulatory Level A)",
+        "contraindicatedMedications":  [
+
+                                       ],
+        "pageOrParagraph":  "Package Insert (LOINC 34391-3)",
+        "publicationDate":  "2024 (Verified Official Label)",
+        "guidelineVersion":  "FDA Human Rx SPL Part 1",
+        "content":  "FDA Drug Label: Cephalexin (CEPHALEXIN ANHYDROUS). Indications: Cephalexin capsules are indicated for the treatment of the following infections when caused by susceptible strains of the designated microorganisms: Respiratory tract infections caused by Streptococcus pneumoniae and Streptococcus pyogenes (Penicillin is the usual drug of choice in the treatment and prevention of streptococcal infections, including the prophylaxis of rheumatic fever. Cephalexin capsules are generally effective in the eradication of streptococci from the nasopharynx; however, substantial data establishing the efficacy of cephalexin capsules in the subsequent prevention of rheumatic fever are not available at present.) Otitis media due to Streptococcus pneumoniae, Haemophilus influenzae, Staphylococcus aureus, Streptococcus pyogenes, and Moraxella catarrhalis Skin and skin s... Contraindications: Cephalexin capsules are contraindicated in patients with known allergy to the cephalosporin group of antibiotics. Warnings: BEFORE THERAPY WITH CEPHALEXIN IS INSTITUTED, CAREFUL INQUIRY SHOULD BE MADE TO DETERMINE WHETHER THE PATIENT HAS HAD PREVIOUS HYPERSENSITIVITY REACTIONS TO CEPHALEXIN, CEPHALOSPORINS, PENICILLINS, OR OTHER DRUGS. IF THIS PRODUCT IS TO BE GIVEN TO PENICILLIN-SENSITIVE PATIENTS, CAUTION SHOULD BE EXERCISED BECAUSE CROSS-HYPERSENSITIVITY AMONG BETA-LACTAM ANTIBIOTICS HAS BEEN CLEARLY DOCUMENTED AND MAY OCCUR IN UP TO 10% OF PATIENTS WITH A HISTORY OF PENICILLIN ALLERGY. IF AN ALLERGIC REACTION TO CEPHALEXIN OCCURS, DISCONTINUE THE DRUG. SERIOUS ACUTE HYPERSENSITIVITY REACTIONS MAY REQUIRE TREATMENT WITH EPINEPHRINE AND OTHER EMERGENCY MEASURES, INCLUDING OXYGEN, INTRAVENOUS FLUIDS, INTRAVENOUS ANTIHISTAMINES, CORTICOSTEROIDS, PRESSOR AMINES AND AIRWAY MANAGEMENT, AS CLINICALLY INDICATED. The... Drug Interactions: Metformin — In healthy subjects given single 500 mg doses of cephalexin and metformin, plasma metformin mean Cmax and AUC increased by an average of 34% and 24%, respectively, and metformin mean renal clearance decreased by 14%. No information is available about the interaction of cephalexin and metformin following multiple doses of either drug. Although not observed in this study, adverse effects could potentially arise from co-administration of cephalexin and metformin by inhibition of tubular secretion via organic cationic transporter systems. Accordingly, careful patient monitoring and dose adjustment of metformin is recommended in patients concomitantly taking cephalexin and metformin.Probenecid — As with other β-lactams, the renal excretion of cephalexin is inhibited by probenecid. Renal \u0026 Specific Populations: ",
+        "contraindicatedConditions":  [
+
+                                      ],
+        "activeIngredient":  "CEPHALEXIN ANHYDROUS",
+        "documentId":  "DOC-FDA-SPL-4455",
+        "indexInZip":  4455
+    },
+    {
+        "actionableContraindication":  true,
+        "packageZip":  "prescription/20131126_ddc8b010-61e1-466f-9dc6-91001000c0f5.zip",
+        "recommendation":  "FDA Contraindications for Propranolol Hydrochloride: Propranolol is contraindicated in 1) cardiogenic shock; 2) sinus bradycardia and greater than first-degree block; 3) bronchial asthma; and 4) in patients with known hypersensitivity to propranolol hydrochloride.",
+        "metadata":  {
+                         "hasDrugInteractions":  true,
+                         "labeler":  "Physicians Total Care, Inc.",
+                         "hasBlackBoxWarning":  false,
+                         "hasRenalPrecautions":  false
+                     },
+        "medicationName":  "Propranolol Hydrochloride",
+        "clinicalDomain":  "Pulmonology",
+        "section":  "FDA Approved Prescribing Information",
+        "recommendedAlternatives":  [
+
+                                    ],
+        "sourceOrganization":  "FDA DailyMed",
+        "evidenceClass":  "FDA Approved Label (Regulatory Level A)",
+        "contraindicatedMedications":  [
+
+                                       ],
+        "pageOrParagraph":  "Package Insert (LOINC 34391-3)",
+        "publicationDate":  "2024 (Verified Official Label)",
+        "guidelineVersion":  "FDA Human Rx SPL Part 1",
+        "content":  "FDA Drug Label: Propranolol Hydrochloride (PROPRANOLOL). Indications:  Contraindications: Propranolol is contraindicated in 1) cardiogenic shock; 2) sinus bradycardia and greater than first-degree block; 3) bronchial asthma; and 4) in patients with known hypersensitivity to propranolol hydrochloride. Warnings:  Drug Interactions: Caution should be exercised when propranolol hydrochloride extended-release capsules are administered with drugs that have an affect on CYP2D6, 1A2, or 2C19 metabolic pathways. Co-administration of such drugs with propranolol may lead to clinically relevant drug interactions and changes on its efficacy and/or toxicity (see Drug Interactions in PHARMACOKINETICS AND DRUG METABOLISM).Alcohol when used concomitantly with propranolol, may increase plasma levels of propranolol. Renal \u0026 Specific Populations: ",
+        "contraindicatedConditions":  [
+
+                                      ],
+        "activeIngredient":  "PROPRANOLOL",
+        "documentId":  "DOC-FDA-SPL-4554",
+        "indexInZip":  4554
+    },
+    {
+        "actionableContraindication":  true,
+        "packageZip":  "prescription/20140106_51536429-1544-4bdd-9cf7-7753d2978841.zip",
+        "recommendation":  "FDA Contraindications for Diphenoxylate Hydrochloride and Atropine Sulfate: Diphenoxylate hydrochloride and atropine sulfate tablets are contraindicated in patients withKnown hypersensitivity to diphenoxylate or atropine,Obstructive jaundice,Diarrhea associated with pseudomembranous enterocolitis or enterotoxin-producing bacteria.",
+        "metadata":  {
+                         "hasDrugInteractions":  true,
+                         "labeler":  "Aidarex Pharmaceuticals LLC",
+                         "hasBlackBoxWarning":  false,
+                         "hasRenalPrecautions":  false
+                     },
+        "medicationName":  "Diphenoxylate Hydrochloride and Atropine Sulfate",
+        "clinicalDomain":  "Pulmonology",
+        "section":  "FDA Approved Prescribing Information",
+        "recommendedAlternatives":  [
+
+                                    ],
+        "sourceOrganization":  "FDA DailyMed",
+        "evidenceClass":  "FDA Approved Label (Regulatory Level A)",
+        "contraindicatedMedications":  [
+
+                                       ],
+        "pageOrParagraph":  "Package Insert (LOINC 34391-3)",
+        "publicationDate":  "2024 (Verified Official Label)",
+        "guidelineVersion":  "FDA Human Rx SPL Part 1",
+        "content":  "FDA Drug Label: Diphenoxylate Hydrochloride and Atropine Sulfate (DIPHENOXYLATE). Indications: Diphenoxylate hydrochloride and atropine sulfate tablets are effective as adjunctive therapy in the management of diarrhea. Contraindications: Diphenoxylate hydrochloride and atropine sulfate tablets are contraindicated in patients withKnown hypersensitivity to diphenoxylate or atropine,Obstructive jaundice,Diarrhea associated with pseudomembranous enterocolitis or enterotoxin-producing bacteria. Warnings: THIS IS NOT AN INNOCUOUS DRUG AND DOSAGE RECOMMENDATIONS SHOULD BE STRICTLY ADHERED TO, ESPECIALLY IN CHILDREN. DIPHENOXYLATE HYDROCHLORIDE AND ATROPINE SULFATE IS NOT RECOMMENDED FOR CHILDREN UNDER 2 YEARS OF AGE. OVERDOSAGE MAY RESULT IN SEVERE RESPIRATORY DEPRESSION AND COMA, POSSIBLY LEADING TO PERMANENT BRAIN DAMAGE OR DEATH (See OVERDOSAGE). THEREFORE, KEEP THIS MEDICATION OUT OF THE REACH OF CHILDREN. THE USE OF DIPHENOXYLATE HYDROCHLORIDE AND ATROPINE SULFATE SHOULD BE ACCOMPANIED BY APPROPRIATE FLUID AND ELECTROLYTE THERAPY, WHEN INDICATED. IF SEVERE DEHYDRATION OR ELECTROLYTE IMBALANCE IS PRESENT, THIS PRODUCT SHOULD BE WITHHELD UNTIL APPROPRIATE CORRECTIVE THERAPY HAS BEEN INITIATED. DRUG-INDUCED INHIBITION OF PERISTALSIS MAY RESULT IN FLUID RETENTION IN THE INTESTINE, WHICH MAY... Drug Interactions: Known drug interactions include barbiturates, tranquilizers, and alcohol. Diphenoxylate hydrochloride and atropine sulfate may interact with MAO inhibitors (see WARNINGS).In studies with male rats, diphenoxylate hydrochloride was found to inhibit the hepatic microsomal enzyme system at a dose of 2 mg/kg/day. Therefore, diphenoxylate has the potential to prolong the biological half-lives of drugs for which the rate of elimination is dependent on the microsomal drug metabolizing enzyme system. Renal \u0026 Specific Populations: ",
+        "contraindicatedConditions":  [
+
+                                      ],
+        "activeIngredient":  "DIPHENOXYLATE",
+        "documentId":  "DOC-FDA-SPL-4653",
+        "indexInZip":  4653
+    },
+    {
+        "actionableContraindication":  true,
+        "packageZip":  "prescription/20140128_d9e99b34-00c8-4532-9e9b-ea16d91c0168.zip",
+        "recommendation":  "FDA Contraindications for Oxybutynin Chloride: Oxybutynin chloride is contraindicated in patients with urinary retention, gastric retention and other severe decreased gastrointestinal motility conditions, uncontrolled narrow-angle glaucoma and in patients who are at risk for these conditions.Oxybutynin chloride is also contraindicated in patients who have demonstrated hypersensitivity to the drug substance or other components of the product.",
+        "metadata":  {
+                         "hasDrugInteractions":  true,
+                         "labeler":  "Aidarex Pharmaceuticals LLC",
+                         "hasBlackBoxWarning":  false,
+                         "hasRenalPrecautions":  false
+                     },
+        "medicationName":  "Oxybutynin Chloride",
+        "clinicalDomain":  "General Medicine",
+        "section":  "FDA Approved Prescribing Information",
+        "recommendedAlternatives":  [
+
+                                    ],
+        "sourceOrganization":  "FDA DailyMed",
+        "evidenceClass":  "FDA Approved Label (Regulatory Level A)",
+        "contraindicatedMedications":  [
+
+                                       ],
+        "pageOrParagraph":  "Package Insert (LOINC 34391-3)",
+        "publicationDate":  "2024 (Verified Official Label)",
+        "guidelineVersion":  "FDA Human Rx SPL Part 1",
+        "content":  "FDA Drug Label: Oxybutynin Chloride (OXYBUTYNIN). Indications: Oxybutynin chloride tablets are indicated for the relief of symptoms of bladder instability associated with voiding in patients with uninhibited neurogenic or reflex neurogenic bladder (i.e., urgency, frequency, urinary leakage, urge incontinence, dysuria). Contraindications: Oxybutynin chloride is contraindicated in patients with urinary retention, gastric retention and other severe decreased gastrointestinal motility conditions, uncontrolled narrow-angle glaucoma and in patients who are at risk for these conditions.Oxybutynin chloride is also contraindicated in patients who have demonstrated hypersensitivity to the drug substance or other components of the product. Warnings: Angioedema of the face, lips, tongue and/or larynx has been reported with oxybutynin. In some cases, angioedema occurred after the first dose. Angioedema associated with upper airway swelling may be life-threatening. If involvement of the tongue, hypopharynx, or larynx occurs, oxybutynin should be promptly discontinued and appropriate therapy and/or measures necessary to ensure a patent airway should be promptly provided. Drug Interactions: The concomitant use of oxybutynin with other anticholinergic drugs or with other agents which produce dry mouth, constipation, somnolence (drowsiness), and/or other anticholinergic-like effects may increase the frequency and/or severity of such effects.Anticholinergic agents may potentially alter the absorption of some concomitantly administered drugs due to anticholinergic effects on gastrointestinal motility. This may be of concern for drugs with a narrow therapeutic index.Mean oxybutynin chloride plasma concentrations were approximately 3 to 4 fold higher when oxybutynin chloride was administered with ketoconazole, a potent CYP3A4 inhibitor.Other inhibitors of the cytochrome P450 3A4 enzyme system, such as antimycotic agents (e.g., itraconazole and miconazole) or macrolide antibiotics (... Renal \u0026 Specific Populations: ",
+        "contraindicatedConditions":  [
+
+                                      ],
+        "activeIngredient":  "OXYBUTYNIN",
+        "documentId":  "DOC-FDA-SPL-4752",
+        "indexInZip":  4752
+    },
+    {
+        "actionableContraindication":  true,
+        "packageZip":  "prescription/20140321_178f8088-43ef-4e2c-a108-d86cd43df1ae.zip",
+        "recommendation":  "FDA Contraindications for Amlodipine Besylate and Benazepril Hydrochloride: Do not co-administer aliskiren with angiotensin receptor blockers, ACE inhibitors, including amlodipine besylate and benazepril hydrochloride capsules in patients with diabetes. Amlodipine besylate and benazepril hydrochloride capsules are contraindicated in patients with a history of angioedema, with or without previous ACE inhibitor treatment, or patients who are hypersensitive to benazepril, to any other ACE inhibitor, to amlodipine, or to any of the excipients of amlodipine besylate and benazepril hydrochloride capsules.",
+        "metadata":  {
+                         "hasDrugInteractions":  false,
+                         "labeler":  "Aidarex Pharmaceuticals LLC",
+                         "hasBlackBoxWarning":  false,
+                         "hasRenalPrecautions":  false
+                     },
+        "medicationName":  "Amlodipine Besylate and Benazepril Hydrochloride",
+        "clinicalDomain":  "Metabolic",
+        "section":  "FDA Approved Prescribing Information",
+        "recommendedAlternatives":  [
+
+                                    ],
+        "sourceOrganization":  "FDA DailyMed",
+        "evidenceClass":  "FDA Approved Label (Regulatory Level A)",
+        "contraindicatedMedications":  [
+
+                                       ],
+        "pageOrParagraph":  "Package Insert (LOINC 34391-3)",
+        "publicationDate":  "2024 (Verified Official Label)",
+        "guidelineVersion":  "FDA Human Rx SPL Part 1",
+        "content":  "FDA Drug Label: Amlodipine Besylate and Benazepril Hydrochloride (AMLODIPINE). Indications:  Contraindications: Do not co-administer aliskiren with angiotensin receptor blockers, ACE inhibitors, including amlodipine besylate and benazepril hydrochloride capsules in patients with diabetes. Amlodipine besylate and benazepril hydrochloride capsules are contraindicated in patients with a history of angioedema, with or without previous ACE inhibitor treatment, or patients who are hypersensitive to benazepril, to any other ACE inhibitor, to amlodipine, or to any of the excipients of amlodipine besylate and benazepril hydrochloride capsules. Warnings: When pregnancy is detected, discontinue amlodipine besylate and benazepril hydrochloride as soon as possible [see Warnings and Precautions (5.5)]. Drugs that act directly on the renin-angiotensin system can cause injury and death to the developing fetus [see Warnings and Precautions (5.5)]. Drug Interactions:  Renal \u0026 Specific Populations: ",
+        "contraindicatedConditions":  [
+
+                                      ],
+        "activeIngredient":  "AMLODIPINE",
+        "documentId":  "DOC-FDA-SPL-4851",
+        "indexInZip":  4851
+    },
+    {
+        "actionableContraindication":  true,
+        "packageZip":  "prescription/20140415_18a96a2c-404f-4234-adf4-6411d2877aae.zip",
+        "recommendation":  "FDA Contraindications for Diphenoxylate Hydrochloride and Atropine Sulfate: Diphenoxylate hydrochloride and atropine sulfate tablets are contraindicated in patients withKnown hypersensitivity to diphenoxylate or atropine,Obstructive jaundice,Diarrhea associated with pseudomembranous enterocolitis or enterotoxin-producing bacteria.",
+        "metadata":  {
+                         "hasDrugInteractions":  true,
+                         "labeler":  "Aphena Pharma Solutions - Tennessee, LLC",
+                         "hasBlackBoxWarning":  false,
+                         "hasRenalPrecautions":  false
+                     },
+        "medicationName":  "Diphenoxylate Hydrochloride and Atropine Sulfate",
+        "clinicalDomain":  "Pulmonology",
+        "section":  "FDA Approved Prescribing Information",
+        "recommendedAlternatives":  [
+
+                                    ],
+        "sourceOrganization":  "FDA DailyMed",
+        "evidenceClass":  "FDA Approved Label (Regulatory Level A)",
+        "contraindicatedMedications":  [
+
+                                       ],
+        "pageOrParagraph":  "Package Insert (LOINC 34391-3)",
+        "publicationDate":  "2024 (Verified Official Label)",
+        "guidelineVersion":  "FDA Human Rx SPL Part 1",
+        "content":  "FDA Drug Label: Diphenoxylate Hydrochloride and Atropine Sulfate (DIPHENOXYLATE). Indications: Diphenoxylate hydrochloride and atropine sulfate tablets are effective as adjunctive therapy in the management of diarrhea. Contraindications: Diphenoxylate hydrochloride and atropine sulfate tablets are contraindicated in patients withKnown hypersensitivity to diphenoxylate or atropine,Obstructive jaundice,Diarrhea associated with pseudomembranous enterocolitis or enterotoxin-producing bacteria. Warnings: THIS IS NOT AN INNOCUOUS DRUG AND DOSAGE RECOMMENDATIONS SHOULD BE STRICTLY ADHERED TO, ESPECIALLY IN CHILDREN. DIPHENOXYLATE HYDROCHLORIDE AND ATROPINE SULFATE IS NOT RECOMMENDED FOR CHILDREN UNDER 2 YEARS OF AGE. OVERDOSAGE MAY RESULT IN SEVERE RESPIRATORY DEPRESSION AND COMA, POSSIBLY LEADING TO PERMANENT BRAIN DAMAGE OR DEATH (See OVERDOSAGE). THEREFORE, KEEP THIS MEDICATION OUT OF THE REACH OF CHILDREN. THE USE OF DIPHENOXYLATE HYDROCHLORIDE AND ATROPINE SULFATE SHOULD BE ACCOMPANIED BY APPROPRIATE FLUID AND ELECTROLYTE THERAPY, WHEN INDICATED. IF SEVERE DEHYDRATION OR ELECTROLYTE IMBALANCE IS PRESENT, THIS PRODUCT SHOULD BE WITHHELD UNTIL APPROPRIATE CORRECTIVE THERAPY HAS BEEN INITIATED. DRUG-INDUCED INHIBITION OF PERISTALSIS MAY RESULT IN FLUID RETENTION IN THE INTESTINE, WHICH MAY... Drug Interactions: Known drug interactions include barbiturates, tranquilizers, and alcohol. Diphenoxylate hydrochloride and atropine sulfate may interact with MAO inhibitors (see WARNINGS).In studies with male rats, diphenoxylate hydrochloride was found to inhibit the hepatic microsomal enzyme system at a dose of 2 mg/kg/day. Therefore, diphenoxylate has the potential to prolong the biological half-lives of drugs for which the rate of elimination is dependent on the microsomal drug metabolizing enzyme system. Renal \u0026 Specific Populations: ",
+        "contraindicatedConditions":  [
+
+                                      ],
+        "activeIngredient":  "DIPHENOXYLATE",
+        "documentId":  "DOC-FDA-SPL-4950",
+        "indexInZip":  4950
+    },
+    {
+        "actionableContraindication":  true,
+        "packageZip":  "prescription/20140507_0c12b60f-ec25-4c59-8b2e-4445e600d051.zip",
+        "recommendation":  "FDA Contraindications for Piroxicam: Piroxicam capsules are contraindicated in patients with known hypersensitivity to piroxicam.Piroxicam capsules should not be given to patients who have experienced asthma, urticaria, or allergic-type reactions after taking aspirin or other NSAIDs. Severe, rarely fatal, anaphylactic-like reactions to NSAIDs have been reported in such patients (see WARNINGS, AnaphylactoidReactions and PRECAUTIONS, Preexisting Asthma).Piroxicam capsules are contraindicated for the treatment of peri-operative pain in the setting of coronary artery bypass graft (CABG) surgery (see WARNINGS).",
+        "metadata":  {
+                         "hasDrugInteractions":  false,
+                         "labeler":  "Aphena Pharma Solutions - Tennessee, LLC",
+                         "hasBlackBoxWarning":  false,
+                         "hasRenalPrecautions":  false
+                     },
+        "medicationName":  "Piroxicam",
+        "clinicalDomain":  "Analgesic",
+        "section":  "FDA Approved Prescribing Information",
+        "recommendedAlternatives":  [
+
+                                    ],
+        "sourceOrganization":  "FDA DailyMed",
+        "evidenceClass":  "FDA Approved Label (Regulatory Level A)",
+        "contraindicatedMedications":  [
+
+                                       ],
+        "pageOrParagraph":  "Package Insert (LOINC 34391-3)",
+        "publicationDate":  "2024 (Verified Official Label)",
+        "guidelineVersion":  "FDA Human Rx SPL Part 1",
+        "content":  "FDA Drug Label: Piroxicam (PIROXICAM). Indications: Carefully consider the potential benefits and risks of piroxicam capsules and other treatment options before deciding to use piroxicam capsules. Use the lowest effective dose for the shortest duration consistent with individual patient treatment goals (see WARNINGS).Piroxicam capsules are indicated:For relief of the signs and symptoms of osteoarthritis.For relief of the signs and symptoms of rheumatoid arthritis. Contraindications: Piroxicam capsules are contraindicated in patients with known hypersensitivity to piroxicam.Piroxicam capsules should not be given to patients who have experienced asthma, urticaria, or allergic-type reactions after taking aspirin or other NSAIDs. Severe, rarely fatal, anaphylactic-like reactions to NSAIDs have been reported in such patients (see WARNINGS, AnaphylactoidReactions and PRECAUTIONS, Preexisting Asthma).Piroxicam capsules are contraindicated for the treatment of peri-operative pain in the setting of coronary artery bypass graft (CABG) surgery (see WARNINGS). Warnings: Cardiovascular RiskNSAIDs may cause an increased risk of serious cardiovascular thrombotic events, myocardial infarction, and stroke, which can be fatal. This risk may increase with duration of use. Patients with cardiovascular disease or risk factors for cardiovascular disease may be at greater risk (see WARNINGS).Piroxicam capsules are contraindicated for the treatment of peri-operative pain in the setting of coronary artery bypass graft (CABG) surgery (see WARNINGS).Gastrointestinal RiskNSAIDs cause an increased risk of serious gastrointestinal adverse events including bleeding, ulceration, and perforation of the stomach or intestines, which can be fatal. These events can occur at any time during use and without warning symptoms. Elderly patients are at greater risk for serious gastroin... Drug Interactions:  Renal \u0026 Specific Populations: ",
+        "contraindicatedConditions":  [
+
+                                      ],
+        "activeIngredient":  "PIROXICAM",
+        "documentId":  "DOC-FDA-SPL-5049",
+        "indexInZip":  5049
+    },
+    {
+        "actionableContraindication":  true,
+        "packageZip":  "prescription/20140610_6368bb69-43e9-4304-a30d-03d593c1c05f.zip",
+        "recommendation":  "FDA Contraindications for UrinD/S: Hypersensitivity to any of the ingredients is possible. Risk benefits should be carefully considered when the following medical problems exist: cardiac disease (especially cardiac arrhythmias, congestive heart failure, coronary heart disease, and mitral stenosis); gastrointestinal tract obstructive disease; glaucoma; myasthenia gravis, acute urinary retention may be precipitated in obstructive uropathy (such as bladder neck obstruction due to prostatic hypertrophy).",
+        "metadata":  {
+                         "hasDrugInteractions":  true,
+                         "labeler":  "Llorens Pharmaceutical International Division",
+                         "hasBlackBoxWarning":  false,
+                         "hasRenalPrecautions":  false
+                     },
+        "medicationName":  "UrinD/S",
+        "clinicalDomain":  "Cardiology",
+        "section":  "FDA Approved Prescribing Information",
+        "recommendedAlternatives":  [
+
+                                    ],
+        "sourceOrganization":  "FDA DailyMed",
+        "evidenceClass":  "FDA Approved Label (Regulatory Level A)",
+        "contraindicatedMedications":  [
+
+                                       ],
+        "pageOrParagraph":  "Package Insert (LOINC 34391-3)",
+        "publicationDate":  "2024 (Verified Official Label)",
+        "guidelineVersion":  "FDA Human Rx SPL Part 1",
+        "content":  "FDA Drug Label: UrinD/S (Methenamine). Indications: Indicated for the treatment of symptoms of irritative voiding. Indicated for the relief of local symptoms, such as inflammation, hypermotility, and pain, which accompany lower urinary tract infections. Indicated for the relief of urinary tract symptoms caused by diagnostic procedures. Contraindications: Hypersensitivity to any of the ingredients is possible. Risk benefits should be carefully considered when the following medical problems exist: cardiac disease (especially cardiac arrhythmias, congestive heart failure, coronary heart disease, and mitral stenosis); gastrointestinal tract obstructive disease; glaucoma; myasthenia gravis, acute urinary retention may be precipitated in obstructive uropathy (such as bladder neck obstruction due to prostatic hypertrophy). Warnings: Do not exceed recommended dosage. If rapid pulse, dizziness or blurring of vision occurs discontinue use immediately. Drug Interactions: Drug Interactions - because of this product\u0027s effect on gastrointestinal motility and gastric emptying, it may decrease the absorption of other oral medications during concurrent use such as: urinary alkalizers; thiazide diuretics (may cause the urine to become alkaline reducing the effectiveness of methenamine by inhibiting its conversion to formaldehyde); antimuscarinics (concurrent use may intensify antimuscarinic effects of hyoscyamine because of secondary antimuscarinic activities of these medications); antacids/antidiarrheals (may reduce absorption of hyoscyamine, concurrent use with antacids may cause urine to become alkaline, reducing effectiveness of methenamine by inhibiting its conversion to formaldehyde). Doses of these medications should be spaced 1 hour apart from doses of hy... Renal \u0026 Specific Populations: ",
+        "contraindicatedConditions":  [
+
+                                      ],
+        "activeIngredient":  "Methenamine",
+        "documentId":  "DOC-FDA-SPL-5148",
+        "indexInZip":  5148
+    },
+    {
+        "actionableContraindication":  true,
+        "packageZip":  "prescription/20140708_502f390d-d69e-4a77-8a59-4eedf91004f3.zip",
+        "recommendation":  "FDA Contraindications for Naproxen: Naproxen tablets contraindicated in patients with known hypersensitivity to naproxen.Naproxen tablets should not be given to patients who have experienced asthma, urticaria, or allergic-type reactions after taking aspirin or other NSAIDs. Severe, rarely fatal, anaphylactic-like reactions to NSAIDs have been reported in such patients (see WARNINGS: Anaphylactoid Reactions and PRECAUTIONS: Preexisting Asthma). Naproxen is contraindicated for the treatment of peri-operative pain in the setting of coronary artery bypass graft (CABG) surgery (see WARNINGS).",
+        "metadata":  {
+                         "hasDrugInteractions":  false,
+                         "labeler":  "Aphena Pharma Solutions - Tennessee, LLC",
+                         "hasBlackBoxWarning":  false,
+                         "hasRenalPrecautions":  false
+                     },
+        "medicationName":  "Naproxen",
+        "clinicalDomain":  "Analgesic",
+        "section":  "FDA Approved Prescribing Information",
+        "recommendedAlternatives":  [
+
+                                    ],
+        "sourceOrganization":  "FDA DailyMed",
+        "evidenceClass":  "FDA Approved Label (Regulatory Level A)",
+        "contraindicatedMedications":  [
+
+                                       ],
+        "pageOrParagraph":  "Package Insert (LOINC 34391-3)",
+        "publicationDate":  "2024 (Verified Official Label)",
+        "guidelineVersion":  "FDA Human Rx SPL Part 1",
+        "content":  "FDA Drug Label: Naproxen (NAPROXEN). Indications: Carefully consider the potential benefits and risks of naproxen tablets other treatment options before deciding to use naproxen tablets. Use the lowest effective dose for the shortest duration consistent with individual patient treatment goals (see WARNINGS).Naproxen is indicated:For the relief of the signs and symptoms of rheumatoid arthritis For the relief of the signs and symptoms of osteoarthritis For the relief of the signs and symptoms of ankylosing spondylitis For the relief of the signs and symptoms of juvenile arthritis Naproxen is indicated:For relief of the signs and symptoms of tendonitis For relief of the signs and symptoms of bursitis For relief of the signs and symptoms of acute gout For the management of pain For the management of primary dysmenorrhea Contraindications: Naproxen tablets contraindicated in patients with known hypersensitivity to naproxen.Naproxen tablets should not be given to patients who have experienced asthma, urticaria, or allergic-type reactions after taking aspirin or other NSAIDs. Severe, rarely fatal, anaphylactic-like reactions to NSAIDs have been reported in such patients (see WARNINGS: Anaphylactoid Reactions and PRECAUTIONS: Preexisting Asthma). Naproxen is contraindicated for the treatment of peri-operative pain in the setting of coronary artery bypass graft (CABG) surgery (see WARNINGS). Warnings: Cardiovascular Risk:NSAIDs may cause an increased risk of serious cardiovascular thrombotic events, myocardial infarction, and stroke, which can be fatal. This risk may increase with duration of use. Patients with cardiovascular disease or risk factors for cardiovascular disease may be at greater risk (see WARNINGS). Naproxen tablets are contraindicated for the treatment of peri-operative pain in the setting of coronary artery bypass graft (CABG) surgery (see WARNINGS). Gastrointestinal Risk:NSAIDs cause an increased risk of serious gastrointestinal adverse events including bleeding, ulceration, and perforation of the stomach or intestines, which can be fatal. These events can occur at any time during use and without warning symptoms. Elderly patients are at greater risk for serious gastro... Drug Interactions:  Renal \u0026 Specific Populations: ",
+        "contraindicatedConditions":  [
+
+                                      ],
+        "activeIngredient":  "NAPROXEN",
+        "documentId":  "DOC-FDA-SPL-5247",
+        "indexInZip":  5247
+    },
+    {
+        "actionableContraindication":  true,
+        "packageZip":  "prescription/20140829_73273069-249a-423e-b634-a73af6632ba3.zip",
+        "recommendation":  "FDA Contraindications for EXTENDED PHENYTOIN SODIUM: Phenytoin is contraindicated in those patients who are hypersensitive to phenytoin or other hydantoins.",
+        "metadata":  {
+                         "hasDrugInteractions":  true,
+                         "labeler":  "TYA Pharmaceuticals",
+                         "hasBlackBoxWarning":  false,
+                         "hasRenalPrecautions":  false
+                     },
+        "medicationName":  "EXTENDED PHENYTOIN SODIUM",
+        "clinicalDomain":  "CNS \u0026 Neurologic",
+        "section":  "FDA Approved Prescribing Information",
+        "recommendedAlternatives":  [
+
+                                    ],
+        "sourceOrganization":  "FDA DailyMed",
+        "evidenceClass":  "FDA Approved Label (Regulatory Level A)",
+        "contraindicatedMedications":  [
+
+                                       ],
+        "pageOrParagraph":  "Package Insert (LOINC 34391-3)",
+        "publicationDate":  "2024 (Verified Official Label)",
+        "guidelineVersion":  "FDA Human Rx SPL Part 1",
+        "content":  "FDA Drug Label: EXTENDED PHENYTOIN SODIUM (PHENYTOIN). Indications: Extended Phenytoin Sodium Capsules, USP are indicated for the control of generalized tonic-clonic (grand mal) and complex partial (psychomotor, temporal lobe) seizures and prevention and treatment of seizures occurring during or following neurosurgery.Phenytoin serum level determinations may be necessary for optimal dosage adjustments (see and sections). DOSAGE AND ADMINISTRATIONCLINICAL PHARMACOLOGY Contraindications: Phenytoin is contraindicated in those patients who are hypersensitive to phenytoin or other hydantoins. Warnings:  Drug Interactions: There are many drugs which may increase or decrease phenytoin levels or which phenytoin may affect. Serum level determinations for phenytoin are especially helpful when possible drug interactions are suspected. The most commonly occurring drug interactions are listed below:Drugs which may increase phenytoin serum levels include: acute alcohol intake, amiodarone, chloramphenicol, chlordiazepoxide, cimetidine, diazepam, dicumarol, disulfiram, estrogens, ethosuximide, fluoxetine, H -antagonists, halothane, isoniazid, methylphenidate, phenothiazines, phenylbutazone, salicylates, succinimides, sulfonamides, ticlopidine, tolbutamide, trazodone. 2Drugs which may decrease phenytoin levels include: carbamazepine, chronic alcohol abuse, reserpine, and sucralfate. Moban brand of molindone hydrochlori... Renal \u0026 Specific Populations: ",
+        "contraindicatedConditions":  [
+
+                                      ],
+        "activeIngredient":  "PHENYTOIN",
+        "documentId":  "DOC-FDA-SPL-5346",
+        "indexInZip":  5346
+    },
+    {
+        "actionableContraindication":  true,
+        "packageZip":  "prescription/20141007_a24f665c-dc77-4911-81d0-2608d955f478.zip",
+        "recommendation":  "FDA Contraindications for Hydroxyzine Hydrochloride: Hydroxyzine, when administered to the pregnant mouse, rat, and rabbit induced fetal abnormalities in the rat and mouse at doses substantially above the human therapeutic range. Clinical data in human beings are inadequate to establish safety in early pregnancy. Until such data are available, hydroxyzine is contraindicated in early pregnancy.Hydroxyzine is contraindicated for patients who have shown a previous hypersensitivity to it.WARNINGS Nursing Mothers:It is not known whether this drug is excreted in human milk. Since many drugs are so excreted, hydroxyzine should not be given to nursing mothers.",
+        "metadata":  {
+                         "hasDrugInteractions":  false,
+                         "labeler":  "State of Florida DOH Central Pharmacy",
+                         "hasBlackBoxWarning":  false,
+                         "hasRenalPrecautions":  false
+                     },
+        "medicationName":  "Hydroxyzine Hydrochloride",
+        "clinicalDomain":  "CNS \u0026 Neurologic",
+        "section":  "FDA Approved Prescribing Information",
+        "recommendedAlternatives":  [
+
+                                    ],
+        "sourceOrganization":  "FDA DailyMed",
+        "evidenceClass":  "FDA Approved Label (Regulatory Level A)",
+        "contraindicatedMedications":  [
+
+                                       ],
+        "pageOrParagraph":  "Package Insert (LOINC 34391-3)",
+        "publicationDate":  "2024 (Verified Official Label)",
+        "guidelineVersion":  "FDA Human Rx SPL Part 1",
+        "content":  "FDA Drug Label: Hydroxyzine Hydrochloride (HYDROXYZINE). Indications: For symptomatic relief of anxiety and tension associated with psychoneurosis and as an adjunct in organic disease states in which anxiety is manifested.Useful in the management of pruritus due to allergic conditions such as chronic urticarial and atopic and contact dermatoses and in histamine-mediated pruritus.As a sedative when used as a premedication and following general anesthesia, hydroxyzine may potentiate meperidine and barbiturates, so their use in pre-anesthetic adjunctive therapy should be modified on an individual basis. Atropine and other belladonna alkaloids are not affected by the drug. Hydroxyzine is not known to interfere with the action of digitalis in any way and it may be used concurrently with this agent.The effectiveness of hydroxyzine as an antianxiety agent for long ... Contraindications: Hydroxyzine, when administered to the pregnant mouse, rat, and rabbit induced fetal abnormalities in the rat and mouse at doses substantially above the human therapeutic range. Clinical data in human beings are inadequate to establish safety in early pregnancy. Until such data are available, hydroxyzine is contraindicated in early pregnancy.Hydroxyzine is contraindicated for patients who have shown a previous hypersensitivity to it.WARNINGS Nursing Mothers:It is not known whether this drug is excreted in human milk. Since many drugs are so excreted, hydroxyzine should not be given to nursing mothers. Warnings:  Drug Interactions:  Renal \u0026 Specific Populations: ",
+        "contraindicatedConditions":  [
+
+                                      ],
+        "activeIngredient":  "HYDROXYZINE",
+        "documentId":  "DOC-FDA-SPL-5445",
+        "indexInZip":  5445
+    },
+    {
+        "actionableContraindication":  true,
+        "packageZip":  "prescription/20150107_0cd531c8-6f98-4bc6-b3db-4c203e3b2f87.zip",
+        "recommendation":  "FDA Contraindications for Folic Acid: Folic acid is contraindicated in patients who have shown previous intolerance to the drug.",
+        "metadata":  {
+                         "hasDrugInteractions":  true,
+                         "labeler":  "State of Florida DOH Central Pharmacy",
+                         "hasBlackBoxWarning":  false,
+                         "hasRenalPrecautions":  false
+                     },
+        "medicationName":  "Folic Acid",
+        "clinicalDomain":  "General Medicine",
+        "section":  "FDA Approved Prescribing Information",
+        "recommendedAlternatives":  [
+
+                                    ],
+        "sourceOrganization":  "FDA DailyMed",
+        "evidenceClass":  "FDA Approved Label (Regulatory Level A)",
+        "contraindicatedMedications":  [
+
+                                       ],
+        "pageOrParagraph":  "Package Insert (LOINC 34391-3)",
+        "publicationDate":  "2024 (Verified Official Label)",
+        "guidelineVersion":  "FDA Human Rx SPL Part 1",
+        "content":  "FDA Drug Label: Folic Acid (FOLIC ACID). Indications: Folic acid is effective in the treatment of megaloblastic anemias due to a deficiency of folic acid (as may be seen in tropical or nontropical sprue) and in anemias of nutritional origin, pregnancy, infancy, or childhood. Contraindications: Folic acid is contraindicated in patients who have shown previous intolerance to the drug. Warnings: Administration of folic acid alone is improper therapy for pernicious anemia and other megaloblastic anemias in which vitamin B12 is deficient. Drug Interactions: There is evidence that the anticonvulsant action of phenytoin is antagonized by folic acid. A patient whose epilepsy is completely controlled by phenytoin may require increased doses to prevent convulsions if folic acid is given.Folate deficiency may result from increased loss of folate, as in renal dialysis and/or interference with metabolism (e.g., folic acid antagonists such as methotrexate); the administration of anticonvulsants, such as diphenylhydantoin, primidone, and barbiturates; alcohol consumption and, especially, alcoholic cirrhosis; and the administration of pyrimethamine and nitrofurantoin.False low serum and red cell folate levels may occur if the patient has been taking antibiotics, such as tetracycline, which suppress the growth of Lactobacillus casei. Renal \u0026 Specific Populations: ",
+        "contraindicatedConditions":  [
+
+                                      ],
+        "activeIngredient":  "FOLIC ACID",
+        "documentId":  "DOC-FDA-SPL-5643",
+        "indexInZip":  5643
+    },
+    {
+        "actionableContraindication":  true,
+        "packageZip":  "prescription/20150220_0f7c3734-dfa5-7082-e054-00144ff88e88.zip",
+        "recommendation":  "FDA Contraindications for Phenazopyridine Hydrochloride: Phenazopyridine HCl should not be used in patients who have previously exhibited hypersensitivity to it. The use of Phenazopyridine HCl is contraindicated in patients with renal insufficiency.",
+        "metadata":  {
+                         "hasDrugInteractions":  false,
+                         "labeler":  "Blenheim Pharmacal, Inc.",
+                         "hasBlackBoxWarning":  false,
+                         "hasRenalPrecautions":  false
+                     },
+        "medicationName":  "Phenazopyridine Hydrochloride",
+        "clinicalDomain":  "Nephrology",
+        "section":  "FDA Approved Prescribing Information",
+        "recommendedAlternatives":  [
+
+                                    ],
+        "sourceOrganization":  "FDA DailyMed",
+        "evidenceClass":  "FDA Approved Label (Regulatory Level A)",
+        "contraindicatedMedications":  [
+
+                                       ],
+        "pageOrParagraph":  "Package Insert (LOINC 34391-3)",
+        "publicationDate":  "2024 (Verified Official Label)",
+        "guidelineVersion":  "FDA Human Rx SPL Part 1",
+        "content":  "FDA Drug Label: Phenazopyridine Hydrochloride (PHENAZOPYRIDINE). Indications: Phenazopyridine HCl is indicated for the symptomatic relief of pain, burning, urgency, frequency, and other discomforts arising from irritation of the lower urinary tract mucosa caused by infection, trauma, surgery, endoscopic procedures, or the passage of sounds or catheters. The use of Phenazopyridine HCl for relief of symptoms should not delay definitive diagnosis and treatment of causative conditions. Because it provides only symptomatic relief, prompt appropriate treatment of the cause of pain must be instituted and Phenazopyridine HCl should be discontinued when symptoms are controlled.The analgesic action may reduce or eliminate the need for systemic analgesics or narcotics. It is, however, compatible with antibacterial therapy and can help to relieve pain and discomfort during the ... Contraindications: Phenazopyridine HCl should not be used in patients who have previously exhibited hypersensitivity to it. The use of Phenazopyridine HCl is contraindicated in patients with renal insufficiency. Warnings:  Drug Interactions:  Renal \u0026 Specific Populations: ",
+        "contraindicatedConditions":  [
+
+                                      ],
+        "activeIngredient":  "PHENAZOPYRIDINE",
+        "documentId":  "DOC-FDA-SPL-5742",
+        "indexInZip":  5742
+    },
+    {
+        "actionableContraindication":  true,
+        "packageZip":  "prescription/20150319_11a55d5f-72b9-0b65-e054-00144ff88e88.zip",
+        "recommendation":  "FDA Contraindications for SKELAXIN: Known hypersensitivity to any components of this product.Known tendency to drug induced, hemolytic, or other anemias. Significantly impaired renal or hepatic function.",
+        "metadata":  {
+                         "hasDrugInteractions":  true,
+                         "labeler":  "Blenheim Pharmacal, Inc.",
+                         "hasBlackBoxWarning":  false,
+                         "hasRenalPrecautions":  false
+                     },
+        "medicationName":  "SKELAXIN",
+        "clinicalDomain":  "Nephrology",
+        "section":  "FDA Approved Prescribing Information",
+        "recommendedAlternatives":  [
+
+                                    ],
+        "sourceOrganization":  "FDA DailyMed",
+        "evidenceClass":  "FDA Approved Label (Regulatory Level A)",
+        "contraindicatedMedications":  [
+
+                                       ],
+        "pageOrParagraph":  "Package Insert (LOINC 34391-3)",
+        "publicationDate":  "2024 (Verified Official Label)",
+        "guidelineVersion":  "FDA Human Rx SPL Part 1",
+        "content":  "FDA Drug Label: SKELAXIN (METAXALONE). Indications: SKELAXIN (metaxalone) is indicated as an adjunct to rest, physical therapy, and other measures for the relief of discomforts associated with acute, painful musculoskeletal conditions. The mode of action of this drug has not been clearly identified, but may be related to its sedative properties. Metaxalone does not directly relax tense skeletal muscles in man. Contraindications: Known hypersensitivity to any components of this product.Known tendency to drug induced, hemolytic, or other anemias. Significantly impaired renal or hepatic function. Warnings: SKELAXIN may enhance the effects of alcohol and other CNS depressants. Drug Interactions: The sedative effects of SKELAXIN and other CNS depressants (e.g., alcohol, benzodiazepines, opioids, tricyclic antidepressants) may be additive. Therefore, caution should be exercised with patients who take more than one of these CNS depressants simultaneously. Renal \u0026 Specific Populations: ",
+        "contraindicatedConditions":  [
+
+                                      ],
+        "activeIngredient":  "METAXALONE",
+        "documentId":  "DOC-FDA-SPL-5841",
+        "indexInZip":  5841
+    },
+    {
+        "actionableContraindication":  false,
+        "packageZip":  "prescription/20150512_614dce60-99f4-45e5-8b7b-e84240a34e8f.zip",
+        "recommendation":  "FDA Prescribing Warning for Benzo-Jel Mint: Keep out of the reach of children. Store at controlled room temperature 59°-86°F (15°-30°C). Do not use on people with known allergies to benzocaine and PABA compounds.",
+        "metadata":  {
+                         "hasDrugInteractions":  false,
+                         "labeler":  "Henry Schein Inc",
+                         "hasBlackBoxWarning":  false,
+                         "hasRenalPrecautions":  false
+                     },
+        "medicationName":  "Benzo-Jel Mint",
+        "clinicalDomain":  "General Medicine",
+        "section":  "FDA Approved Prescribing Information",
+        "recommendedAlternatives":  [
+
+                                    ],
+        "sourceOrganization":  "FDA DailyMed",
+        "evidenceClass":  "FDA Approved Label (Regulatory Level A)",
+        "contraindicatedMedications":  [
+
+                                       ],
+        "pageOrParagraph":  "Package Insert (LOINC 34391-3)",
+        "publicationDate":  "2024 (Verified Official Label)",
+        "guidelineVersion":  "FDA Human Rx SPL Part 1",
+        "content":  "FDA Drug Label: Benzo-Jel Mint (Benzocaine). Indications:  Contraindications:  Warnings: Keep out of the reach of children. Store at controlled room temperature 59°-86°F (15°-30°C). Do not use on people with known allergies to benzocaine and PABA compounds. Drug Interactions:  Renal \u0026 Specific Populations: ",
+        "contraindicatedConditions":  [
+
+                                      ],
+        "activeIngredient":  "Benzocaine",
+        "documentId":  "DOC-FDA-SPL-5940",
+        "indexInZip":  5940
+    },
+    {
+        "actionableContraindication":  true,
+        "packageZip":  "prescription/20150801_e91786c4-f928-4419-bd57-eca11498a6e6.zip",
+        "recommendation":  "FDA Contraindications for Amoxicillin: Amoxicillin is contraindicated in patients who have experienced a serious hypersensitivity reaction (e.g., anaphylaxis or Stevens-Johnson syndrome) to amoxicillin or to other β-lactam antibiotics (e.g., penicillins and cephalosporins).",
+        "metadata":  {
+                         "hasDrugInteractions":  false,
+                         "labeler":  "Blenheim Pharmacal, Inc.",
+                         "hasBlackBoxWarning":  false,
+                         "hasRenalPrecautions":  false
+                     },
+        "medicationName":  "Amoxicillin",
+        "clinicalDomain":  "Antimicrobial",
+        "section":  "FDA Approved Prescribing Information",
+        "recommendedAlternatives":  [
+
+                                    ],
+        "sourceOrganization":  "FDA DailyMed",
+        "evidenceClass":  "FDA Approved Label (Regulatory Level A)",
+        "contraindicatedMedications":  [
+
+                                       ],
+        "pageOrParagraph":  "Package Insert (LOINC 34391-3)",
+        "publicationDate":  "2024 (Verified Official Label)",
+        "guidelineVersion":  "FDA Human Rx SPL Part 1",
+        "content":  "FDA Drug Label: Amoxicillin (AMOXICILLIN ANHYDROUS). Indications: To reduce the development of drug-resistant bacteria and maintain the effectiveness of amoxicillin and other antibacterial drugs, amoxicillin should be used only to treat infections that are proven or strongly suspected to be caused by bacteria. When culture and susceptibility information are available, they should be considered in selecting or modifying antibacterial therapy. In the absence of such data, local epidemiology and susceptibility patterns may contribute to the empiric selection of therapy.Amoxicillin is indicated in the treatment of infections due to susceptible (ONLY β-lactamase–negative) isolates of the designated bacteria in the conditions listed below: Contraindications: Amoxicillin is contraindicated in patients who have experienced a serious hypersensitivity reaction (e.g., anaphylaxis or Stevens-Johnson syndrome) to amoxicillin or to other β-lactam antibiotics (e.g., penicillins and cephalosporins). Warnings:  Drug Interactions:  Renal \u0026 Specific Populations: ",
+        "contraindicatedConditions":  [
+
+                                      ],
+        "activeIngredient":  "AMOXICILLIN ANHYDROUS",
+        "documentId":  "DOC-FDA-SPL-6039",
+        "indexInZip":  6039
+    },
+    {
+        "actionableContraindication":  true,
+        "packageZip":  "prescription/20151018_baaaa16c-48a8-4d92-83ca-319c091dd931.zip",
+        "recommendation":  "FDA Contraindications for TRAMADOL HYDROCHLORIDE: CONTRAINDICATIONSTramadol hydrochloride tablets, USP should not be administered to patients who have previouslydemonstrated hypersensitivity to tramadol, any other component of this product or opoids.",
+        "metadata":  {
+                         "hasDrugInteractions":  false,
+                         "labeler":  "Alivio Medical Products, LLC",
+                         "hasBlackBoxWarning":  false,
+                         "hasRenalPrecautions":  false
+                     },
+        "medicationName":  "TRAMADOL HYDROCHLORIDE",
+        "clinicalDomain":  "Analgesic",
+        "section":  "FDA Approved Prescribing Information",
+        "recommendedAlternatives":  [
+
+                                    ],
+        "sourceOrganization":  "FDA DailyMed",
+        "evidenceClass":  "FDA Approved Label (Regulatory Level A)",
+        "contraindicatedMedications":  [
+
+                                       ],
+        "pageOrParagraph":  "Package Insert (LOINC 34391-3)",
+        "publicationDate":  "2024 (Verified Official Label)",
+        "guidelineVersion":  "FDA Human Rx SPL Part 1",
+        "content":  "FDA Drug Label: TRAMADOL HYDROCHLORIDE (TRAMADOL). Indications: INDICATIONS AND USAGETramadol hydrochloride tablets, USP are indicated for the management of moderate to moderately severe pain in adults. Contraindications: CONTRAINDICATIONSTramadol hydrochloride tablets, USP should not be administered to patients who have previouslydemonstrated hypersensitivity to tramadol, any other component of this product or opoids. Warnings: WARNINGSSeizure Risk Seizures have been reported in patients receiving Tramadol hydrochloride within therecommended dosage range. Drug Interactions:  Renal \u0026 Specific Populations: ",
+        "contraindicatedConditions":  [
+
+                                      ],
+        "activeIngredient":  "TRAMADOL",
+        "documentId":  "DOC-FDA-SPL-6138",
+        "indexInZip":  6138
+    },
+    {
+        "actionableContraindication":  true,
+        "packageZip":  "prescription/20151116_3c4accb1-749d-4b89-bec5-5b9b7ea9dd23.zip",
+        "recommendation":  "FDA Contraindications for MUPIROCIN2%: This drug is contraindicated in patients with known hypersensitivity to any of the constituents of the product.",
+        "metadata":  {
+                         "hasDrugInteractions":  false,
+                         "labeler":  "DirectRX",
+                         "hasBlackBoxWarning":  false,
+                         "hasRenalPrecautions":  false
+                     },
+        "medicationName":  "MUPIROCIN2%",
+        "clinicalDomain":  "Antimicrobial",
+        "section":  "FDA Approved Prescribing Information",
+        "recommendedAlternatives":  [
+
+                                    ],
+        "sourceOrganization":  "FDA DailyMed",
+        "evidenceClass":  "FDA Approved Label (Regulatory Level A)",
+        "contraindicatedMedications":  [
+
+                                       ],
+        "pageOrParagraph":  "Package Insert (LOINC 34391-3)",
+        "publicationDate":  "2024 (Verified Official Label)",
+        "guidelineVersion":  "FDA Human Rx SPL Part 1",
+        "content":  "FDA Drug Label: MUPIROCIN2% (MUPIROCIN). Indications: Mupirocin Ointment USP, 2% is indicated for the topical treatment of impetigo due to: S. aureus and S. pyogenes. Contraindications: This drug is contraindicated in patients with known hypersensitivity to any of the constituents of the product. Warnings: Avoid contact with the eyes. In case of accidental contact, rinse well with water.In the event of a sensitization or severe local irritation from mupirocin ointment, usage should be discontinued.Clostridium difficile-associated diarrhea (CDAD) has been reported with use of nearly all antibacterial agents, including mupirocin, and may range in severity from mild diarrhea to fatal colitis. Treatment with antibacterial agents alters the normal flora of the colon leading to overgrowth of C. difficile.C. difficile produces toxins A and B which contribute to the development of CDAD. Hypertoxin producing isolates of C. difficile cause increased morbidity and mortality, as these infections can be refractory to antimicrobial therapy and may require colectomy. CDAD must be considered in all patients... Drug Interactions:  Renal \u0026 Specific Populations: ",
+        "contraindicatedConditions":  [
+
+                                      ],
+        "activeIngredient":  "MUPIROCIN",
+        "documentId":  "DOC-FDA-SPL-6237",
+        "indexInZip":  6237
+    },
+    {
+        "actionableContraindication":  true,
+        "packageZip":  "prescription/20151229_27ab4f1a-2f2b-150c-e054-00144ff8d46c.zip",
+        "recommendation":  "FDA Contraindications for Naproxen: Naproxen and naproxen sodium are contraindicated in patients with known hypersensitivity to naproxen and naproxen sodium. Naproxen and naproxen sodium should not be given to patients who have experienced asthma, urticaria, or allergic-type reactions after taking aspirin or other NSAIDs. Severe, rarely fatal, anaphylactic-like reactions to NSAIDs have been reported in such patients (see WARNINGS: Anaphylactoid Reactions and PRECAUTIONS: Preexisting Asthma). Naproxen and naproxen sodium are contraindicated for the treatment of peri-operative pain in the setting of coronary artery bypass graft (CABG) surgery (see WARNINGS).",
+        "metadata":  {
+                         "hasDrugInteractions":  true,
+                         "labeler":  "Apotheca Inc.",
+                         "hasBlackBoxWarning":  false,
+                         "hasRenalPrecautions":  false
+                     },
+        "medicationName":  "Naproxen",
+        "clinicalDomain":  "Analgesic",
+        "section":  "FDA Approved Prescribing Information",
+        "recommendedAlternatives":  [
+
+                                    ],
+        "sourceOrganization":  "FDA DailyMed",
+        "evidenceClass":  "FDA Approved Label (Regulatory Level A)",
+        "contraindicatedMedications":  [
+
+                                       ],
+        "pageOrParagraph":  "Package Insert (LOINC 34391-3)",
+        "publicationDate":  "2024 (Verified Official Label)",
+        "guidelineVersion":  "FDA Human Rx SPL Part 1",
+        "content":  "FDA Drug Label: Naproxen (NAPROXEN). Indications: Carefully consider the potential benefits and risks of naproxen, naproxen sodium and other treatment options before deciding to use naproxen or naproxen sodium tablets. Use the lowest effective dose for the shortest duration consistent with individual patient treatment goals (see WARNINGS). Naproxen as naproxen tablets or naproxen sodium tablets are indicated: For the relief of the signs and symptoms of rheumatoid arthritis For the relief of the signs and symptoms of osteoarthritis For the relief of the signs and symptoms of ankylosing spondylitis For the relief of the signs and symptoms of juvenile arthritis Naproxen as naproxen suspension is recommended for juvenile rheumatoid arthritis in order to obtain the maximum dosage flexibility based on the patient’s weight.Naproxen as naproxen t... Contraindications: Naproxen and naproxen sodium are contraindicated in patients with known hypersensitivity to naproxen and naproxen sodium. Naproxen and naproxen sodium should not be given to patients who have experienced asthma, urticaria, or allergic-type reactions after taking aspirin or other NSAIDs. Severe, rarely fatal, anaphylactic-like reactions to NSAIDs have been reported in such patients (see WARNINGS: Anaphylactoid Reactions and PRECAUTIONS: Preexisting Asthma). Naproxen and naproxen sodium are contraindicated for the treatment of peri-operative pain in the setting of coronary artery bypass graft (CABG) surgery (see WARNINGS). Warnings: Cardiovascular Risk • NSAIDs may cause an increased risk of serious cardiovascular thrombotic events, myocardial infarction, and stroke, which can be fatal. This risk may increase with duration of use. Patients with cardiovascular disease or risk factors for cardiovascular disease may be at greater risk (see WARNINGS). • Naproxen as naproxen tablets or naproxen sodium tablets is contraindicated for the treatment of peri-operative pain in the setting of coronary artery bypass graft (CABG) surgery (see WARNINGS). Gastrointestinal Risk • NSAIDs cause an increased risk of serious gastrointestinal adverse events including bleeding, ulceration, and perforation of the stomach or intestines, which can be fatal. These events can occur at any time during use and without warning symptoms. Elderly pat... Drug Interactions: Angiotensin Converting Enzyme (ACE)-inhibitors/Angiotensin Receptor Blockers (ARBs)NSAIDs may diminish the antihypertensive effect of ACE-inhibitors, ARBs, or beta-blockers (including propanolol).Monitor patients taking NSAIDs concomitantly with ACE-inhibitors, ARBs, or beta blockers for changes in blood pressure.In addition, in patients who are elderly, volume-depleted (including those on diuretic therapy), or have compromised renal function, co-administration of NSAIDs with ACE inhibitors or ARBs may result in deterioration of renal function, including possible acute renal failure. Monitor these patients closely for signs of worsening renal functionAntacids and SucralfateConcomitant administration of some antacids (magnesium oxide or aluminum hydroxide) and sucralfate can delay the absor... Renal \u0026 Specific Populations: ",
+        "contraindicatedConditions":  [
+
+                                      ],
+        "activeIngredient":  "NAPROXEN",
+        "documentId":  "DOC-FDA-SPL-6336",
+        "indexInZip":  6336
+    },
+    {
+        "actionableContraindication":  true,
+        "packageZip":  "prescription/20160213_83a42950-7b6f-4c86-b604-68e7f4c07859.zip",
+        "recommendation":  "FDA Contraindications for Doxepin Hydrochloride: Doxepin is contraindicated in individuals who have shown hypersensitivity to the drug. Possibility of cross sensitivity with other dibenzoxepines should be kept in mind.Doxepin is contraindicated in patients with glaucoma or a tendency to urinary retention. These disorders should be ruled out, particularly in older patients.",
+        "metadata":  {
+                         "hasDrugInteractions":  true,
+                         "labeler":  "Carilion Materials Management",
+                         "hasBlackBoxWarning":  false,
+                         "hasRenalPrecautions":  false
+                     },
+        "medicationName":  "Doxepin Hydrochloride",
+        "clinicalDomain":  "CNS \u0026 Neurologic",
+        "section":  "FDA Approved Prescribing Information",
+        "recommendedAlternatives":  [
+
+                                    ],
+        "sourceOrganization":  "FDA DailyMed",
+        "evidenceClass":  "FDA Approved Label (Regulatory Level A)",
+        "contraindicatedMedications":  [
+
+                                       ],
+        "pageOrParagraph":  "Package Insert (LOINC 34391-3)",
+        "publicationDate":  "2024 (Verified Official Label)",
+        "guidelineVersion":  "FDA Human Rx SPL Part 1",
+        "content":  "FDA Drug Label: Doxepin Hydrochloride (Doxepin). Indications: Doxepin is recommended for the treatment of: Psychoneurotic patients with depression and/or anxiety.Depression and/or anxiety associated with alcoholism (not to be taken concomitantly with alcohol).Depression and/or anxiety associated with organic disease (the possibility of drug interaction should be considered if the patient is receiving other drugs concomitantly).Psychotic depressive disorders with associated anxiety including involutional depression and manic-depressive disorders.The target symptoms of psychoneurosis that respond particularly well to doxepin include anxiety, tension, depression, somatic symptoms and concerns, sleep disturbances, guilt, lack of energy, fear, apprehension and worry. Clinical experience has shown that doxepin is safe and well tolerated even in the elderly... Contraindications: Doxepin is contraindicated in individuals who have shown hypersensitivity to the drug. Possibility of cross sensitivity with other dibenzoxepines should be kept in mind.Doxepin is contraindicated in patients with glaucoma or a tendency to urinary retention. These disorders should be ruled out, particularly in older patients. Warnings: Antidepressants increased the risk compared to placebo of suicidal thinking and behavior (suicidality) in children, adolescents, and young adults in short-term studies of major depressive disorder (MDD) and other psychiatric disorders. Anyone considering the use of doxepin hydrochloride or any other antidepressant in a child, adolescent, or young adult must balance this risk with the clinical need. Short-term studies did not show an increase in the risk of suicidality with antidepressants compared to placebo in adults beyond age 24; there was a reduction in risk with antidepressants compared to placebo in adults aged 65 and older. Depression and certain other psychiatric disorders are themselves associated with increases in the risk of suicide. Patients of all ages who are started on antid... Drug Interactions: : Drugs Metabolized by P450 2D6: The biochemical activity of the drug metabolizing isozyme cytochrome P450 2D6 (debrisoquin hydroxylase) is reduced in a subset of the Caucasian population (about 7-10% of Caucasians are so-called “poor metabolizers”); reliable estimates of the prevalence of reduced P450 2D6 isozyme activity among Asian, African and other populations are not yet available. Poor metabolizers have higher than expected plasma concentrations of tricyclic antidepressants (TCAs) when given usual doses. Depending on the fraction of drug metabolized by P450 2D6, the increase in plasma concentration may be small, or quite large (8-fold increase in plasma AUC of the TCA). Drug InteractionsIn addition, certain drugs inhibit the activity of this isozyme and make normal metabolizers rese... Renal \u0026 Specific Populations: ",
+        "contraindicatedConditions":  [
+
+                                      ],
+        "activeIngredient":  "Doxepin",
+        "documentId":  "DOC-FDA-SPL-6435",
+        "indexInZip":  6435
+    }
+]
