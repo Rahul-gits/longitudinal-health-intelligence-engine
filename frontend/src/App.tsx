@@ -28,6 +28,7 @@ import { EvidenceProvenanceModal } from './components/EvidenceProvenanceModal';
 import { NotificationBanner } from './components/NotificationBanner';
 import { VirtualDoctorSimpleConsultation } from './components/VirtualDoctorSimpleConsultation';
 import { ClinicalValidationHarnessLaboratory } from './components/ClinicalValidationHarnessLaboratory';
+import { EditPatientProfileModal, EditProfileTab } from './components/EditPatientProfileModal';
 import { useAuth } from './context/AuthContext';
 import { getDynamicPatientProfile } from './data/mockPatientData';
 
@@ -40,7 +41,14 @@ const MainDashboard: React.FC = () => {
   const [activeRole, setActiveRole] = useState<'patient' | 'clinician' | 'research'>('patient');
   const [showEmergencyModal, setShowEmergencyModal] = useState<boolean>(false);
   const [showEvidenceModal, setShowEvidenceModal] = useState<boolean>(false);
+  const [showEditProfileModal, setShowEditProfileModal] = useState<boolean>(false);
+  const [editProfileInitialTab, setEditProfileInitialTab] = useState<EditProfileTab>('demographics');
   const [patientUseAdvancedTeleDoc, setPatientUseAdvancedTeleDoc] = useState<boolean>(false);
+
+  const handleOpenEditProfile = (initialTab: EditProfileTab = 'demographics') => {
+    setEditProfileInitialTab(initialTab);
+    setShowEditProfileModal(true);
+  };
 
   return (
     <div className="min-h-screen bg-[#FAF8F5] text-black flex flex-col font-sans selection:bg-[#FFE600] selection:text-black">
@@ -64,6 +72,7 @@ const MainDashboard: React.FC = () => {
         activeRole={activeRole}
         setActiveRole={setActiveRole}
         onTriggerEmergency={() => setShowEmergencyModal(true)}
+        onOpenEditProfile={() => handleOpenEditProfile('demographics')}
       />
 
       {/* Main View Area */}
@@ -116,7 +125,8 @@ const MainDashboard: React.FC = () => {
           activeRole === 'patient' ? (
             <PatientPortalDashboard 
               onNavigateTab={setActiveTab} 
-              onOpenVirtualDoctor={() => setActiveTab('virtual-doctor')} 
+              onOpenVirtualDoctor={() => setActiveTab('virtual-doctor')}
+              onOpenEditProfile={handleOpenEditProfile}
             />
           ) : (
             <CommandCenter onNavigateTab={setActiveTab} />
@@ -190,6 +200,13 @@ const MainDashboard: React.FC = () => {
       <EvidenceProvenanceModal 
         isOpen={showEvidenceModal} 
         onClose={() => setShowEvidenceModal(false)} 
+      />
+
+      {/* Edit Patient Profile & Clinical Data Modal */}
+      <EditPatientProfileModal
+        isOpen={showEditProfileModal}
+        onClose={() => setShowEditProfileModal(false)}
+        initialTab={editProfileInitialTab}
       />
     </div>
   );

@@ -26,7 +26,8 @@ import {
   BellRing,
   ClipboardList,
   Home,
-  Sliders
+  Sliders,
+  UserCog
 } from 'lucide-react';
 import { PATIENT_INFO, getDynamicPatientProfile } from '../data/mockPatientData';
 import { checkBackendHealth, ServerHealthStatus } from '../services/apiClient';
@@ -38,6 +39,7 @@ interface NavigationProps {
   activeRole: 'patient' | 'clinician' | 'research';
   setActiveRole: (role: 'patient' | 'clinician' | 'research') => void;
   onTriggerEmergency: () => void;
+  onOpenEditProfile?: () => void;
 }
 
 export const Navigation: React.FC<NavigationProps> = ({
@@ -45,7 +47,8 @@ export const Navigation: React.FC<NavigationProps> = ({
   setActiveTab,
   activeRole,
   setActiveRole,
-  onTriggerEmergency
+  onTriggerEmergency,
+  onOpenEditProfile
 }) => {
   const { user, logout } = useAuth();
   const [showAdvancedMenu, setShowAdvancedMenu] = useState<boolean>(false);
@@ -146,6 +149,18 @@ export const Navigation: React.FC<NavigationProps> = ({
               {currentPatient.status}
             </span>
           </div>
+
+          {/* Quick Edit Profile Button */}
+          {onOpenEditProfile && (
+            <button
+              onClick={onOpenEditProfile}
+              className="flex items-center space-x-1.5 px-3 py-1.5 bg-[#FFE600] hover:bg-[#FFD600] text-black border-2 border-black shadow-[2px_2px_0px_0px_#000] text-xs font-black transition-all cursor-pointer font-mono"
+              title="Modify patient demographics, diagnoses, medications and clinical records"
+            >
+              <UserCog className="w-4 h-4 stroke-[2.5]" />
+              <span className="hidden sm:inline uppercase">Edit Profile</span>
+            </button>
+          )}
 
           {/* 3 Audience Complexity Levels (Progressive Disclosure) */}
           <div className="flex items-center bg-[#FAF8F5] p-1 border-2 border-black shadow-[2px_2px_0px_0px_#000] text-xs font-bold font-mono">

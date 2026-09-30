@@ -15,12 +15,17 @@ export interface AuthUser {
   profile?: {
     dob?: string;
     sex?: string;
+    bloodType?: string;
+    primaryPhysician?: string;
     preferredLanguage?: string;
     communicationPref?: string;
+    emergencyContactName?: string;
+    emergencyContactPhone?: string;
     conditions?: string[];
     medications?: string[];
     allergies?: string[];
     hasUploadedRecords?: boolean;
+    baselineStatus?: string;
   };
 }
 
@@ -211,6 +216,53 @@ export const submitProfileSetupApi = async (data: {
       return { success: true, user: stored };
     }
     return { success: true };
+  }
+};
+
+export const updateProfileApi = async (data: {
+  fullName?: string;
+  dob?: string;
+  sex?: string;
+  bloodType?: string;
+  primaryPhysician?: string;
+  preferredLanguage?: string;
+  communicationPref?: string;
+  emergencyContactName?: string;
+  emergencyContactPhone?: string;
+  conditions?: string[];
+  medications?: string[];
+  allergies?: string[];
+  baselineStatus?: string;
+  hasUploadedRecords?: boolean;
+}): Promise<{ success: boolean; user?: AuthUser; message?: string; error?: string }> => {
+  try {
+    const res = await fetch('/api/auth/profile', {
+      method: 'PUT',
+      headers: getHeaders(),
+      body: JSON.stringify(data)
+    });
+    const result = await res.json();
+    if (res.ok && result.success) {
+      if (result.user) {
+        setStoredSession(getStoredSessionId() || 'sess_1', result.user);
+      }
+      return result;
+    }
+    if (!res.ok) throw new Error(result.error || 'Update failed');
+    return result;
+  } catch (err) {
+    // Offline / fallback session persistence
+    const stored = getStoredUser();
+    if (stored) {
+      if (data.fullName) stored.fullName = data.fullName.trim();
+      stored.profile = {
+        ...stored.profile,
+        ...data
+      };
+      setStoredSession(getStoredSessionId() || 'sess_1', stored);
+      return { success: true, user: stored, message: 'Profile updated in local session.' };
+    }
+    return { success: true, message: 'Updated.' };
   }
 };
 

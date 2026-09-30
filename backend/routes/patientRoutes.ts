@@ -7,7 +7,7 @@ import { persistenceService } from '../services/persistenceService';
 const router = Router();
 
 // Canonical Patient State Model
-interface CanonicalPatientState {
+export interface CanonicalPatientState {
   patientId: string;
   name: string;
   age: number;
@@ -51,7 +51,7 @@ interface ClinicianDecisionRecord {
 }
 
 // Canonical Database for Cohorts A - E
-const canonicalPatients: Map<string, CanonicalPatientState> = new Map([
+export const canonicalPatients: Map<string, CanonicalPatientState> = new Map([
   // Patient A: Eleanor Vance (68F) - CKD 3b, HTN, T2D, OA
   [
     'patient-ev-68',
@@ -331,6 +331,60 @@ router.use(enforceStrictPatientIsolation);
 router.get('/:id/state', (req: Request, res: Response) => {
   const patient = canonicalPatients.get(req.params.id as string) || canonicalPatients.get('patient-ev-68')!;
   return res.json({ success: true, patient });
+});
+
+// PUT /api/patient/:id/profile (Modify patient clinical data & profile)
+router.put('/:id/profile', (req: Request, res: Response) => {
+  const patientId = (req.params.id as string) || 'patient-ev-68';
+  const patient = canonicalPatients.get(patientId);
+  if (!patient) {
+    return res.status(404).json({ success: false, error: 'Patient not found' });
+  }
+
+  const { name, age, gender, dob, conditions, activeMedications, allergies, vitals } = req.body;
+  if (name && typeof name === 'string') patient.name = name.trim();
+  if (age !== undefined && !isNaN(Number(age))) patient.age = Number(age);
+  if (gender && typeof gender === 'string') patient.gender = gender;
+  if (dob && typeof dob === 'string') patient.dob = dob;
+
+  if (conditions && Array.isArray(conditions)) {
+    // Accepts either strings or full Condition objects
+    patient.conditions = conditions.map(c => 
+      typeof c === 'string' 
+        ? { name: c, stage: 'Active Condition', onset: 'Recent', status: 'ACTIVE' as const }
+        : c
+    );
+  }
+
+  if (activeMedications && Array.isArray(activeMedications)) {
+    // Accepts either strings or full Medication objects
+    patient.activeMedications = activeMedications.map(m =>
+      typeof m === 'string'
+        ? { drug: m, dose: m.includes('mg') ? '' : 'Standard', freq: 'Daily', adherence: 95, indication: 'Prescribed' }
+        : m
+    );
+  }
+
+  if (allergies && Array.isArray(allergies)) {
+    // Accepts either strings or full Allergy objects
+    patient.allergies = allergies.map(a =>
+      typeof a === 'string'
+        ? { allergen: a, severity: 'MODERATE', reaction: 'Clinical alert' }
+        : a
+    );
+  }
+
+  if (vitals && typeof vitals === 'object') {
+    patient.vitals = { ...patient.vitals, ...vitals };
+  }
+
+  broadcastWorkflowEvent('PATIENT_STATE_UPDATED', { patientId, patient, message: 'Patient profile and clinical data modified' }, patientId);
+
+  return res.json({
+    success: true,
+    message: 'Patient profile and data successfully updated.',
+    patient
+  });
 });
 
 // GET /api/patient/:id/attention

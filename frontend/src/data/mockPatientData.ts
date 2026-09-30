@@ -25,14 +25,15 @@ export const calculateAgeFromDob = (dob?: string): number => {
 
 export const getDynamicPatientProfile = (user?: AuthUser | null) => {
   if (!user || user.email === 'eleanor@example.com' || user.fullName?.toLowerCase().includes('eleanor')) {
+    const age = user?.profile?.dob ? calculateAgeFromDob(user.profile.dob) : 68;
     return {
       id: user?.id || 'PT-884920',
       name: user?.fullName || 'Eleanor Vance',
-      age: 68,
-      gender: 'Female',
-      bloodType: 'A+',
-      primaryPhysician: 'Dr. Aris Thorne, MD (Cardiology)',
-      status: 'Needs Clinician Review',
+      age: age > 0 && age < 120 ? age : 68,
+      gender: user?.profile?.sex || 'Female',
+      bloodType: user?.profile?.bloodType || 'A+',
+      primaryPhysician: user?.profile?.primaryPhysician || 'Dr. Aris Thorne, MD (Cardiology)',
+      status: user?.profile?.baselineStatus || 'Needs Clinician Review',
       statusColor: 'amber',
       overallHealthScore: 74,
       conditions: user?.profile?.conditions && user.profile.conditions.length > 0 ? user.profile.conditions : [
@@ -45,7 +46,12 @@ export const getDynamicPatientProfile = (user?: AuthUser | null) => {
         'Furosemide 40mg',
         'Spironolactone 25mg'
       ],
-      allergies: user?.profile?.allergies || ['Sulfa drugs', 'NSAIDs (Avoid)'],
+      allergies: user?.profile?.allergies && user.profile.allergies.length > 0 ? user.profile.allergies : ['Sulfa drugs', 'NSAIDs (Avoid)'],
+      emergencyContactName: user?.profile?.emergencyContactName || 'Thomas Vance (Son)',
+      emergencyContactPhone: user?.profile?.emergencyContactPhone || '(555) 234-8901',
+      preferredLanguage: user?.profile?.preferredLanguage || 'English',
+      communicationPref: user?.profile?.communicationPref || 'SMS & Mobile App',
+      dob: user?.profile?.dob || '1958-03-14',
       lastUpdated: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) + ' ' + new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
     };
   }
@@ -64,14 +70,19 @@ export const getDynamicPatientProfile = (user?: AuthUser | null) => {
     name: user.fullName || user.email.split('@')[0],
     age: age > 0 && age < 120 ? age : 28,
     gender: user.profile?.sex || 'Male',
-    bloodType: 'O+',
-    primaryPhysician: 'Dr. Sarah Jenkins, MD (Internal Medicine)',
-    status: user.profile?.hasUploadedRecords ? 'Active Monitoring' : 'Healthy Baseline',
+    bloodType: user.profile?.bloodType || 'O+',
+    primaryPhysician: user.profile?.primaryPhysician || 'Dr. Sarah Jenkins, MD (Internal Medicine)',
+    status: user.profile?.baselineStatus || (user.profile?.hasUploadedRecords ? 'Active Monitoring' : 'Healthy Baseline'),
     statusColor: 'emerald',
     overallHealthScore: 89,
     conditions,
     medications,
-    allergies: user.profile?.allergies || ['None Reported'],
+    allergies: user.profile?.allergies && user.profile.allergies.length > 0 ? user.profile.allergies : ['None Reported'],
+    emergencyContactName: user.profile?.emergencyContactName || 'Family Member',
+    emergencyContactPhone: user.profile?.emergencyContactPhone || '(555) 123-4567',
+    preferredLanguage: user.profile?.preferredLanguage || 'English',
+    communicationPref: user.profile?.communicationPref || 'Email & SMS',
+    dob: user.profile?.dob || '1998-06-20',
     lastUpdated: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) + ' ' + new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
   };
 };

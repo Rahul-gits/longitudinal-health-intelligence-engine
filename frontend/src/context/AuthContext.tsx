@@ -6,9 +6,12 @@ import {
   verifyOtpApi,
   submitConsentApi,
   submitProfileSetupApi,
+  updateProfileApi,
   checkSessionApi,
   logoutApi,
-  getStoredUser
+  getStoredUser,
+  setStoredSession,
+  getStoredSessionId
 } from '../services/authApi';
 
 export type AuthState =
@@ -50,6 +53,22 @@ interface AuthContextType {
     medications: string[];
     allergies: string[];
     hasUploadedRecords: boolean;
+  }) => Promise<boolean>;
+  updateProfile: (data: {
+    fullName?: string;
+    dob?: string;
+    sex?: string;
+    bloodType?: string;
+    primaryPhysician?: string;
+    preferredLanguage?: string;
+    communicationPref?: string;
+    emergencyContactName?: string;
+    emergencyContactPhone?: string;
+    conditions?: string[];
+    medications?: string[];
+    allergies?: string[];
+    baselineStatus?: string;
+    hasUploadedRecords?: boolean;
   }) => Promise<boolean>;
   logout: () => Promise<void>;
   demoLoginAs: (role: 'eleanor' | 'rahul') => Promise<void>;
@@ -234,6 +253,66 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const updateProfile = async (data: {
+    fullName?: string;
+    dob?: string;
+    sex?: string;
+    bloodType?: string;
+    primaryPhysician?: string;
+    preferredLanguage?: string;
+    communicationPref?: string;
+    emergencyContactName?: string;
+    emergencyContactPhone?: string;
+    conditions?: string[];
+    medications?: string[];
+    allergies?: string[];
+    baselineStatus?: string;
+    hasUploadedRecords?: boolean;
+  }): Promise<boolean> => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const res = await updateProfileApi(data);
+      if (res.success && res.user) {
+        setUser(res.user);
+        return true;
+      } else if (res.success) {
+        if (user) {
+          const updated: AuthUser = {
+            ...user,
+            fullName: data.fullName ? data.fullName.trim() : user.fullName,
+            profile: {
+              ...user.profile,
+              ...data
+            }
+          };
+          setUser(updated);
+          setStoredSession(getStoredSessionId() || 'sess_1', updated);
+        }
+        return true;
+      } else {
+        setError(res.error || 'Failed to update profile.');
+        return false;
+      }
+    } catch {
+      if (user) {
+        const updated: AuthUser = {
+          ...user,
+          fullName: data.fullName ? data.fullName.trim() : user.fullName,
+          profile: {
+            ...user.profile,
+            ...data
+          }
+        };
+        setUser(updated);
+        setStoredSession(getStoredSessionId() || 'sess_1', updated);
+      }
+      return true;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const logout = async () => {
     setIsLoading(true);
     try {
@@ -272,6 +351,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         verifyOtp,
         submitConsent,
         submitProfile,
+        updateProfile,
         logout,
         demoLoginAs
       }}
