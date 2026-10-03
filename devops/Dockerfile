@@ -19,6 +19,9 @@ COPY backend/ ./backend/
 RUN npm run build
 RUN npm run lint:server
 
+# Ensure /app/dist exists (defensive fallback if Vite placed output in frontend/dist)
+RUN if [ -d "/app/frontend/dist" ] && [ ! -d "/app/dist" ]; then cp -r /app/frontend/dist /app/dist; fi
+
 # Verify dist directory was created
 RUN test -d /app/dist || { echo "ERROR: /app/dist not found after build"; ls -la /app/; exit 1; }
 

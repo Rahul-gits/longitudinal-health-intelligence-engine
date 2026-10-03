@@ -1,6 +1,8 @@
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import path from 'path';
+import fs from 'fs';
 import patientRoutes from './routes/patientRoutes';
 import workflowRoutes from './routes/workflowRoutes';
 import screeningRoutes, { handleVirtualDoctorChat } from './routes/screeningRoutes';
@@ -110,6 +112,21 @@ app.use('/api/usability', usabilityRoutes);
 app.use('/api/shadow', shadowRoutes);
 app.use('/api/governance', governanceRoutes);
 app.use('/api/rag', ragRoutes);
+
+// Serve frontend static assets in production if dist directory exists
+const distPath = fs.existsSync(path.resolve(process.cwd(), 'dist'))
+  ? path.resolve(process.cwd(), 'dist')
+  : path.resolve(__dirname, '../dist');
+
+if (fs.existsSync(distPath)) {
+  app.use(express.static(distPath));
+  app.get('*', (req: Request, res: Response, next: NextFunction) => {
+    if (req.path.startsWith('/api')) {
+      return next();
+    }
+    res.sendFile(path.resolve(distPath, 'index.html'));
+  });
+}
 
 // 404 Handler
 app.use((_req: Request, res: Response) => {
