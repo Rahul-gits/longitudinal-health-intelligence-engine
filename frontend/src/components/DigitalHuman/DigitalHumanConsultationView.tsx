@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { DoctorPostureMode, VirtualDoctorPersona } from '../../types/health';
+import { useAuth } from '../../context/AuthContext';
 import { 
   Mic, 
   MicOff, 
@@ -28,6 +29,7 @@ interface DigitalHumanConsultationViewProps {
   activeWord?: string;
   transcriptText?: string;
   patientTranscript?: string;
+  patientName?: string;
   onSelectPosture?: (posture: DoctorPostureMode) => void;
   onSelectPersona?: (personaId: string) => void;
   onToggleMute?: () => void;
@@ -72,12 +74,16 @@ export const DigitalHumanConsultationView: React.FC<DigitalHumanConsultationView
   activeWord = '',
   transcriptText = '',
   patientTranscript = '',
+  patientName,
   onSelectPosture,
   onSelectPersona,
   onToggleMute,
   onEndCall,
   clinicalContext
 }) => {
+  const { user } = useAuth();
+  const displayPatientName = patientName || user?.fullName || 'Rahul Gunda';
+
   // Human Physiological Simulation States
   const [blink, setBlink] = useState<boolean>(false);
   const [breathPhase, setBreathPhase] = useState<number>(0);
@@ -409,7 +415,7 @@ export const DigitalHumanConsultationView: React.FC<DigitalHumanConsultationView
         </div>
 
         {/* ─────────────────────────────────────────────────────────────
-            3. PICTURE-IN-PICTURE (Patient Webcam / Eleanor Vance Self-View)
+            3. PICTURE-IN-PICTURE (Patient Webcam / Self-View)
         ───────────────────────────────────────────────────────────── */}
         <div className="absolute bottom-20 right-4 w-36 h-28 md:w-44 md:h-32 bg-slate-900 rounded-xl overflow-hidden border-2 border-white/40 shadow-2xl z-30 transition-all hover:scale-105 group">
           {isCameraOn ? (
@@ -424,7 +430,7 @@ export const DigitalHumanConsultationView: React.FC<DigitalHumanConsultationView
             ) : (
               <img 
                 src="/avatars/patient-eleanor.jpg" 
-                alt="You (Eleanor Vance)" 
+                alt={`You (${displayPatientName})`} 
                 className="w-full h-full object-cover"
               />
             )
@@ -450,8 +456,8 @@ export const DigitalHumanConsultationView: React.FC<DigitalHumanConsultationView
           </div>
 
           <div className="absolute bottom-1 left-1.5 right-1.5 flex items-center justify-between text-[9px] text-white/80 bg-black/60 backdrop-blur px-1 rounded">
-            <span>Eleanor Vance</span>
-            <span className="text-emerald-400 font-mono font-bold">● LIVE</span>
+            <span className="truncate max-w-[100px]">{displayPatientName}</span>
+            <span className="text-emerald-400 font-mono font-bold ml-1 flex-shrink-0">● LIVE</span>
           </div>
         </div>
 

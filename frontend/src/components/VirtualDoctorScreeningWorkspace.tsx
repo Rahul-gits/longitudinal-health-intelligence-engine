@@ -477,6 +477,7 @@ CONSENSUS STATUS: Verified by Multi-Agent Swarm (94.8% Cohesion).
               activeWord={activeWord}
               transcriptText={customDoctorFeedback || currentStep.spokenScript}
               patientTranscript={patientFreeTextInput}
+              patientName={user?.fullName || currentPatient.name || 'Rahul Gunda'}
               onSelectPosture={(p) => setActivePosture(p)}
               onSelectPersona={(id) => {
                 setActivePersonaId(id);

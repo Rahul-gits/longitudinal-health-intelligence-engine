@@ -66,7 +66,7 @@ export class VirtualDoctorScreeningEngine {
       voiceRate: 1.02,
       preferredVoiceName: 'Samantha',
       clinicalFocus: 'Drug-Drug Interactions & CYP2C9 Pharmacogenomics',
-      greetingScript: 'Hello Eleanor, wonderful to see you. I am Dr. Maya Lin, your clinical pharmacologist. I want to walk you through exactly what is happening between your medications in simple, everyday terms.',
+      greetingScript: 'Hello {NAME}, wonderful to see you. I am Dr. Maya Lin, your clinical pharmacologist. I want to walk you through exactly what is happening between your medications in simple, everyday terms.',
       explanationScript: 'Your genetic panel shows you carry the CYP2C9 intermediate metabolizer variant. This means your body clears NSAIDs like Ibuprofen about 40% slower than average, causing the medication to stay active in your kidneys much longer.',
       safetyAlertScript: 'Because Lisinopril already relaxes the exit valve of your kidney filters, the Ibuprofen simultaneously tightens the entry valve. This creates a pinch that reduces filtration pressure. We call this the double-whammy interaction.',
       actionPlanScript: 'Good news: this is completely reversible once we stop the Ibuprofen. I have queued a prescription for topical Diclofenac gel and Acetaminophen which deliver pain relief straight to the knee joint without circulating through your kidneys.',
@@ -101,7 +101,7 @@ export class VirtualDoctorScreeningEngine {
       voiceRate: 0.98,
       preferredVoiceName: 'Alex',
       clinicalFocus: 'Holistic Symptom Management & Daily Mobility',
-      greetingScript: 'Hi Eleanor, good to speak with you today. As your primary care physician, my top priority is making sure you can stay active, sleep comfortably, and keep your knee pain well managed without putting your kidneys in jeopardy.',
+      greetingScript: 'Hi {NAME}, good to speak with you today. As your primary care physician, my top priority is making sure you can stay active, sleep comfortably, and keep your knee pain well managed without putting your kidneys in jeopardy.',
       explanationScript: 'I noticed in your daily logs that you have been having trouble walking up stairs and noted some puffiness in your ankles in the evening. It makes total sense why you reached for the Ibuprofen, but we have much safer options.',
       safetyAlertScript: 'If you ever notice your breathing feeling heavier when lying flat in bed, or sudden weight gain over 3 pounds in 2 days, that means your body is holding onto extra water. That is a clear sign to call our office directly.',
       actionPlanScript: 'Let us get you set up with low-impact seated knee exercises, gentle heat therapy, and safe pain relief. You are doing great by monitoring your symptoms, and we will get your kidney numbers right back on track.',
@@ -187,6 +187,9 @@ export class VirtualDoctorScreeningEngine {
     const user = userOverride !== undefined ? userOverride : getStoredUser();
     const persona = this.getPersonaById(personaId, user);
     const patientState: PatientClinicalState = patientStateEngine.getPatientState(user);
+    const dynamicProfile = getDynamicPatientProfile(user);
+    const patientFullName = dynamicProfile.name || user?.fullName || 'Patient';
+    const firstName = patientFullName.split(' ')[0] || 'Patient';
 
     return [
       {
@@ -241,14 +244,14 @@ export class VirtualDoctorScreeningEngine {
         stepNumber: 4,
         phase: 'symptom_check',
         title: 'Interactive Patient Symptom Screening',
-        spokenScript: 'Eleanor, to tailor your immediate care plan, could you confirm how you are feeling right now regarding your knee pain and shortness of breath?',
+        spokenScript: `${firstName}, to tailor your immediate care plan, could you confirm how you are feeling right now regarding your knee pain and shortness of breath?`,
         posture: 'listening',
         patientOptions: [
           {
             id: 'opt-stop-nsaid',
             label: '✅ I understand and have stopped taking the OTC Ibuprofen.',
             patientResponseText: 'I stopped taking the Ibuprofen today. My knee is still stiff, but I want to protect my kidneys.',
-            doctorFeedbackScript: 'Excellent decision, Eleanor. Halting the Ibuprofen immediately removes the vascular pinch on your kidneys. We will replace it with a soothing topical option right now.',
+            doctorFeedbackScript: `Excellent decision, ${firstName}. Halting the Ibuprofen immediately removes the vascular pinch on your kidneys. We will replace it with a soothing topical option right now.`,
             postureReaction: 'reassuring',
             safetyImpact: 'safe',
             actionableNextStep: 'Prescribe topical Diclofenac gel / Lidocaine patch.'

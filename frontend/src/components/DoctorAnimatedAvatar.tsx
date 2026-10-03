@@ -10,6 +10,7 @@ export interface DoctorAnimatedAvatarProps {
   activeWord?: string;
   transcriptText?: string;
   patientTranscript?: string;
+  patientName?: string;
   onSelectPosture?: (posture: DoctorPostureMode) => void;
   onSelectPersona?: (personaId: string) => void;
   onToggleMute?: () => void;
@@ -30,6 +31,7 @@ export const DoctorAnimatedAvatar: React.FC<DoctorAnimatedAvatarProps> = ({
   activeWord = '',
   transcriptText,
   patientTranscript,
+  patientName,
   onSelectPosture,
   onSelectPersona,
   onToggleMute,
@@ -45,6 +47,7 @@ export const DoctorAnimatedAvatar: React.FC<DoctorAnimatedAvatarProps> = ({
       activeWord={activeWord}
       transcriptText={transcriptText}
       patientTranscript={patientTranscript}
+      patientName={patientName}
       onSelectPosture={onSelectPosture}
       onSelectPersona={onSelectPersona}
       onToggleMute={onToggleMute}
