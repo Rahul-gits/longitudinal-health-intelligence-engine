@@ -477,6 +477,12 @@ CONSENSUS STATUS: Verified by Multi-Agent Swarm (94.8% Cohesion).
               isMuted={isMuted}
               activeWord={activeWord}
               onSelectPosture={(p) => setActivePosture(p)}
+              onSelectPersona={(id) => {
+                setActivePersonaId(id);
+                setCurrentStepIndex(0);
+                setSelectedPatientOption(null);
+                setCustomDoctorFeedback(null);
+              }}
             />
 
             {/* Picture-in-Picture: Patient Self-View Cam (Eleanor Vance) */}
