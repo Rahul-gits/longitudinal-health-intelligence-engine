@@ -617,6 +617,8 @@ export interface StaticClinicalCase {
 export type DoctorPostureMode = 
   | 'greeting' 
   | 'listening' 
+  | 'understanding'
+  | 'reviewing'
   | 'explaining' 
   | 'alerting' 
   | 'prescribing' 

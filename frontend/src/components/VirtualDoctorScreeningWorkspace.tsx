@@ -467,15 +467,16 @@ CONSENSUS STATUS: Verified by Multi-Agent Swarm (94.8% Cohesion).
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
         {/* Left Column: Virtual Doctor Animated Video Feed (7 Cols on LG) */}
         <div className="lg:col-span-7 flex flex-col space-y-4">
-          {/* Main Video Viewport Container */}
-          <div className="relative bg-[#111827] border-3 border-black shadow-[6px_6px_0px_0px_#000] flex-1 flex flex-col min-h-[440px]">
-            {/* Animated Doctor Posture Avatar */}
+          {/* Main Video Viewport Container: Tele-Health Digital Human Consultation */}
+          <div className="flex-1 flex flex-col">
             <DoctorAnimatedAvatar
               persona={activePersona}
               posture={activePosture}
               isSpeaking={isPlaying}
               isMuted={isMuted}
               activeWord={activeWord}
+              transcriptText={customDoctorFeedback || currentStep.spokenScript}
+              patientTranscript={patientFreeTextInput}
               onSelectPosture={(p) => setActivePosture(p)}
               onSelectPersona={(id) => {
                 setActivePersonaId(id);
@@ -483,24 +484,19 @@ CONSENSUS STATUS: Verified by Multi-Agent Swarm (94.8% Cohesion).
                 setSelectedPatientOption(null);
                 setCustomDoctorFeedback(null);
               }}
+              onToggleMute={handleToggleMute}
+              onEndCall={() => setIsCallActive(false)}
+              clinicalContext={{
+                title: activePersona.clinicalFocus,
+                description: activePersona.explanationScript,
+                keyFindings: activePersona.biomarkerFocus.map(b => ({
+                  label: b.name,
+                  value: b.currentValue,
+                  note: b.clinicalImpact
+                }))
+              }}
             />
-
-            {/* Picture-in-Picture: Patient Self-View Cam (Eleanor Vance) */}
-            <div className="absolute bottom-16 right-4 w-36 h-28 bg-[#1E293B] border-2 border-white shadow-[3px_3px_0px_0px_#000] overflow-hidden flex flex-col justify-between p-1.5 z-30">
-              <div className="flex items-center justify-between text-[9px] font-mono text-white/80">
-                <span className="bg-black/60 px-1 rounded text-[#00F5D4] font-bold">YOU (SELF-VIEW)</span>
-                <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
-              </div>
-              <div className="flex items-center justify-center">
-                <div className="w-10 h-10 rounded-full bg-[#FF70A6] border-2 border-black flex items-center justify-center font-black text-black text-xs">
-                  EV
-                </div>
-              </div>
-              <div className="bg-black/80 px-1 py-0.5 text-[8px] font-mono text-white flex justify-between">
-                <span>{PATIENT_INFO.name}</span>
-                <span className="text-emerald-400 font-bold">HR: 74</span>
-              </div>
-            </div>
+          </div>
 
             {/* Video Call Interactive Control Toolbar */}
             <div className="bg-[#000000] p-3 border-t-2 border-black flex flex-wrap items-center justify-between gap-3 z-30">
@@ -570,7 +566,6 @@ CONSENSUS STATUS: Verified by Multi-Agent Swarm (94.8% Cohesion).
                 </button>
               </div>
             </div>
-          </div>
 
           {/* Live Karaoke Subtitles Bar & AI Diagnostics */}
           {showCaptions && (
