@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { DoctorPostureMode, VirtualDoctorPersona } from '../../types/health';
 import { useAuth } from '../../context/AuthContext';
 import { 
@@ -52,6 +52,24 @@ const DOCTOR_PHOTO_MAP: Record<string, string> = {
   'doc-chen': '/avatars/doc-chen.jpg'
 };
 
+interface DoctorMouthLandmarks {
+  x: number; // percentage in image (0-100)
+  y: number; // percentage in image (0-100)
+  widthPct: number;
+  heightPct: number;
+  upperLipTone: string;
+  lowerLipTone: string;
+  skinBlendTone: string;
+}
+
+const DOCTOR_MOUTH_MAP: Record<string, DoctorMouthLandmarks> = {
+  'doc-thorne': { x: 50.5, y: 38.6, widthPct: 10.2, heightPct: 5.0, upperLipTone: '#7D3B43', lowerLipTone: '#9E4E58', skinBlendTone: '#6E3C32' },
+  'doc-jacob': { x: 50.5, y: 38.6, widthPct: 10.2, heightPct: 5.0, upperLipTone: '#7D3B43', lowerLipTone: '#9E4E58', skinBlendTone: '#6E3C32' },
+  'doc-lin': { x: 51.4, y: 40.7, widthPct: 9.4, heightPct: 4.6, upperLipTone: '#A84C60', lowerLipTone: '#C66579', skinBlendTone: '#D49B86' },
+  'doc-vance': { x: 48.6, y: 38.5, widthPct: 10.0, heightPct: 4.8, upperLipTone: '#763842', lowerLipTone: '#944A54', skinBlendTone: '#723F36' },
+  'doc-chen': { x: 49.7, y: 28.8, widthPct: 9.2, heightPct: 4.4, upperLipTone: '#A04E60', lowerLipTone: '#BE6576', skinBlendTone: '#C89380' }
+};
+
 function computeVisemeFromWord(word: string): VisemeShape {
   if (!word || !word.trim()) return 'REST_TALK';
   const clean = word.toLowerCase().replace(/[^a-z]/g, '');
@@ -89,6 +107,7 @@ export const DigitalHumanConsultationView: React.FC<DigitalHumanConsultationView
   const [breathPhase, setBreathPhase] = useState<number>(0);
   const [nodPhase, setNodPhase] = useState<number>(0);
   const [mouthOpen, setMouthOpen] = useState<number>(0);
+  const [mouthSpread, setMouthSpread] = useState<number>(1.0);
   const [currentViseme, setCurrentViseme] = useState<VisemeShape>('SIL');
   const [mouseTilt, setMouseTilt] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
 
@@ -102,6 +121,71 @@ export const DigitalHumanConsultationView: React.FC<DigitalHumanConsultationView
 
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const viewportRef = useRef<HTMLDivElement>(null);
+  const [viewportDims, setViewportDims] = useState<{ width: number; height: number }>({ width: 640, height: 600 });
+
+  // Dynamic Viewport Measurement for Pixel-Perfect Facial Alignment
+  useEffect(() => {
+    if (!viewportRef.current) return;
+    const observer = new ResizeObserver(entries => {
+      for (const entry of entries) {
+        if (entry.contentRect) {
+          setViewportDims({
+            width: entry.contentRect.width,
+            height: entry.contentRect.height
+          });
+        }
+      }
+    });
+    observer.observe(viewportRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  // Compute exact coordinates of doctor's mouth relative to rendered viewport
+  const mouthBox = useMemo(() => {
+    const data = DOCTOR_MOUTH_MAP[persona.id] || DOCTOR_MOUTH_MAP['doc-thorne'];
+    const W = viewportDims.width;
+    const H = viewportDims.height;
+    if (!W || !H) {
+      return {
+        left: `${data.x}%`,
+        top: `${data.y}%`,
+        width: 76,
+        height: 38,
+        data
+      };
+    }
+
+    let imgW = W;
+    let imgH = H;
+    let offX = 0;
+    let offY = 0;
+
+    if (W > H) {
+      // Landscape: image scales to width, cropped vertically
+      imgW = W;
+      imgH = W;
+      offY = -(W - H) / 2;
+    } else {
+      // Portrait: image scales to height, cropped horizontally
+      imgH = H;
+      imgW = H;
+      offX = -(H - W) / 2;
+    }
+
+    const cx = offX + (data.x / 100) * imgW;
+    const cy = offY + (data.y / 100) * imgH;
+    const bw = (data.widthPct / 100) * imgW;
+    const bh = (data.heightPct / 100) * imgH;
+
+    return {
+      left: `${cx}px`,
+      top: `${cy}px`,
+      width: Math.max(56, bw),
+      height: Math.max(28, bh),
+      data
+    };
+  }, [persona.id, viewportDims]);
 
   // 1. Natural Blinking Engine (every 3.2 - 4.5s with occasional double-blinks)
   useEffect(() => {
@@ -141,30 +225,72 @@ export const DigitalHumanConsultationView: React.FC<DigitalHumanConsultationView
     }
   }, [posture]);
 
-  // 4. Real-time Viseme & Lip Sync Engine
+  // 4. Real-time Syllabic Viseme & Lip Sync Engine (Continuous fluid speech articulation)
   useEffect(() => {
     if (!isSpeaking || isMuted) {
       setMouthOpen(0);
+      setMouthSpread(1.0);
       setCurrentViseme('SIL');
       return;
     }
 
-    const interval = setInterval(() => {
+    let animationFrameId: number;
+    const startTime = performance.now();
+
+    const animateLipSync = (now: number) => {
+      const elapsed = now - startTime;
+
+      // Human speech syllable rhythm (~4.2 Hz primary cadence with micro-flutter)
+      const primaryOsc = Math.sin((elapsed / 1000) * Math.PI * 8.4);
+      const secondaryOsc = Math.sin((elapsed / 1000) * Math.PI * 13.8);
+      const syllableWave = Math.max(0, (primaryOsc * 0.72 + secondaryOsc * 0.28));
+
+      // Viseme phoneme configuration
       const viseme = computeVisemeFromWord(activeWord);
       setCurrentViseme(viseme);
 
-      let targetOpen = 0.5;
-      if (viseme === 'MBP') targetOpen = 0.08;
-      else if (viseme === 'OH') targetOpen = 0.85;
-      else if (viseme === 'EE') targetOpen = 0.4;
-      else if (viseme === 'FV') targetOpen = 0.3;
-      else if (viseme === 'LDT') targetOpen = 0.6;
-      else targetOpen = Math.sin(Date.now() / 90) * 0.35 + 0.5;
+      let visemeOpen = 0.55;
+      let visemeSpread = 1.0;
 
-      setMouthOpen(targetOpen);
-    }, 60);
+      switch (viseme) {
+        case 'MBP': // Lips pressed closed on bilabial plosives (M, B, P)
+          visemeOpen = 0.02;
+          visemeSpread = 0.96;
+          break;
+        case 'OH': // Rounded open vowels (O, OO, U)
+          visemeOpen = 0.88;
+          visemeSpread = 0.84;
+          break;
+        case 'EE': // Wide smile vowels (E, EE, AY)
+          visemeOpen = 0.42;
+          visemeSpread = 1.24;
+          break;
+        case 'FV': // Labiodental fricatives (F, V)
+          visemeOpen = 0.26;
+          visemeSpread = 1.04;
+          break;
+        case 'LDT': // Lingual / alveolar (L, D, T, S, Z)
+          visemeOpen = 0.54;
+          visemeSpread = 1.1;
+          break;
+        default: // Fluid speech vowel-consonant flow
+          visemeOpen = 0.6;
+          visemeSpread = 1.02;
+      }
 
-    return () => clearInterval(interval);
+      // Continuous dynamic aperture combining syllable wave and phoneme target
+      const targetAperture = Math.min(1.0, Math.max(0.04, visemeOpen * (0.3 + 0.7 * syllableWave)));
+      setMouthOpen(targetAperture);
+      setMouthSpread(visemeSpread);
+
+      animationFrameId = requestAnimationFrame(animateLipSync);
+    };
+
+    animationFrameId = requestAnimationFrame(animateLipSync);
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+    };
   }, [isSpeaking, isMuted, activeWord]);
 
   // 5. Optional Real Webcam Stream Connection
@@ -353,7 +479,10 @@ export const DigitalHumanConsultationView: React.FC<DigitalHumanConsultationView
       {/* ─────────────────────────────────────────────────────────────
           2. CENTRAL DIGITAL HUMAN VIDEO STREAM
       ───────────────────────────────────────────────────────────── */}
-      <div className="relative w-full flex-1 flex items-center justify-center overflow-hidden">
+      <div 
+        ref={viewportRef}
+        className="relative w-full flex-1 flex items-center justify-center overflow-hidden"
+      >
         {/* Main Specialist Full-Frame Photo with Motion Engine */}
         <div 
           className="relative w-full h-full flex items-center justify-center transition-transform duration-500 ease-out"
@@ -372,27 +501,123 @@ export const DigitalHumanConsultationView: React.FC<DigitalHumanConsultationView
             }`}
           />
 
-          {/* Lip Synchronization Mouth Movement Layer */}
-          {isSpeaking && !isMuted && mouthOpen > 0.1 && (
+          {/* High-Fidelity Anatomical Lip Sync & Oral Articulation Component */}
+          {isSpeaking && !isMuted && mouthOpen > 0.04 && (
             <div 
-              className="absolute pointer-events-none transition-all duration-75"
+              className="absolute pointer-events-none transition-transform duration-75 ease-out"
               style={{
-                top: '52.5%',
-                left: '49.8%',
-                transform: 'translate(-50%, -50%)',
-                width: '68px',
-                height: `${20 + mouthOpen * 14}px`,
-                backgroundColor: 'rgba(56, 14, 21, 0.45)',
-                borderRadius: currentViseme === 'OH' ? '50%' : '35%',
-                filter: 'blur(3px)',
-                boxShadow: '0 0 10px rgba(0, 0, 0, 0.5)'
+                left: mouthBox.left,
+                top: mouthBox.top,
+                transform: `translate(-50%, -50%) scaleX(${mouthSpread}) scaleY(${1 + mouthOpen * 0.15})`,
+                width: `${mouthBox.width}px`,
+                height: `${mouthBox.height}px`,
+                filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.35))'
               }}
-            />
+            >
+              <svg 
+                viewBox="0 0 100 50" 
+                className="w-full h-full overflow-visible"
+              >
+                <defs>
+                  <filter id="lip-feather" x="-20%" y="-20%" width="140%" height="140%">
+                    <feGaussianBlur stdDeviation="0.7" result="blur" />
+                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                  </filter>
+
+                  <radialGradient id="oral-cavity-grad" cx="50%" cy="40%" r="55%">
+                    <stop offset="0%" stopColor="#120406" />
+                    <stop offset="60%" stopColor="#28090E" />
+                    <stop offset="100%" stopColor="#3D1016" />
+                  </radialGradient>
+
+                  <linearGradient id="teeth-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stopColor="#FFFFFF" />
+                    <stop offset="70%" stopColor="#F5EFE6" />
+                    <stop offset="100%" stopColor="#D5CBBF" />
+                  </linearGradient>
+
+                  <linearGradient id="upper-lip-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stopColor={mouthBox.data.skinBlendTone} stopOpacity="0.35" />
+                    <stop offset="50%" stopColor={mouthBox.data.upperLipTone} stopOpacity="0.95" />
+                    <stop offset="100%" stopColor="#4A161C" stopOpacity="1" />
+                  </linearGradient>
+
+                  <linearGradient id="lower-lip-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stopColor="#4A161C" stopOpacity="0.9" />
+                    <stop offset="40%" stopColor={mouthBox.data.lowerLipTone} stopOpacity="0.95" />
+                    <stop offset="100%" stopColor={mouthBox.data.skinBlendTone} stopOpacity="0.35" />
+                  </linearGradient>
+                </defs>
+
+                {/* 1. Underlying Oral Cavity */}
+                <ellipse 
+                  cx="50" 
+                  cy="25" 
+                  rx={34 * mouthSpread} 
+                  ry={Math.max(2, 16 * mouthOpen)} 
+                  fill="url(#oral-cavity-grad)" 
+                />
+
+                {/* 2. Pearlescent Upper Teeth Row */}
+                {mouthOpen > 0.1 && (
+                  <path 
+                    d={`M ${50 - 24 * Math.min(1.1, mouthSpread)} 22 
+                        Q 50 ${20 + mouthOpen * 2} ${50 + 24 * Math.min(1.1, mouthSpread)} 22 
+                        L ${50 + 22 * Math.min(1.1, mouthSpread)} ${23 + Math.min(6, mouthOpen * 7)} 
+                        Q 50 ${24 + Math.min(7, mouthOpen * 8)} ${50 - 22 * Math.min(1.1, mouthSpread)} ${23 + Math.min(6, mouthOpen * 7)} Z`}
+                    fill="url(#teeth-grad)"
+                    opacity={Math.min(1, mouthOpen * 2.2)}
+                  />
+                )}
+
+                {/* 3. Subtle Lower Teeth / Tongue Arc */}
+                {mouthOpen > 0.42 && (
+                  <path 
+                    d={`M ${50 - 18 * mouthSpread} ${25 + mouthOpen * 10} 
+                        Q 50 ${23 + mouthOpen * 8} ${50 + 18 * mouthSpread} ${25 + mouthOpen * 10} 
+                        Q 50 ${27 + mouthOpen * 11} ${50 - 18 * mouthSpread} ${25 + mouthOpen * 10} Z`}
+                    fill="#8A3440"
+                    opacity={0.85}
+                  />
+                )}
+
+                {/* 4. Natural Upper Lip with Cupid's Bow */}
+                <path 
+                  d={`M 12 25 
+                      Q 32 17 44 20 
+                      Q 50 22 56 20 
+                      Q 68 17 88 25 
+                      Q 68 21 50 23 
+                      Q 32 21 12 25 Z`}
+                  fill="url(#upper-lip-grad)"
+                  filter="url(#lip-feather)"
+                />
+
+                {/* 5. Articulating Lower Lip */}
+                <path 
+                  d={`M 14 25 
+                      Q 50 ${23 + mouthOpen * 18} 86 25 
+                      Q 50 ${30 + mouthOpen * 19} 14 25 Z`}
+                  fill="url(#lower-lip-grad)"
+                  filter="url(#lip-feather)"
+                />
+
+                {/* 6. Soft Specular Light Reflection on Lower Lip */}
+                <ellipse 
+                  cx="50" 
+                  cy={27 + mouthOpen * 16} 
+                  rx="18" 
+                  ry="2.2" 
+                  fill="white" 
+                  opacity="0.22" 
+                />
+              </svg>
+            </div>
           )}
         </div>
 
-        {/* Dynamic Human State Subtitle Pill (Centered floating above controls) */}
-        <div className="absolute bottom-20 inset-x-0 flex flex-col items-center pointer-events-none z-20 px-4">
+        {/* Dynamic Human State Subtitle Pill (Docked cleanly above controls) */}
+        <div className="absolute bottom-14 inset-x-0 flex flex-col items-center pointer-events-none z-20 px-4">
           <div className="inline-flex items-center space-x-2 bg-black/70 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/15 text-xs text-white shadow-lg">
             <span className={`w-2 h-2 rounded-full ${humanStatus.dotColor}`} />
             <span className="font-medium text-slate-100">{humanStatus.text}</span>
