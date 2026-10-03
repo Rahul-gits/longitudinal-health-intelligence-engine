@@ -120,11 +120,11 @@ const distPath = fs.existsSync(path.resolve(process.cwd(), 'dist'))
 
 if (fs.existsSync(distPath)) {
   app.use(express.static(distPath));
-  app.get('*', (req: Request, res: Response, next: NextFunction) => {
-    if (req.path.startsWith('/api')) {
-      return next();
+  app.use((req: Request, res: Response, next: NextFunction) => {
+    if (req.method === 'GET' && !req.path.startsWith('/api')) {
+      return res.sendFile(path.resolve(distPath, 'index.html'));
     }
-    res.sendFile(path.resolve(distPath, 'index.html'));
+    next();
   });
 }
 
