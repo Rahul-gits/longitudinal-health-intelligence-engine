@@ -10,70 +10,78 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        display: ['Space Grotesk', 'sans-serif'],
-        sans: ['Plus Jakarta Sans', 'sans-serif'],
-        mono: ['JetBrains Mono', 'monospace'],
-      },
-      boxShadow: {
-        'brutal-sm': '2px 2px 0px 0px #000000',
-        'brutal': '4px 4px 0px 0px #000000',
-        'brutal-lg': '6px 6px 0px 0px #000000',
-        'brutal-xl': '8px 8px 0px 0px #000000',
-        'brutal-white': '4px 4px 0px 0px #FFFFFF',
-        'brutal-pink': '4px 4px 0px 0px #FF70A6',
-        'brutal-yellow': '4px 4px 0px 0px #FFE600',
+        // Display: bold geometric - editorial headings
+        display: ['"Space Grotesk"', 'sans-serif'],
+        // Body: neutral readable sans
+        sans: ['Inter', '"Plus Jakarta Sans"', 'sans-serif'],
+        // Technical/clinical metadata
+        mono: ['"IBM Plex Mono"', '"JetBrains Mono"', 'monospace'],
       },
       colors: {
-        neo: {
-          yellow: '#FFE600',
-          pink: '#FF70A6',
-          lime: '#CCFF00',
-          cyan: '#00F5D4',
-          orange: '#FF6B35',
-          purple: '#8338EC',
-          blue: '#3A86FF',
-          bg: '#FAF8F5',
-          card: '#FFFFFF',
-          darkCard: '#18181B',
-          black: '#000000',
-          white: '#FFFFFF',
-        },
-        health: {
-          dark: '#0B0F19',
-          card: '#131B2E',
-          border: '#1E293B',
-          cyan: '#00F5D4',
-          emerald: '#CCFF00',
-          rose: '#FF70A6',
-          amber: '#FFE600',
-          purple: '#8338EC',
-          blue: '#3A86FF'
+        // Primary editorial palette
+        paper: '#F3F0E8',
+        surface: '#FAF8F2',
+        ink: '#080808',
+        muted: '#525252',
+        rule: '#B8B5AD',
+        border: '#111111',
+        // Signature interaction color
+        yellow: { DEFAULT: '#FFE45C', hover: '#FFD700' },
+        // Clinical semantic colors (reserved for meaning)
+        teal: { DEFAULT: '#0D9488', light: '#CCFBF1', dark: '#0F766E' },
+        amber: { DEFAULT: '#F59E0B', light: '#FEF3C7', dark: '#D97706' },
+        danger: { DEFAULT: '#DC2626', light: '#FEE2E2', dark: '#B91C1C' },
+        success: { DEFAULT: '#15803D', light: '#DCFCE7', dark: '#166534' },
+        // Dark mode surfaces
+        dark: {
+          bg: '#090E17',
+          surface: '#101A27',
+          border: '#536171',
+          text: '#F5F5F0',
+          muted: '#94A3B8',
         }
       },
+      boxShadow: {
+        // Neo-Brutalist hard offset shadows
+        'brutal-xs': '2px 2px 0 #080808',
+        'brutal-sm': '3px 3px 0 #080808',
+        'brutal':    '5px 5px 0 #080808',
+        'brutal-lg': '7px 7px 0 #080808',
+        'brutal-xl': '10px 10px 0 #080808',
+        // Yellow accent shadow
+        'brutal-yellow': '5px 5px 0 #FFE45C',
+        // Dark mode brutal shadow
+        'brutal-dark': '5px 5px 0 #536171',
+        // Hover state (reduced offset)
+        'brutal-hover': '2px 2px 0 #080808',
+      },
+      borderWidth: {
+        '1': '1px',
+        '2': '2px',
+        '3': '3px',
+      },
       animation: {
-        'marquee': 'marquee 25s linear infinite',
-        'pulse-glow': 'pulseGlow 2s infinite ease-in-out',
-        'float-slow': 'floatSlow 4s infinite ease-in-out',
-        'fade-in': 'fadeIn 0.3s ease-out forwards',
+        'marquee': 'marquee 35s linear infinite',
+        'fade-in': 'fadeIn 0.2s ease-out forwards',
+        'slide-up': 'slideUp 0.2s ease-out forwards',
       },
       keyframes: {
         marquee: {
-          '0%': { transform: 'translateX(0%)' },
+          '0%':   { transform: 'translateX(0%)' },
           '100%': { transform: 'translateX(-50%)' },
         },
-        pulseGlow: {
-          '0%, 100%': { opacity: '0.4', transform: 'scale(1)' },
-          '50%': { opacity: '1', transform: 'scale(1.05)' }
-        },
-        floatSlow: {
-          '0%, 100%': { transform: 'translateY(0px)' },
-          '50%': { transform: 'translateY(-6px)' }
-        },
         fadeIn: {
-          '0%': { opacity: '0', transform: 'translateY(10px)' },
-          '100%': { opacity: '1', transform: 'translateY(0)' }
-        }
-      }
+          '0%':   { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
+        slideUp: {
+          '0%':   { opacity: '0', transform: 'translateY(8px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+      },
+      spacing: {
+        '18': '4.5rem',
+      },
     },
   },
   plugins: [],

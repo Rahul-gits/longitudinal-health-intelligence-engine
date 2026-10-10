@@ -2,132 +2,462 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ═══════════════════════════════════════════════════
+   HEAL ENGINE — NEO-BRUTALIST EDITORIAL DESIGN SYSTEM
+   Swiss editorial typography · Hard black rules · Yellow accent
+   Content is the decoration.
+   ═══════════════════════════════════════════════════ */
+
 @layer base {
+  :root {
+    --bg-paper:   #F3F0E8;
+    --bg-surface: #FAF8F2;
+    --text-ink:   #080808;
+    --text-muted: #525252;
+    --border:     #111111;
+    --rule:       #B8B5AD;
+    --yellow:     #FFE45C;
+    --teal:       #0D9488;
+    --amber:      #F59E0B;
+    --danger:     #DC2626;
+    --success:    #15803D;
+    --nav-h:      3.25rem;   /* 52px top nav height */
+  }
+
+  .dark {
+    --bg-paper:   #090E17;
+    --bg-surface: #101A27;
+    --text-ink:   #F5F5F0;
+    --text-muted: #94A3B8;
+    --border:     #536171;
+    --rule:       #1E2D40;
+    --yellow:     #FFE45C;
+    --teal:       #10B981;
+    --amber:      #F59E0B;
+    --danger:     #F87171;
+    --success:    #4ADE80;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    background-color: #FAF8F5;
-    color: #000000;
+    font-family: Inter, 'Plus Jakarta Sans', sans-serif;
+    background-color: var(--bg-paper);
+    color: var(--text-ink);
+    font-size: 0.9375rem;       /* 15px base */
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
-  
-  h1, h2, h3, h4, h5, h6, .font-display {
+
+  /* Typographic hierarchy */
+  h1, h2, h3, h4, h5, h6,
+  .font-display {
     font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: var(--text-ink);
   }
 
-  code, pre, .font-mono {
-    font-family: 'JetBrains Mono', monospace;
+  code, pre,
+  .font-mono,
+  .clinical-meta {
+    font-family: 'IBM Plex Mono', 'JetBrains Mono', monospace;
+    font-size: 0.8125rem;
+  }
+
+  /* Selection */
+  ::selection {
+    background-color: #FFE45C;
+    color: #080808;
   }
 }
 
-/* Custom Neubrutalist Scrollbars */
-::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
-}
-::-webkit-scrollbar-track {
-  background: #FAF8F5;
-  border-left: 2px solid #000000;
-}
-::-webkit-scrollbar-thumb {
-  background: #FFE600;
-  border: 2px solid #000000;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #FF70A6;
+/* ───────────────────────────────────────
+   SCROLLBAR — thin editorial rule
+   ─────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--rule); }
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+/* ═══════════════════════════════════════════════════
+   COMPONENT LIBRARY
+   ═══════════════════════════════════════════════════ */
+
+@layer components {
+
+  /* ── PANELS & SURFACES ──────────────────────────── */
+
+  /* Primary bordered panel — black rule, hard shadow */
+  .he-panel {
+    @apply bg-surface border border-[var(--border)] relative;
+    background-color: var(--bg-surface);
+    border: 1.5px solid var(--border);
+    box-shadow: 5px 5px 0 var(--border);
+  }
+
+  /* Flat section panel — no shadow, lighter border */
+  .he-panel-flat {
+    @apply relative;
+    background-color: var(--bg-surface);
+    border: 1.5px solid var(--border);
+  }
+
+  /* Yellow accent panel */
+  .he-panel-yellow {
+    background-color: #FFE45C;
+    border: 1.5px solid var(--border);
+    box-shadow: 5px 5px 0 var(--border);
+  }
+
+  /* Clinical alert panels */
+  .he-alert-critical {
+    background-color: #FEE2E2;
+    border: 2px solid #DC2626;
+    border-left: 5px solid #DC2626;
+  }
+  .dark .he-alert-critical {
+    background-color: rgba(220, 38, 38, 0.12);
+    border-color: #F87171;
+    border-left-color: #F87171;
+  }
+
+  .he-alert-warning {
+    background-color: #FEF3C7;
+    border: 2px solid #F59E0B;
+    border-left: 5px solid #F59E0B;
+  }
+  .dark .he-alert-warning {
+    background-color: rgba(245, 158, 11, 0.12);
+    border-color: #FBBF24;
+    border-left-color: #FBBF24;
+  }
+
+  .he-alert-info {
+    background-color: var(--bg-surface);
+    border: 1.5px solid var(--border);
+    border-left: 4px solid var(--border);
+  }
+
+  .he-alert-resolved {
+    background-color: #DCFCE7;
+    border: 1.5px solid #15803D;
+    border-left: 4px solid #15803D;
+  }
+  .dark .he-alert-resolved {
+    background-color: rgba(21, 128, 61, 0.12);
+    border-color: #4ADE80;
+    border-left-color: #4ADE80;
+  }
+
+  /* ── BUTTONS ──────────────────────────────────────── */
+
+  /* Primary — yellow, hard shadow */
+  .he-btn {
+    @apply inline-flex items-center gap-2 font-bold text-sm px-4 py-2 cursor-pointer select-none transition-all;
+    background-color: #FFE45C;
+    color: var(--text-ink);
+    border: 2px solid var(--border);
+    box-shadow: 5px 5px 0 var(--border);
+    font-family: 'Space Grotesk', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    line-height: 1;
+  }
+  .he-btn:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 7px 7px 0 var(--border);
+  }
+  .he-btn:active {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 var(--border);
+  }
+  .he-btn:focus-visible {
+    outline: 3px solid #FFE45C;
+    outline-offset: 2px;
+  }
+
+  /* Secondary — white, black border, no shadow fill */
+  .he-btn-ghost {
+    @apply inline-flex items-center gap-2 font-semibold text-sm px-4 py-2 cursor-pointer select-none transition-all;
+    background-color: var(--bg-surface);
+    color: var(--text-ink);
+    border: 1.5px solid var(--border);
+    box-shadow: 3px 3px 0 var(--border);
+    font-family: 'Space Grotesk', sans-serif;
+    letter-spacing: 0.02em;
+  }
+  .he-btn-ghost:hover {
+    transform: translate(-1px, -1px);
+    box-shadow: 4px 4px 0 var(--border);
+  }
+  .he-btn-ghost:active {
+    transform: translate(1px, 1px);
+    box-shadow: 1px 1px 0 var(--border);
+  }
+
+  /* Danger button */
+  .he-btn-danger {
+    @apply he-btn;
+    background-color: #DC2626;
+    color: #ffffff;
+    border-color: var(--border);
+  }
+
+  /* ── NAVIGATION ───────────────────────────────────── */
+
+  /* Horizontal nav tab */
+  .he-nav-tab {
+    @apply flex items-center gap-1.5 px-3 py-2 font-bold text-xs tracking-widest uppercase cursor-pointer select-none transition-colors whitespace-nowrap;
+    font-family: 'Space Grotesk', sans-serif;
+    color: var(--text-muted);
+    border-bottom: 2px solid transparent;
+  }
+  .he-nav-tab:hover {
+    color: var(--text-ink);
+    border-bottom-color: var(--rule);
+  }
+  .he-nav-tab.active {
+    color: var(--text-ink);
+    border-bottom-color: #FFE45C;
+    background-color: #FFE45C;
+  }
+
+  /* Sub-navigation (workspace tabs) */
+  .he-sub-tab {
+    @apply flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold cursor-pointer select-none transition-all whitespace-nowrap;
+    font-family: 'Space Grotesk', sans-serif;
+    color: var(--text-muted);
+    border: 1.5px solid transparent;
+  }
+  .he-sub-tab:hover {
+    color: var(--text-ink);
+    background-color: var(--bg-surface);
+    border-color: var(--border);
+  }
+  .he-sub-tab.active {
+    color: var(--text-ink);
+    background-color: #FFE45C;
+    border: 1.5px solid var(--border);
+    box-shadow: 2px 2px 0 var(--border);
+  }
+
+  /* ── BADGES & LABELS ──────────────────────────────── */
+
+  .he-badge {
+    @apply inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5;
+    font-family: 'IBM Plex Mono', monospace;
+    border: 1px solid var(--border);
+  }
+
+  /* Clinical risk level badges */
+  .he-badge-critical { background: #DC2626; color: #fff; border-color: #B91C1C; }
+  .he-badge-high     { background: #F59E0B; color: #080808; border-color: #D97706; }
+  .he-badge-moderate { background: #FFE45C; color: #080808; border-color: #111111; }
+  .he-badge-low      { background: #DCFCE7; color: #166534; border-color: #15803D; }
+  .he-badge-neutral  { background: var(--bg-surface); color: var(--text-muted); border-color: var(--rule); }
+
+  /* ── INPUTS ───────────────────────────────────────── */
+
+  .he-input {
+    @apply w-full px-3 py-2 text-sm font-medium bg-white dark:bg-dark-surface transition-all;
+    color: var(--text-ink);
+    border: 1.5px solid var(--border);
+    box-shadow: 3px 3px 0 var(--border);
+    font-family: Inter, sans-serif;
+    outline: none;
+  }
+  .he-input:focus {
+    border-color: #FFE45C;
+    box-shadow: 3px 3px 0 #FFE45C, 0 0 0 2px rgba(255, 228, 92, 0.25);
+  }
+  .he-input::placeholder { color: var(--rule); }
+
+  /* ── SECTION LABELS (uppercase rules) ──────────────── */
+
+  .he-section-label {
+    @apply text-[10px] font-bold uppercase tracking-[0.12em] mb-2;
+    font-family: 'IBM Plex Mono', monospace;
+    color: var(--text-muted);
+  }
+
+  /* ── DIVIDERS ─────────────────────────────────────── */
+
+  .he-rule {
+    border: none;
+    border-top: 1px solid var(--rule);
+    margin: 0;
+  }
+  .he-rule-strong {
+    border: none;
+    border-top: 2px solid var(--border);
+    margin: 0;
+  }
+
+  /* ── VITAL METRIC CARD ────────────────────────────── */
+
+  .he-metric {
+    @apply p-3;
+    background-color: var(--bg-surface);
+    border: 1.5px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  /* ── MODULE GRID ITEM ─────────────────────────────── */
+
+  .he-module {
+    @apply p-3 cursor-pointer select-none transition-all;
+    background-color: var(--bg-surface);
+    border: 1.5px solid var(--border);
+  }
+  .he-module:hover {
+    box-shadow: 3px 3px 0 var(--border);
+    transform: translate(-1px, -1px);
+  }
+
+  /* ── GLASS-TO-FLAT COMPAT OVERRIDES ──────────────── */
+  /* Keep legacy class names working but with flat editorial style */
+  .glass-panel,
+  .glass-panel-glow,
+  .neo-card,
+  .neo-card-yellow,
+  .neo-card-pink,
+  .neo-card-lime,
+  .neo-card-cyan,
+  .neo-card-orange,
+  .kinetic-card,
+  .kinetic-card-teal,
+  .kinetic-card-ochre {
+    background-color: var(--bg-surface) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border: 1.5px solid var(--border) !important;
+    border-radius: 0 !important;
+    box-shadow: 3px 3px 0 var(--border) !important;
+  }
+
+  .neo-button,
+  .kinetic-button {
+    background-color: var(--bg-surface) !important;
+    border: 1.5px solid var(--border) !important;
+    box-shadow: 3px 3px 0 var(--border) !important;
+    border-radius: 0 !important;
+  }
+  .neo-button:hover,
+  .kinetic-button:hover {
+    transform: translate(-2px, -2px) !important;
+    box-shadow: 5px 5px 0 var(--border) !important;
+  }
+
+  .neo-badge,
+  .kinetic-badge {
+    border: 1px solid var(--border) !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .neo-input,
+  .kinetic-input {
+    border: 1.5px solid var(--border) !important;
+    border-radius: 0 !important;
+    box-shadow: 3px 3px 0 var(--border) !important;
+  }
+
+  /* Remove kinetic-morphism rounded corners and blurs globally */
+  [class*="rounded-2xl"],
+  [class*="rounded-3xl"],
+  [class*="rounded-full"]:not(input):not(.he-keep-round) {
+    border-radius: 0 !important;
+  }
+
+  /* Remove gradients */
+  [class*="bg-gradient"],
+  [class*="from-"],
+  [class*="via-"],
+  [class*="to-"] {
+    background-image: none !important;
+  }
+
+  /* Remove backdrop blur */
+  [class*="backdrop-blur"] {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
 }
 
-/* Neubrutalist Base Component Helpers */
-.neo-card {
-  background-color: #FFFFFF;
-  border: 3px solid #000000;
-  box-shadow: 5px 5px 0px 0px #000000;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+/* ═══════════════════════════════════════════════════
+   UTILITY OVERRIDES FOR LEGACY BRIGHT NEON COLORS
+   Remap old palette to editorial system in-place
+   ═══════════════════════════════════════════════════ */
+
+/* Neon yellow → editorial yellow */
+[class*="bg-\[\#FFE600\]"],
+[class*="bg-\[\#FFE45C\]"] {
+  background-color: #FFE45C !important;
+  color: #080808 !important;
 }
 
-.neo-card-yellow {
-  background-color: #FFE600;
-  border: 3px solid #000000;
-  box-shadow: 5px 5px 0px 0px #000000;
+/* Hot pink → ink surface */
+[class*="bg-\[\#FF70A6\]"] {
+  background-color: var(--bg-surface) !important;
+  color: var(--text-ink) !important;
+  border: 1px solid var(--border) !important;
 }
 
-.neo-card-pink {
-  background-color: #FF70A6;
-  border: 3px solid #000000;
-  box-shadow: 5px 5px 0px 0px #000000;
+/* Lime green → success green */
+[class*="bg-\[\#CCFF00\]"] {
+  background-color: #DCFCE7 !important;
+  color: #166534 !important;
 }
 
-.neo-card-lime {
-  background-color: #CCFF00;
-  border: 3px solid #000000;
-  box-shadow: 5px 5px 0px 0px #000000;
+/* Cyan neon → teal */
+[class*="bg-\[\#00F5D4\]"] {
+  background-color: #CCFBF1 !important;
+  color: #0D9488 !important;
 }
 
-.neo-card-cyan {
-  background-color: #00F5D4;
-  border: 3px solid #000000;
-  box-shadow: 5px 5px 0px 0px #000000;
+/* Bright orange → amber */
+[class*="bg-\[\#FF6B35\]"],
+[class*="bg-\[\#FF5722\]"] {
+  background-color: #FEF3C7 !important;
+  color: #D97706 !important;
 }
 
-.neo-card-orange {
-  background-color: #FF6B35;
-  border: 3px solid #000000;
-  box-shadow: 5px 5px 0px 0px #000000;
+/* Purple → ink surface */
+[class*="bg-\[\#8338EC\]"],
+[class*="bg-\[\#A855F7\]"] {
+  background-color: var(--bg-surface) !important;
+  color: var(--text-ink) !important;
+  border: 1px solid var(--border) !important;
 }
 
-.neo-button {
-  border: 2px solid #000000;
-  box-shadow: 3px 3px 0px 0px #000000;
-  font-weight: 700;
-  transition: all 0.1s ease-in-out;
+/* Bright blue → teal or surface */
+[class*="bg-\[\#3A86FF\]"] {
+  background-color: #CCFBF1 !important;
+  color: #0D9488 !important;
 }
 
-.neo-button:hover {
-  transform: translate(-2px, -2px);
-  box-shadow: 5px 5px 0px 0px #000000;
+/* Text colours */
+[class*="text-\[\#FFE600\]"],
+[class*="text-\[\#FFE45C\]"] { color: #080808 !important; }
+[class*="text-\[\#FF70A6\]"] { color: var(--text-muted) !important; }
+[class*="text-\[\#CCFF00\]"] { color: #15803D !important; }
+[class*="text-\[\#00F5D4\]"] { color: #0D9488 !important; }
+[class*="text-\[\#A855F7\]"] { color: var(--text-muted) !important; }
+
+/* Border colours — hard black only */
+[class*="border-black"] {
+  border-color: var(--border) !important;
 }
 
-.neo-button:active {
-  transform: translate(2px, 2px);
-  box-shadow: 1px 1px 0px 0px #000000;
+/* Remove tilts / rotations */
+[class*="-rotate-"],
+[class*="rotate-"] {
+  transform: none !important;
 }
-
-.neo-badge {
-  border: 2px solid #000000;
-  font-weight: 800;
-  box-shadow: 2px 2px 0px 0px #000000;
-  text-transform: uppercase;
-}
-
-.neo-input {
-  border: 2px solid #000000;
-  box-shadow: 3px 3px 0px 0px #000000;
-  background-color: #FFFFFF;
-  color: #000000;
-  font-weight: 600;
-}
-
-.neo-input:focus {
-  outline: none;
-  background-color: #FFFDF5;
-  box-shadow: 5px 5px 0px 0px #000000;
-}
-
-/* Glassmorphism backward compatibility converted to Neubrutalist panel */
-.glass-panel {
-  background: #FFFFFF;
-  border: 3px solid #000000;
-  box-shadow: 4px 4px 0px 0px #000000;
-}
-
-.glass-panel-glow {
-  background: #FFE600;
-  border: 3px solid #000000;
-  box-shadow: 6px 6px 0px 0px #000000;
-}
-
-/* Node pulse effect for Neubrutalism */
-.node-active {
-  border: 3px solid #000000;
-  box-shadow: 4px 4px 0px 0px #000000;
-  animation: pulse 1.5s infinite ease-in-out;
-}
-
