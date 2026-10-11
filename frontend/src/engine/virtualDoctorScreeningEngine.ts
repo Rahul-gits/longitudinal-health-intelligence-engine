@@ -3,7 +3,10 @@ import {
   ScreeningDialogueStep, 
   DoctorPostureMode, 
   PatientClinicalState,
-  PatientScreeningOption
+  PatientScreeningOption,
+  AvatarState,
+  SpecialistResponse,
+  postureToAvatarState
 } from '../types/health';
 import { patientStateEngine } from './patientStateEngine';
 import { AuthUser, getStoredUser } from '../services/authApi';
@@ -293,6 +296,58 @@ export class VirtualDoctorScreeningEngine {
         evidenceReference: 'Heal Engine Multi-Agent Clinical Consensus (Swarm Cohesion: 94.8%)'
       }
     ];
+  }
+
+  public getStructuredResponse(
+    personaId: string,
+    stepIndex: number,
+    userOverride?: AuthUser | null,
+    patientInputText?: string
+  ): SpecialistResponse {
+    const dialogue = this.getScreeningDialogue(personaId, userOverride);
+    const step = dialogue[stepIndex] || dialogue[0];
+    
+    // Assess clinical safety triggers
+    let isEscalated = false;
+    let safetyNotice: string | undefined;
+    let state: AvatarState = postureToAvatarState(step.posture);
+
+    if (patientInputText) {
+      const lower = patientInputText.toLowerCase();
+      if (lower.includes('chest pain') || lower.includes('pass out') || lower.includes('cannot breathe') || lower.includes('emergency')) {
+        isEscalated = true;
+        state = 'ALERTING';
+        safetyNotice = 'CRITICAL RED FLAG: Acute cardiopulmonary distress detected. Escalating to rapid clinician review.';
+      } else if (lower.includes('swollen') || lower.includes('puffiness') || lower.includes('weight') || lower.includes('breath')) {
+        state = 'ALERTING';
+        safetyNotice = 'Cardiorenal fluid accumulation indicator flagged for follow-up.';
+      } else if (lower.includes('knee') || lower.includes('pain') || lower.includes('ibuprofen')) {
+        state = 'EXPLAINING';
+      } else {
+        state = 'UNDERSTANDING';
+      }
+    }
+
+    if (step.phase === 'medication_alert') {
+      state = 'ALERTING';
+      isEscalated = true;
+      safetyNotice = 'Contraindicated concurrent NSAID + ACE-inhibitor administration in CKD Stage 3.';
+    } else if (step.phase === 'biomarker_review') {
+      state = 'REVIEWING';
+    } else if (step.phase === 'welcome') {
+      state = 'GREETING';
+    }
+
+    return {
+      text: step.spokenScript,
+      personaId,
+      state,
+      subtitles: step.spokenScript,
+      requiresClinicianReview: isEscalated,
+      evidenceCitations: step.evidenceReference ? [step.evidenceReference] : undefined,
+      safetyGateAlert: safetyNotice,
+      confidenceScore: 0.98
+    };
   }
 }
 

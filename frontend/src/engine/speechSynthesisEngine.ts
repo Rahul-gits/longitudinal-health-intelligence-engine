@@ -134,7 +134,9 @@ export class SpeechSynthesisEngine {
 
       utterance.onerror = (e) => {
         cleanupUtterance();
-        console.warn('Speech synthesis notice/error:', e);
+        if (e.error !== 'interrupted' && e.error !== 'canceled') {
+          console.warn('Speech synthesis notice/error:', e);
+        }
         callbacks.onError?.(e);
         callbacks.onEnd?.();
       };

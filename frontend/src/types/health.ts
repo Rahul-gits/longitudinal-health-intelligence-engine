@@ -614,6 +614,16 @@ export interface StaticClinicalCase {
   consensus: ConsensusState;
 }
 
+export type AvatarState = 
+  | 'GREETING'
+  | 'LISTENING'
+  | 'UNDERSTANDING'
+  | 'REVIEWING'
+  | 'EXPLAINING'
+  | 'CHECKING'
+  | 'REASSURING'
+  | 'ALERTING';
+
 export type DoctorPostureMode = 
   | 'greeting' 
   | 'listening' 
@@ -623,6 +633,46 @@ export type DoctorPostureMode =
   | 'alerting' 
   | 'prescribing' 
   | 'reassuring';
+
+export interface SpecialistResponse {
+  text: string;
+  personaId: string;
+  state: AvatarState;
+  audioUrl?: string;
+  subtitles: string;
+  requiresClinicianReview: boolean;
+  evidenceCitations?: string[];
+  safetyGateAlert?: string;
+  confidenceScore?: number;
+}
+
+export function postureToAvatarState(posture: DoctorPostureMode): AvatarState {
+  switch (posture) {
+    case 'greeting': return 'GREETING';
+    case 'listening': return 'LISTENING';
+    case 'understanding': return 'UNDERSTANDING';
+    case 'reviewing': return 'REVIEWING';
+    case 'explaining': return 'EXPLAINING';
+    case 'alerting': return 'ALERTING';
+    case 'prescribing': return 'CHECKING';
+    case 'reassuring': return 'REASSURING';
+    default: return 'LISTENING';
+  }
+}
+
+export function avatarStateToPosture(state: AvatarState): DoctorPostureMode {
+  switch (state) {
+    case 'GREETING': return 'greeting';
+    case 'LISTENING': return 'listening';
+    case 'UNDERSTANDING': return 'understanding';
+    case 'REVIEWING': return 'reviewing';
+    case 'EXPLAINING': return 'explaining';
+    case 'CHECKING': return 'prescribing';
+    case 'REASSURING': return 'reassuring';
+    case 'ALERTING': return 'alerting';
+    default: return 'listening';
+  }
+}
 
 export interface VirtualDoctorPersona {
   id: string;

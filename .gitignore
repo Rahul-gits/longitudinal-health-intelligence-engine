@@ -27,3 +27,4 @@ dist-ssr
 *.sw?
 *.zip
 backend/db/*.zip
+devops/*.glb

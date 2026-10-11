@@ -1,9 +1,66 @@
 import { Router, Request, Response } from 'express';
 import { authenticateAndAuthorize } from '../middleware/securityRbacMiddleware';
+import { observabilityService } from '../services/observabilityService';
+import { securityRbacTestSuite } from '../tests/securityRbacTestSuite';
 
 const router = Router();
 
-// All workflow/pipeline endpoints require authenticated clinician or admin
+// Real-Time Server-Sent Events (SSE) Client Registry with Heartbeat & Scoping
+const sseClients: { res: Response; patientId: string; userId: string }[] = [];
+
+// Periodic 15s Heartbeat to prevent socket drops
+setInterval(() => {
+  const ping = `event: heartbeat\ndata: ${JSON.stringify({ timestamp: new Date().toISOString() })}\n\n`;
+  sseClients.forEach(c => {
+    try {
+      c.res.write(ping);
+    } catch {
+      // cleaned on close
+    }
+  });
+}, 15000);
+
+export function broadcastWorkflowEvent(eventType: string, data: Record<string, any>, targetPatientId?: string) {
+  const payload = `event: ${eventType}\ndata: ${JSON.stringify({ timestamp: new Date().toISOString(), ...data })}\n\n`;
+  sseClients.forEach(client => {
+    // Scoped event delivery: only deliver if target matches or is platform broadcast
+    if (!targetPatientId || client.patientId === targetPatientId || client.patientId === '*') {
+      try {
+        client.res.write(payload);
+      } catch (err) {
+        // Handled on close
+      }
+    }
+  });
+}
+
+// GET /api/workflow/events/stream (Server-Sent Events Real-Time Bus)
+router.get('/events/stream', (req: Request, res: Response) => {
+  res.writeHead(200, {
+    'Content-Type': 'text/event-stream',
+    'Cache-Control': 'no-cache',
+    'Connection': 'keep-alive',
+    'X-Accel-Buffering': 'no'
+  });
+
+  const patientId = (req.query.patientId as string) || 'patient-ev-68';
+  const userId = (req.query.userId as string) || 'clinician-dr-thorne';
+
+  // Send initial handshake
+  res.write(`event: connected\ndata: ${JSON.stringify({ status: 'SSE_CONNECTED', patientId, userId })}\n\n`);
+
+  const clientRecord = { res, patientId, userId };
+  sseClients.push(clientRecord);
+  observabilityService.updateSseCount(sseClients.length);
+
+  req.on('close', () => {
+    const idx = sseClients.indexOf(clientRecord);
+    if (idx !== -1) sseClients.splice(idx, 1);
+    observabilityService.updateSseCount(sseClients.length);
+  });
+});
+
+// All workflow execution and state-mutation endpoints require authenticated clinician or admin
 router.use(authenticateAndAuthorize(['clinician', 'admin']));
 
 // 6-step care loop clinical pipeline simulation
@@ -322,63 +379,7 @@ import { fhirCdsHooksService } from '../services/fhirCdsHooksService';
 import { clinicalScenarioTestSuite } from '../services/clinicalScenarioTestSuite';
 import { virtualDoctorSessionService } from '../services/virtualDoctorSessionService';
 import { aiGovernanceService } from '../services/aiGovernanceService';
-import { observabilityService } from '../services/observabilityService';
-import { securityRbacTestSuite } from '../tests/securityRbacTestSuite';
 
-// Real-Time Server-Sent Events (SSE) Client Registry with Heartbeat & Scoping
-const sseClients: { res: Response; patientId: string; userId: string }[] = [];
-
-// Periodic 15s Heartbeat to prevent socket drops
-setInterval(() => {
-  const ping = `event: heartbeat\ndata: ${JSON.stringify({ timestamp: new Date().toISOString() })}\n\n`;
-  sseClients.forEach(c => {
-    try {
-      c.res.write(ping);
-    } catch {
-      // cleaned on close
-    }
-  });
-}, 15000);
-
-export function broadcastWorkflowEvent(eventType: string, data: Record<string, any>, targetPatientId?: string) {
-  const payload = `event: ${eventType}\ndata: ${JSON.stringify({ timestamp: new Date().toISOString(), ...data })}\n\n`;
-  sseClients.forEach(client => {
-    // Scoped event delivery: only deliver if target matches or is platform broadcast
-    if (!targetPatientId || client.patientId === targetPatientId || client.patientId === '*') {
-      try {
-        client.res.write(payload);
-      } catch (err) {
-        // Handled on close
-      }
-    }
-  });
-}
-
-// GET /api/workflow/events/stream (Server-Sent Events Real-Time Bus with RBAC and Heartbeat)
-router.get('/events/stream', (req: Request, res: Response) => {
-  res.writeHead(200, {
-    'Content-Type': 'text/event-stream',
-    'Cache-Control': 'no-cache',
-    'Connection': 'keep-alive',
-    'X-Accel-Buffering': 'no'
-  });
-
-  const patientId = (req.query.patientId as string) || 'patient-ev-68';
-  const userId = (req.query.userId as string) || 'clinician-dr-thorne';
-
-  // Send initial handshake
-  res.write(`event: connected\ndata: ${JSON.stringify({ status: 'SSE_CONNECTED', patientId, userId })}\n\n`);
-
-  const clientRecord = { res, patientId, userId };
-  sseClients.push(clientRecord);
-  observabilityService.updateSseCount(sseClients.length);
-
-  req.on('close', () => {
-    const idx = sseClients.indexOf(clientRecord);
-    if (idx !== -1) sseClients.splice(idx, 1);
-    observabilityService.updateSseCount(sseClients.length);
-  });
-});
 
 // POST /api/workflow/jobs/enqueue (Full Reliability Semantics & Idempotency)
 router.post('/jobs/enqueue', (req: Request, res: Response) => {

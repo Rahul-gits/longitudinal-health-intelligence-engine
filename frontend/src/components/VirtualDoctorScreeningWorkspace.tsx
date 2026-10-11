@@ -472,12 +472,14 @@ CONSENSUS STATUS: Verified by Multi-Agent Swarm (94.8% Cohesion).
             <DoctorAnimatedAvatar
               persona={activePersona}
               posture={activePosture}
+              state={emergencyBanner || activeSafetyGateNotice ? 'ALERTING' : undefined}
               isSpeaking={isPlaying}
               isMuted={isMuted}
               activeWord={activeWord}
               transcriptText={customDoctorFeedback || currentStep.spokenScript}
               patientTranscript={patientFreeTextInput}
               patientName={user?.fullName || currentPatient.name || 'Rahul Gunda'}
+              hasSafetyAlert={Boolean(emergencyBanner || activeSafetyGateNotice)}
               onSelectPosture={(p) => setActivePosture(p)}
               onSelectPersona={(id) => {
                 setActivePersonaId(id);
