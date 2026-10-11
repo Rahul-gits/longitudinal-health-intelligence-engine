@@ -5,10 +5,10 @@ import { ArrowRight, AlertCircle, Loader2, Lock, Eye, EyeOff } from 'lucide-reac
 
 export const RegisterView: React.FC = () => {
   const { register, error, isLoading, setAuthView, setError } = useAuth();
-  const [fullName, setFullName] = useState<string>('Rahul Gunda');
-  const [email, setEmail] = useState<string>('rahul@example.com');
-  const [password, setPassword] = useState<string>('HealDemo2026!');
-  const [confirmPassword, setConfirmPassword] = useState<string>('HealDemo2026!');
+  const [fullName, setFullName] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [confirmPassword, setConfirmPassword] = useState<string>('');
   const [agreedToTerms, setAgreedToTerms] = useState<boolean>(true);
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
@@ -51,7 +51,7 @@ export const RegisterView: React.FC = () => {
             type="text"
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
-            placeholder="Rahul Gunda"
+            placeholder="e.g. Sarah Jenkins"
             required
             className="w-full px-3.5 py-2.5 bg-white border border-[#DCE2E8] rounded-xl text-sm text-[#172033] placeholder-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] transition-all"
           />
@@ -66,11 +66,12 @@ export const RegisterView: React.FC = () => {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="rahul@example.com"
+            placeholder="you@hospital.org"
             required
             className="w-full px-3.5 py-2.5 bg-white border border-[#DCE2E8] rounded-xl text-sm text-[#172033] placeholder-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] transition-all"
           />
         </div>
+
 
         <div>
           <label className="block text-xs font-semibold text-[#172033] mb-1.5" htmlFor="reg-password">

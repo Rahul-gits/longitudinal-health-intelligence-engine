@@ -28,6 +28,8 @@ export const GestureController: React.FC<GestureControllerProps> = ({
 }) => {
   const animFrameRef = useRef<number | null>(null);
 
+  const lastEmittedTimeRef = useRef<number>(0);
+
   useEffect(() => {
     const startTime = performance.now();
 
@@ -125,7 +127,10 @@ export const GestureController: React.FC<GestureControllerProps> = ({
         noddingPhase: nodPitch
       };
 
-      onKinematicsUpdate?.(kinematics);
+      if (time - lastEmittedTimeRef.current >= 33) {
+        lastEmittedTimeRef.current = time;
+        onKinematicsUpdate?.(kinematics);
+      }
       animFrameRef.current = requestAnimationFrame(loop);
     };
 

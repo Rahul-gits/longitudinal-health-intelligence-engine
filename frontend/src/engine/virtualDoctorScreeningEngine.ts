@@ -146,7 +146,7 @@ export class VirtualDoctorScreeningEngine {
       voiceRate: 1.0,
       preferredVoiceName: 'Karen',
       clinicalFocus: '7-Day Renal Recovery Trajectory & Hydration Protocol',
-      greetingScript: 'Hello Eleanor, I am Dr. Sarah Chen from Nephrology. I specialize in protecting and restoring kidney function. I am here to guide your 7-day renal recovery pathway.',
+      greetingScript: 'Hello {NAME}, I am Dr. Sarah Chen from Nephrology. I specialize in protecting and restoring kidney function. I am here to guide your 7-day renal recovery pathway.',
       explanationScript: 'Your kidneys are resilient organs. Because this eGFR dip occurred recently over just three weeks, removing the offending medication typically allows intraglomerular pressure to normalize within 5 to 7 days.',
       safetyAlertScript: 'While we pause the Ibuprofen, it is crucial that you stay properly hydrated with 1.5 to 2 liters of water daily, and avoid high-potassium salt substitutes while on Lisinopril.',
       actionPlanScript: 'We have ordered a follow-up Renal Function Panel for you on August 20th. If your eGFR returns above 60 as we expect, you will remain safely in Stage 2 CKD without long-term damage.',

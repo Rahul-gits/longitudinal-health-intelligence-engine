@@ -21,7 +21,7 @@ export class EvidenceIntelligenceEngine {
       evidenceGrade: 'Grade A (Strong RCT/Meta-analysis)',
       relevanceScore: 98,
       summary: 'Recommends avoiding systemic non-steroidal anti-inflammatory drugs (NSAIDs) in patients with eGFR < 60 mL/min/1.73m², particularly when combined with ACE inhibitors or ARBs.',
-      applicableToPatientReason: 'Eleanor Vance has Stage 2 CKD with a documented eGFR drop to 52 mL/min and active Lisinopril therapy.'
+      applicableToPatientReason: 'Patient profile indicates Stage 2 CKD with a documented eGFR drop to 52 mL/min and active Lisinopril therapy.'
     },
     {
       id: 'ev-fda-nsaid-blackbox',
@@ -41,7 +41,7 @@ export class EvidenceIntelligenceEngine {
       evidenceGrade: 'Grade B (Cohort Study)',
       relevanceScore: 92,
       summary: 'Topical NSAIDs and 5% Lidocaine patches provide targeted analgesia for knee OA with negligible systemic absorption (< 3%) and zero measurable renal clearance impact.',
-      applicableToPatientReason: 'Provides an effective non-toxic analgesia substitute preserving Eleanor’s joint mobility.'
+      applicableToPatientReason: 'Provides an effective non-toxic analgesia substitute preserving patient joint mobility without renal compromise.'
     }
   ];
 

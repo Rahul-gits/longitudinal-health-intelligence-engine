@@ -44,29 +44,32 @@ interface CareFollowUpWorkspaceProps {
 export const CareFollowUpWorkspace: React.FC<CareFollowUpWorkspaceProps> = ({ onNavigateTab }) => {
   const { user } = useAuth();
   const currentPatient = getDynamicPatientProfile(user);
-  const isCardiorenal = currentPatient.name.toLowerCase().includes('eleanor');
+  const isCardiorenal = (currentPatient.conditions || []).some((c: string) => 
+    c.toLowerCase().includes('heart') || 
+    c.toLowerCase().includes('kidney') || 
+    c.toLowerCase().includes('renal')
+  );
 
   const [tasks, setTasks] = useState<CareTask[]>(() => {
-    if (isCardiorenal) {
+    if (currentPatient.medications && currentPatient.medications.length > 0) {
       return [
-        { id: 'task-1', title: 'Take Lisinopril 20mg with breakfast', timeOfDay: 'Morning', category: 'MEDICATION', completed: true, dueDate: 'Today' },
-        { id: 'task-2', title: 'Check morning weight on smart scale', timeOfDay: 'Morning', category: 'TELEMETRY', completed: true, dueDate: 'Today' },
-        { id: 'task-3', title: 'Apply Topical Diclofenac 1% gel to right knee (Pause Advil)', timeOfDay: 'Afternoon', category: 'MEDICATION', completed: false, dueDate: 'Today' },
-        { id: 'task-4', title: 'Hydration goal: 6 to 8 glasses of water', timeOfDay: 'Evening', category: 'LIFESTYLE', completed: false, dueDate: 'Today' }
+        ...currentPatient.medications.map((m: string, idx: number) => ({
+          id: `task-med-${idx}`,
+          title: `Take ${m}`,
+          timeOfDay: idx % 2 === 0 ? 'Morning' : 'Evening',
+          category: 'MEDICATION' as const,
+          completed: false,
+          dueDate: 'Today'
+        })),
+        { id: 'task-vitals', title: 'Log blood pressure & morning vitals', timeOfDay: 'Morning', category: 'TELEMETRY' as const, completed: false, dueDate: 'Today' },
+        { id: 'task-lifestyle', title: 'Hydration goal: 6 to 8 glasses of water', timeOfDay: 'Evening', category: 'LIFESTYLE' as const, completed: false, dueDate: 'Today' }
       ];
     }
-    const medTasks: CareTask[] = currentPatient.medications.map((m, idx) => ({
-      id: `task-med-${idx}`,
-      title: `Take ${m}`,
-      timeOfDay: idx % 2 === 0 ? 'Morning' : 'Evening',
-      category: 'MEDICATION' as const,
-      completed: idx === 0,
-      dueDate: 'Today'
-    }));
     return [
-      ...medTasks,
-      { id: 'task-vitals', title: 'Log blood pressure & morning vitals', timeOfDay: 'Morning', category: 'TELEMETRY', completed: true, dueDate: 'Today' },
-      { id: 'task-lifestyle', title: 'Hydration goal: 6 to 8 glasses of water', timeOfDay: 'Evening', category: 'LIFESTYLE', completed: false, dueDate: 'Today' }
+      { id: 'task-1', title: 'Complete health profile and add prescriptions', timeOfDay: 'Morning', category: 'SYMPTOM_SURVEY' as const, completed: false, dueDate: 'Today' },
+      { id: 'task-vitals', title: 'Log blood pressure & morning vitals', timeOfDay: 'Morning', category: 'TELEMETRY' as const, completed: false, dueDate: 'Today' },
+      { id: 'task-specialist', title: 'Complete introductory symptom check with AI Specialist', timeOfDay: 'Afternoon', category: 'SYMPTOM_SURVEY' as const, completed: false, dueDate: 'Today' },
+      { id: 'task-lifestyle', title: 'Hydration goal: 6 to 8 glasses of water', timeOfDay: 'Evening', category: 'LIFESTYLE' as const, completed: false, dueDate: 'Today' }
     ];
   });
 

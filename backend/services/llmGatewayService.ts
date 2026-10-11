@@ -51,6 +51,17 @@ export interface VirtualSpecialistChatRequest {
   credentials?: string;
 }
 
+export interface VirtualSpecialistEvidenceChunk {
+  chunkId: string;
+  title: string;
+  sourceOrganization: string;
+  guidelineVersion: string;
+  clinicalDomain: string;
+  recommendation: string;
+  similarityScore: number;
+  actionableContraindication?: boolean;
+}
+
 export interface VirtualSpecialistChatResponse {
   provider: 'GEMINI' | 'OPENAI' | 'ANTHROPIC' | 'HEAL_CLINICAL_LLM';
   model: string;
@@ -65,6 +76,8 @@ export interface VirtualSpecialistChatResponse {
   personaId?: string;
   personaName?: string;
   recommendedPosture?: 'greeting' | 'listening' | 'explaining' | 'alerting' | 'prescribing' | 'reassuring';
+  ragEvidence?: VirtualSpecialistEvidenceChunk[];
+  ragContextSummary?: string;
   latencyMs: number;
   timestamp: string;
 }
@@ -208,27 +221,70 @@ export class LlmGatewayService {
     }
 
     // 2. Resolve Role-Based Specialist Persona
-    const personaName = req.personaName || (req.personaId === 'doc-thorne' ? 'Dr. Aris Thorne, MD' : req.personaId === 'doc-vance' ? 'Dr. Marcus Vance, MD' : 'Dr. Maya Lin, PharmD');
-    const personaTitle = req.specialty || (req.personaId === 'doc-thorne' ? 'Chief of Cardiorenal Medicine' : req.personaId === 'doc-vance' ? 'Primary Care Physician & Patient Advocate' : 'Geriatric Clinical Pharmacologist');
-    const personaFocus = req.clinicalFocus || (req.personaId === 'doc-thorne' ? 'Acute-on-Chronic Renal Perfusion & Fluid Hemodynamics' : req.personaId === 'doc-vance' ? 'Holistic Symptom Management & Daily Mobility' : 'Drug-Drug Interactions & CYP2C9 Pharmacogenomics');
+    const isChen = req.personaId === 'doc-chen' || (req.personaName && req.personaName.includes('Chen'));
+    const isThorne = req.personaId === 'doc-thorne' || (req.personaName && req.personaName.includes('Thorne'));
+    const isVance = req.personaId === 'doc-vance' || (req.personaName && req.personaName.includes('Vance'));
+    const isLin = req.personaId === 'doc-lin' || (req.personaName && req.personaName.includes('Lin'));
+
+    const resolvedPersonaId = req.personaId || (isChen ? 'doc-chen' : isThorne ? 'doc-thorne' : isVance ? 'doc-vance' : 'doc-lin');
+    const personaName = req.personaName || (isChen ? 'Dr. Sarah Chen, MD' : isThorne ? 'Dr. Aris Thorne, MD' : isVance ? 'Dr. Marcus Vance, MD' : 'Dr. Maya Lin, PharmD');
+    const personaTitle = req.specialty || (isChen ? 'Preventive Nephrology Specialist' : isThorne ? 'Chief of Cardiorenal Medicine' : isVance ? 'Primary Care Physician & Patient Advocate' : 'Geriatric Clinical Pharmacologist');
+    const personaFocus = req.clinicalFocus || (isChen ? '7-Day Renal Recovery Trajectory & Hydration Protocol' : isThorne ? 'Acute-on-Chronic Renal Perfusion & Fluid Hemodynamics' : isVance ? 'Holistic Symptom Management & Daily Mobility' : 'Drug-Drug Interactions & CYP2C9 Pharmacogenomics');
 
     let personaVoiceGuide = '';
-    if (req.personaId === 'doc-thorne' || personaName.includes('Thorne')) {
+    if (isChen) {
+      personaVoiceGuide = `You are Dr. Sarah Chen, MD (${personaTitle}). Clinical Focus: ${personaFocus}. Speak with analytical clarity and encouraging nephrology precision. Emphasize that the acute kidney injury and eGFR decline from NSAID + ACEi is reversible with timely cessation, guide the patient through 1.5-2L daily hydration, electrolyte surveillance, avoiding potassium salt substitutes, and preparing for the 7-day follow-up renal function panel.`;
+    } else if (isThorne) {
       personaVoiceGuide = `You are Dr. Aris Thorne, MD (${personaTitle}). Clinical Focus: ${personaFocus}. Speak with calm clinical authority and cardiorenal expertise. Emphasize renal perfusion, protecting nephron filtration from acute stressors, monitoring NT-proBNP fluid strain, and why NSAIDs constrict afferent renal arterioles.`;
-    } else if (req.personaId === 'doc-lin' || personaName.includes('Lin')) {
+    } else if (isLin) {
       personaVoiceGuide = `You are Dr. Maya Lin, PharmD (${personaTitle}). Clinical Focus: ${personaFocus}. Speak with warm, approachable precision. Emphasize pharmacology mechanisms, explaining the 'double whammy' interaction between Lisinopril and NSAIDs, CYP2C9 intermediate metabolism (slower drug clearance), and recommending safe topical alternatives like Diclofenac 1% gel.`;
-    } else if (req.personaId === 'doc-vance' || personaName.includes('Vance')) {
+    } else if (isVance) {
       personaVoiceGuide = `You are Dr. Marcus Vance, MD (${personaTitle}). Clinical Focus: ${personaFocus}. Speak with high warmth, empathy, and practical lifestyle guidance. Focus on daily functional mobility, safe sleep habits, leg swelling checks, peace of mind, and simple non-pharmacological comfort steps.`;
     } else {
       personaVoiceGuide = `You are ${personaName}, a compassionate, expert Virtual Clinical Specialist at HEAL Engine specializing in ${personaTitle}.`;
     }
 
-    // 3. Query Vector Database for relevant Evidence RAG chunks
-    const ragQuery = `${req.userMessage} ${(req.conditions || []).join(' ')} ${(req.medications || []).join(' ')}`;
-    const retrievedEvidence = vectorDatabase.searchEvidence(ragQuery, { topK: 3, minSimilarity: 0.28 });
+    // 3. Query Vector Database for relevant Evidence RAG chunks with persona-aware domain targeting
+    const personaPreferredDomain = isChen || isThorne ? 'Nephrology' : isLin ? 'Pharmacogenomics' : 'Geriatrics';
+    const ragQuery = `${req.userMessage} ${(req.conditions || []).join(' ')} ${(req.medications || []).join(' ')} ${personaFocus}`;
+    
+    // Targeted RAG search
+    let retrievedEvidence = vectorDatabase.searchEvidence(ragQuery, {
+      topK: 4,
+      minSimilarity: 0.22,
+      domain: personaPreferredDomain
+    });
+
+    // Broaden RAG if domain filter yielded fewer than 2 results
+    if (retrievedEvidence.length < 2) {
+      const broaderEvidence = vectorDatabase.searchEvidence(ragQuery, { topK: 4, minSimilarity: 0.20 });
+      const existingIds = new Set(retrievedEvidence.map(e => e.chunk.chunkId));
+      for (const item of broaderEvidence) {
+        if (!existingIds.has(item.chunk.chunkId)) {
+          retrievedEvidence.push(item);
+          existingIds.add(item.chunk.chunkId);
+        }
+      }
+    }
+
+    const formattedRagEvidence: VirtualSpecialistEvidenceChunk[] = retrievedEvidence.map(e => ({
+      chunkId: e.chunk.chunkId,
+      title: e.chunk.title,
+      sourceOrganization: e.chunk.sourceOrganization,
+      guidelineVersion: e.chunk.guidelineVersion,
+      clinicalDomain: e.chunk.clinicalDomain,
+      recommendation: e.chunk.recommendation,
+      similarityScore: Math.round(e.similarityScore * 100) / 100,
+      actionableContraindication: e.chunk.actionableContraindication
+    }));
+
     const ragContext = vectorDatabase.buildRagPromptContext(retrievedEvidence);
-    const ragObservationChips = retrievedEvidence.map(e =>
-      `[RAG Evidence]: ${e.chunk.sourceOrganization} (${(e.similarityScore * 100).toFixed(0)}% match) - ${e.chunk.title.substring(0, 48)}`
+    const ragContextSummary = formattedRagEvidence.length > 0
+      ? `Grounded with ${formattedRagEvidence.length} clinical guidelines: ${formattedRagEvidence.map(e => `${e.sourceOrganization} (${(e.similarityScore * 100).toFixed(0)}%)`).join(', ')}`
+      : 'Grounded via verified HEAL clinical safety ontology.';
+
+    const ragObservationChips = formattedRagEvidence.map(e =>
+      `[RAG Evidence]: ${e.sourceOrganization} (${(e.similarityScore * 100).toFixed(0)}% match) - ${e.title.substring(0, 48)}`
     );
 
     // 4. Prepare structured system context with patient profile & retrieved RAG evidence
@@ -248,7 +304,8 @@ CRITICAL CLINICAL RULES:
 1. Speak in friendly, reassuring plain English (no excessive medical jargon).
 2. If patient has kidney disease (CKD) or takes Lisinopril/ACE inhibitors and asks about pain or Ibuprofen/Advil, explain that oral anti-inflammatories constrict kidney blood flow and should be paused. Recommend discussing topical alternatives like Diclofenac gel with their doctor.
 3. If patient mentions swelling, weight gain, or extra pillows at night, recognize fluid retention and explain it gently.
-4. Output valid JSON in the format:
+4. Ground your responses on the cited clinical guideline evidence provided above.
+5. Output valid JSON in the format:
 {
   "doctorResponse": "Warm, conversational response to the patient in your persona voice",
   "clinicalObservations": ["Observation 1", "Observation 2"],
@@ -274,7 +331,7 @@ CRITICAL CLINICAL RULES:
           return {
             provider: 'GEMINI',
             model: 'gemini-1.5-flash',
-            personaId: req.personaId,
+            personaId: resolvedPersonaId,
             personaName,
             doctorResponse: audited.sanitizedText,
             clinicalObservations: [...(geminiRes.clinicalObservations || ['AI clinical dialogue recorded']), ...ragObservationChips],
@@ -284,6 +341,8 @@ CRITICAL CLINICAL RULES:
             requiresEmergency: false,
             safetyGateTriggered: geminiRes.safetyGateTriggered || audited.violated,
             safetyDetails: audited.violated ? audited.reason : undefined,
+            ragEvidence: formattedRagEvidence,
+            ragContextSummary,
             latencyMs: Date.now() - startTime,
             timestamp: new Date().toISOString()
           };
@@ -309,7 +368,7 @@ CRITICAL CLINICAL RULES:
           return {
             provider: 'OPENAI',
             model: this.model || 'gpt-4o-mini',
-            personaId: req.personaId,
+            personaId: resolvedPersonaId,
             personaName,
             doctorResponse: audited.sanitizedText,
             clinicalObservations: [...(openaiRes.clinicalObservations || ['AI clinical dialogue recorded']), ...ragObservationChips],
@@ -319,6 +378,8 @@ CRITICAL CLINICAL RULES:
             requiresEmergency: false,
             safetyGateTriggered: openaiRes.safetyGateTriggered || audited.violated,
             safetyDetails: audited.violated ? audited.reason : undefined,
+            ragEvidence: formattedRagEvidence,
+            ragContextSummary,
             latencyMs: Date.now() - startTime,
             timestamp: new Date().toISOString()
           };
@@ -344,7 +405,7 @@ CRITICAL CLINICAL RULES:
           return {
             provider: 'ANTHROPIC',
             model: this.model.includes('claude') ? this.model : 'claude-3-5-sonnet-20241022',
-            personaId: req.personaId,
+            personaId: resolvedPersonaId,
             personaName,
             doctorResponse: audited.sanitizedText,
             clinicalObservations: [...(anthropicRes.clinicalObservations || ['AI clinical dialogue recorded']), ...ragObservationChips],
@@ -354,6 +415,8 @@ CRITICAL CLINICAL RULES:
             requiresEmergency: false,
             safetyGateTriggered: anthropicRes.safetyGateTriggered || audited.violated,
             safetyDetails: audited.violated ? audited.reason : undefined,
+            ragEvidence: formattedRagEvidence,
+            ragContextSummary,
             latencyMs: Date.now() - startTime,
             timestamp: new Date().toISOString()
           };
@@ -364,11 +427,18 @@ CRITICAL CLINICAL RULES:
     }
 
     // 7. Intelligent Built-in Clinical LLM Engine (Domain Expert Synthesizer)
-    const localSynth = this.synthesizeClinicalSpecialistResponse(req, startTime);
+    const localSynth = this.synthesizeClinicalSpecialistResponse({
+      ...req,
+      personaId: resolvedPersonaId,
+      personaName
+    }, startTime);
+
     return {
       ...localSynth,
-      personaId: req.personaId,
+      personaId: resolvedPersonaId,
       personaName,
+      ragEvidence: formattedRagEvidence,
+      ragContextSummary,
       clinicalObservations: [...localSynth.clinicalObservations, ...ragObservationChips]
     };
   }
@@ -434,7 +504,8 @@ CRITICAL CLINICAL RULES:
     const data = await res.json() as any;
     const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
     if (!text) return null;
-    return JSON.parse(text);
+    const cleaned = text.replace(/```json/gi, '').replace(/```/g, '').trim();
+    return JSON.parse(cleaned);
   }
 
   /**
@@ -498,11 +569,18 @@ CRITICAL CLINICAL RULES:
     let recommendedPosture: 'greeting' | 'listening' | 'explaining' | 'alerting' | 'prescribing' | 'reassuring' = 'listening';
 
     // Persona-specific prefixes
-    const personaPrefix = req.personaId === 'doc-thorne'
+    const isChenSynth = req.personaId === 'doc-chen' || (req.personaName && req.personaName.includes('Chen'));
+    const isThorneSynth = req.personaId === 'doc-thorne' || (req.personaName && req.personaName.includes('Thorne'));
+    const isVanceSynth = req.personaId === 'doc-vance' || (req.personaName && req.personaName.includes('Vance'));
+    const isLinSynth = req.personaId === 'doc-lin' || (req.personaName && req.personaName.includes('Lin'));
+
+    const personaPrefix = isChenSynth
+      ? 'From a Preventive Nephrology viewpoint: '
+      : isThorneSynth
       ? 'From a Cardiorenal perspective: '
-      : req.personaId === 'doc-vance'
+      : isVanceSynth
       ? 'As your primary care doctor: '
-      : req.personaId === 'doc-lin'
+      : isLinSynth
       ? 'From a clinical pharmacology standpoint: '
       : '';
 
@@ -518,9 +596,11 @@ CRITICAL CLINICAL RULES:
         riskLevel = 'MODERATE';
         recommendedPosture = 'alerting';
 
-        if (req.personaId === 'doc-thorne') {
+        if (isChenSynth) {
+          doctorResponse = `I hear you, ${patientFirstName}. Knee pain makes daily activity difficult, but as your Nephrology specialist, our priority is preserving and restoring your kidney filtration rate. Because you take ${req.medications?.[0] || 'Lisinopril'}, oral NSAIDs like Advil or Ibuprofen choke renal microcirculation. The encouraging news is that kidney function is resilient—pausing oral NSAIDs and using topical Diclofenac 1% gel allows your filtration to bounce back within 5 to 7 days. Shall we confirm this recovery plan?`;
+        } else if (isThorneSynth) {
           doctorResponse = `I hear you, ${patientFirstName}. Knee pain can be debilitating. However, as your Cardiorenal specialist, I must warn you that because you take ${req.medications?.[0] || 'Lisinopril'}, systemic oral NSAIDs like Advil or Ibuprofen constrict the afferent arterioles into your kidney filters. This can cause an acute drop in kidney filtration rate. A topical agent like Diclofenac 1% gel relieves joint inflammation locally without hemodynamic renal penalty. Would you like us to prescribe the topical alternative?`;
-        } else if (req.personaId === 'doc-vance') {
+        } else if (isVanceSynth) {
           doctorResponse = `I completely understand how frustrating knee stiffness and pain can be, ${patientFirstName}. My priority is keeping you moving comfortably, but taking oral Advil right now creates a safety hazard with your blood pressure regimen and kidneys. Let's switch to a gentle topical gel, rest the joint with a warm compress, and keep your kidneys fully protected. Have you tried topical therapy or warm compresses?`;
         } else {
           // doc-lin (pharmacology default)

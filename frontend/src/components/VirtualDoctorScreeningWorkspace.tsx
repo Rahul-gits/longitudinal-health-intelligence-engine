@@ -133,7 +133,9 @@ export const VirtualDoctorScreeningWorkspace: React.FC = () => {
       {
         pitch: activePersona.voicePitch,
         rate: speechRate,
-        voiceName: activePersona.preferredVoiceName
+        voiceName: activePersona.preferredVoiceName,
+        personaId: activePersona.id,
+        gender: (activePersona.id === 'doc-lin' || activePersona.id === 'doc-chen') ? 'female' : 'male'
       },
       {
         onStart: () => setIsPlaying(true),

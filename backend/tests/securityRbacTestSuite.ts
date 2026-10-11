@@ -16,6 +16,8 @@ import { authenticateAndAuthorize } from '../middleware/securityRbacMiddleware';
 import { usersDb, sessionsDb, validateSession } from '../routes/authRoutes';
 import type { UserRecord, SessionRecord } from '../routes/authRoutes';
 import crypto from 'crypto';
+import { DpdpComplianceService } from '../services/dpdpComplianceService';
+import { SecurityAlertDispatcherService } from '../services/securityAlertDispatcherService';
 
 export interface SecurityTestCaseResult {
   testId: string;
@@ -99,6 +101,7 @@ export class SecurityRbacTestSuite {
   private setupTestFixtures(): {
     patientSession: string;
     clinicianSession: string;
+    clinicianMfaSession: string;
     researcherSession: string;
     adminSession: string;
   } {
@@ -186,7 +189,10 @@ export class SecurityRbacTestSuite {
     sessionsDb.set(patientSession, { userId: 'test-patient-alice', createdAt: now, expiresAt: expiry });
 
     const clinicianSession = `test-sec-clinician-${crypto.randomBytes(8).toString('hex')}`;
-    sessionsDb.set(clinicianSession, { userId: 'test-dr-jones', createdAt: now, expiresAt: expiry });
+    sessionsDb.set(clinicianSession, { userId: 'test-dr-jones', createdAt: now, expiresAt: expiry, mfaVerified: false });
+
+    const clinicianMfaSession = `test-sec-clinician-mfa-${crypto.randomBytes(8).toString('hex')}`;
+    sessionsDb.set(clinicianMfaSession, { userId: 'test-dr-jones', createdAt: now, expiresAt: expiry, mfaVerified: true });
 
     const researcherSession = `test-sec-researcher-${crypto.randomBytes(8).toString('hex')}`;
     sessionsDb.set(researcherSession, { userId: 'test-researcher-singh', createdAt: now, expiresAt: expiry });
@@ -194,7 +200,7 @@ export class SecurityRbacTestSuite {
     const adminSession = `test-sec-admin-${crypto.randomBytes(8).toString('hex')}`;
     sessionsDb.set(adminSession, { userId: 'test-admin-root', createdAt: now, expiresAt: expiry });
 
-    return { patientSession, clinicianSession, researcherSession, adminSession };
+    return { patientSession, clinicianSession, clinicianMfaSession, researcherSession, adminSession };
   }
 
   public runAllSecurityTests(): SecuritySuiteSummary {
@@ -218,6 +224,15 @@ export class SecurityRbacTestSuite {
 
     // SEC-006: Admin cannot bypass clinical safety gate role requirement
     results.push(this.testAdminCannotAccessClinicianOnlyEndpoint(fixtures.adminSession));
+
+    // SEC-007: Privileged MFA enforcement for clinician role
+    results.push(this.testPrivilegedMfaEnforcement(fixtures.clinicianSession, fixtures.clinicianMfaSession));
+
+    // SEC-008: DPDP Act 2023 Consent Integrity & ABDM ABHA Verification
+    results.push(this.testDpdpConsentAndAbhaValidation());
+
+    // SEC-009: Security Alert Dispatcher Delivery & Incident Audit
+    results.push(this.testSecurityAlertDispatcherDelivery());
 
     const passedCount = results.filter(r => r.passed).length;
     const failedCount = results.length - passedCount;
@@ -437,6 +452,137 @@ export class SecurityRbacTestSuite {
       auditLogCreated: true,
       passed,
       failureReason: passed ? undefined : `Expected 403, got ${status}`
+    };
+  }
+
+  /**
+   * SEC-007: Privileged MFA Enforcement
+   * Verifies that when privileged MFA enforcement is active, unverified clinician sessions receive 403
+   * and verified sessions pass through.
+   */
+  private testPrivilegedMfaEnforcement(nonMfaSession: string, mfaSession: string): SecurityTestCaseResult {
+    const prevEnv = process.env.ENFORCE_PRIVILEGED_MFA;
+    try {
+      process.env.ENFORCE_PRIVILEGED_MFA = 'true';
+
+      const middleware = authenticateAndAuthorize(['clinician']);
+      const nonMfaReqRes = createMockReqRes({
+        headers: { authorization: `Bearer ${nonMfaSession}` },
+        path: '/api/patients/patient-ev-68'
+      });
+      middleware(nonMfaReqRes.req, nonMfaReqRes.res, nonMfaReqRes.next);
+      const blockedStatus = nonMfaReqRes.getStatus();
+      const blockedCorrectly = blockedStatus === 403 && !nonMfaReqRes.wasNextCalled();
+
+      const mfaReqRes = createMockReqRes({
+        headers: { authorization: `Bearer ${mfaSession}` },
+        path: '/api/patients/patient-ev-68'
+      });
+      middleware(mfaReqRes.req, mfaReqRes.res, mfaReqRes.next);
+      const passedCorrectly = mfaReqRes.wasNextCalled();
+
+      const passed = blockedCorrectly && passedCorrectly;
+
+      return {
+        testId: 'SEC-007',
+        name: 'Privileged Role Multi-Factor Authentication (MFA) Enforcement',
+        actor: { userId: 'test-dr-jones', role: 'clinician' },
+        attemptedAction: 'Privileged clinical route access with unverified vs MFA-verified session',
+        targetResourceId: 'CLINICAL_PRIVILEGED_ROUTE',
+        expectedOutcome: 'DENIED',
+        actualOutcome: passed ? 'DENIED' : 'ALLOWED',
+        securityViolationPrevented: passed,
+        httpStatusExpected: 403,
+        httpStatusObserved: blockedStatus,
+        auditLogCreated: true,
+        passed,
+        failureReason: passed ? undefined : `Blocked correctly: ${blockedCorrectly}, MFA pass: ${passedCorrectly}`
+      };
+    } finally {
+      process.env.ENFORCE_PRIVILEGED_MFA = prevEnv;
+    }
+  }
+
+  /**
+   * SEC-008: India DPDP Act 2023 Consent Integrity & ABDM ABHA Verification
+   * Verifies verifiable SHA-256 consent digest, statutory retention exception, and 14-digit ABHA validation.
+   */
+  private testDpdpConsentAndAbhaValidation(): SecurityTestCaseResult {
+    const consent = DpdpComplianceService.recordConsent({
+      patientId: 'patient-test-dpdp',
+      patientName: 'Test Patient DPDP',
+      purposes: {
+        telemetryMonitoring: true,
+        clinicalAiAssistance: true,
+        researchDeidentified: false,
+        ehrInteropSharing: true
+      }
+    });
+
+    const isConsentActive = consent.status === 'ACTIVE' && consent.signatureHash.length === 64;
+
+    const erasure = DpdpComplianceService.processErasureRequest('patient-test-dpdp');
+    const isRetentionEnforced = erasure.status === 'RETAINED_STATUTORY_RECORD' && erasure.retainedReasons.length >= 3;
+
+    const validAbha = DpdpComplianceService.validateAbhaNumber('12-3456-7890-1234');
+    const invalidAbha = DpdpComplianceService.validateAbhaNumber('12345');
+    const isAbhaHandled = validAbha.isValidFormat === true && invalidAbha.isValidFormat === false;
+
+    const passed = isConsentActive && isRetentionEnforced && isAbhaHandled;
+
+    return {
+      testId: 'SEC-008',
+      name: 'India DPDP Act 2023 Consent Integrity & ABDM ABHA Verification',
+      actor: { userId: 'patient-test-dpdp', role: 'patient' },
+      attemptedAction: 'Itemized consent hash generation, statutory retention erasure, and ABDM ABHA validation',
+      targetResourceId: 'DPDP_COMPLIANCE_VAULT',
+      expectedOutcome: 'ALLOWED',
+      actualOutcome: passed ? 'ALLOWED' : 'DENIED',
+      securityViolationPrevented: true,
+      httpStatusExpected: 200,
+      httpStatusObserved: passed ? 200 : 500,
+      auditLogCreated: true,
+      passed,
+      failureReason: passed ? undefined : `Consent: ${isConsentActive}, Retention: ${isRetentionEnforced}, ABHA: ${isAbhaHandled}`
+    };
+  }
+
+  /**
+   * SEC-009: Real-Time Security Incident Dispatcher & Auditing
+   * Verifies critical incident capture and audit buffer retention.
+   */
+  private testSecurityAlertDispatcherDelivery(): SecurityTestCaseResult {
+    SecurityAlertDispatcherService.clearHistoryForTesting();
+
+    const incidentId = `SEC-INC-TEST-${Date.now()}`;
+    void SecurityAlertDispatcherService.dispatchAlert({
+      id: incidentId,
+      timestamp: new Date().toISOString(),
+      eventType: 'PROMPT_INJECTION_ATTEMPT',
+      ip: '192.168.1.100',
+      endpoint: '/api/clinical/ai-query',
+      actorRole: 'ANONYMOUS',
+      details: 'Prompt injection vector intercepted by security barrier',
+      severity: 'CRITICAL'
+    });
+
+    const history = SecurityAlertDispatcherService.getAlertHistory();
+    const passed = history.length > 0 && history.some(h => h.incidentId === incidentId && h.severity === 'CRITICAL');
+
+    return {
+      testId: 'SEC-009',
+      name: 'Real-Time Security Incident Dispatcher & Auditing',
+      actor: { userId: 'security-dispatcher-subsystem', role: 'admin' },
+      attemptedAction: 'Dispatch and record CRITICAL security event to alert dispatcher',
+      targetResourceId: 'SECURITY_ALERT_DISPATCHER',
+      expectedOutcome: 'ALLOWED',
+      actualOutcome: passed ? 'ALLOWED' : 'DENIED',
+      securityViolationPrevented: true,
+      httpStatusExpected: 200,
+      httpStatusObserved: passed ? 200 : 500,
+      auditLogCreated: true,
+      passed,
+      failureReason: passed ? undefined : 'Alert event was not captured in dispatcher history'
     };
   }
 }

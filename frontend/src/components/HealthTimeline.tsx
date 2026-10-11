@@ -44,9 +44,9 @@ export const HealthTimeline: React.FC = () => {
         </div>
 
         {/* Filters */}
-        <div className="flex items-center space-x-2">
+        <div className="flex flex-wrap items-center gap-2">
           {/* Year Filter */}
-          <div className="flex items-center bg-[#FFFFFF] p-1 border-2 border-black shadow-[2px_2px_0px_0px_#000] text-xs font-black font-mono">
+          <div className="flex flex-wrap items-center bg-[#FFFFFF] p-1 border-2 border-black shadow-[2px_2px_0px_0px_#000] text-xs font-black font-mono">
             <button
               onClick={() => setSelectedYear('all')}
               className={`px-3 py-1 border transition-all cursor-pointer ${

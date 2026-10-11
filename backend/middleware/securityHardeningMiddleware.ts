@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { validateSession } from '../routes/authRoutes';
+import { SecurityAlertDispatcherService } from '../services/securityAlertDispatcherService';
 
 // Rate Limiting Bucket Store
 interface RateLimitBucket {
@@ -84,6 +85,7 @@ export const rateLimitMiddleware = (req: Request, res: Response, next: NextFunct
       severity: 'HIGH'
     };
     securityAuditLogs.push(event);
+    void SecurityAlertDispatcherService.dispatchAlert(event);
 
     return res.status(429).json({
       success: false,
@@ -160,6 +162,7 @@ export const promptInjectionDefenseMiddleware = (req: Request, res: Response, ne
         severity: 'CRITICAL'
       };
       securityAuditLogs.push(event);
+      void SecurityAlertDispatcherService.dispatchAlert(event);
 
       return res.status(400).json({
         success: false,
@@ -238,6 +241,7 @@ export const enforceStrictPatientIsolation = (req: Request, res: Response, next:
         severity: 'CRITICAL'
       };
       securityAuditLogs.push(event);
+      void SecurityAlertDispatcherService.dispatchAlert(event);
 
       return res.status(403).json({
         success: false,
@@ -262,6 +266,7 @@ export const enforceStrictPatientIsolation = (req: Request, res: Response, next:
         severity: 'CRITICAL'
       };
       securityAuditLogs.push(event);
+      void SecurityAlertDispatcherService.dispatchAlert(event);
 
       return res.status(403).json({
         success: false,

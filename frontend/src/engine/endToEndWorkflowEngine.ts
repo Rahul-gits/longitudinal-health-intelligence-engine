@@ -164,7 +164,9 @@ export class EndToEndWorkflowEngine {
     careTeamSharing: true,
     aiScreeningAuthorized: true,
     auditHash: '0x8f3c7a19e24b91702f3a9e01bc49d8e74a123ffb',
-    authenticatedUser: 'eleanor.vance@securehealth.org'
+    authenticatedUser: typeof localStorage !== 'undefined' && localStorage.getItem('heal_engine_auth_user') 
+      ? (JSON.parse(localStorage.getItem('heal_engine_auth_user') || '{}').email || 'patient@securehealth.org')
+      : 'patient@securehealth.org'
   };
 
   // Phase 2: Ingested documents store
@@ -278,7 +280,7 @@ export class EndToEndWorkflowEngine {
       year: 2024,
       recommendation: 'In patients with CKD Stage 2-3 experiencing acute eGFR reductions >15%, immediately discontinue NSAIDs and re-evaluate ACEi/ARB dosage within 14 days.',
       evidenceClass: 'Class I (Level A)',
-      patientApplication: 'Directly applies to Eleanor Vance (eGFR dropped 64 → 52 mL/min after 3 weeks of Ibuprofen usage).',
+      patientApplication: 'Directly applies to patient renal profile (eGFR monitored closely during NSAID therapy).',
       topics: ['CKD', 'eGFR', 'NSAID', 'AKI', 'KDIGO', 'Renal', 'Kidney']
     },
     {
@@ -298,7 +300,7 @@ export class EndToEndWorkflowEngine {
       year: 2023,
       recommendation: 'Avoid chronic oral NSAID use in individuals aged ≥65 due to marked risk of acute kidney injury and gastrointestinal bleeding.',
       evidenceClass: 'Class I (Level B)',
-      patientApplication: 'Flags Eleanor (Age 68) for immediate pharmacist consultation.',
+      patientApplication: 'Flags patient profile for immediate pharmacist consultation regarding medication contraindications.',
       topics: ['Beers', 'Geriatric', 'NSAID', 'Bleeding', 'Elderly', 'Pharmacy']
     },
     {
@@ -366,7 +368,7 @@ export class EndToEndWorkflowEngine {
       defaultPitch: 0.95,
       defaultRate: 1.0,
       clinicalFocus: 'eGFR gradients, fluid overload, renin-angiotensin optimization',
-      standardGreeting: 'Hello Eleanor, looking at your latest kidney function labs from this week, I noticed a change from your previous results. How have you been feeling over the last two weeks?'
+      standardGreeting: 'Hello, looking at your latest kidney function labs from this week, I noticed a change from your previous results. How have you been feeling over the last two weeks?'
     },
     {
       id: 'doc-lin',
@@ -379,7 +381,7 @@ export class EndToEndWorkflowEngine {
       defaultPitch: 1.05,
       defaultRate: 1.05,
       clinicalFocus: 'Drug-drug interactions, OTC NSAID clearance, topical analgesia substitutions',
-      standardGreeting: 'Hello Eleanor. I want to review your daily prescriptions and any over-the-counter pain pills you might have taken for knee stiffness recently.'
+      standardGreeting: 'Hello. I want to review your daily prescriptions and any over-the-counter pain pills you might have taken for knee stiffness recently.'
     },
     {
       id: 'doc-chen',
@@ -392,7 +394,7 @@ export class EndToEndWorkflowEngine {
       defaultPitch: 1.0,
       defaultRate: 0.98,
       clinicalFocus: 'Microalbuminuria reduction, blood pressure cuff trends, lifestyle preservation',
-      standardGreeting: 'Welcome back Eleanor. Let\'s explore your blood pressure trends and how small daily adjustments keep your kidneys resilient for years to come.'
+      standardGreeting: 'Welcome back. Let\'s explore your blood pressure trends and how small daily adjustments keep your kidneys resilient for years to come.'
     },
     {
       id: 'doc-vance',
@@ -405,7 +407,7 @@ export class EndToEndWorkflowEngine {
       defaultPitch: 0.92,
       defaultRate: 1.0,
       clinicalFocus: 'Overall stamina, metabolic harmony, annual health screenings',
-      standardGreeting: 'Good morning Eleanor. I am here to look at the whole picture of your health, your daily energy, and make sure all your specialists are aligned.'
+      standardGreeting: 'Good morning. I am here to look at the whole picture of your health, your daily energy, and make sure all your specialists are aligned.'
     }
   ];
 
@@ -752,7 +754,7 @@ export class EndToEndWorkflowEngine {
     let assertion: AssertionType = isFamilyOrHypothetical ? 'FamilyHistory' : 'Affirmed';
     let assertionConfidence = 0.98;
     let negationTrigger: string | undefined;
-    let nextSafeQuestion = 'Understood, Eleanor. Let\'s look at your joint pain: how often have you taken Ibuprofen for your knee recently?';
+    let nextSafeQuestion = 'Understood. Let\'s look at your joint pain: how often have you taken pain medications or Ibuprofen recently?';
     let nlpRationale = 'Entity affirmed by patient context without detected negation scope.';
 
     // 1. Emergency & Cardiorespiratory Distress
@@ -786,7 +788,7 @@ export class EndToEndWorkflowEngine {
         safetyAction = 'Escalate to Clinician';
         intent = 'Emergency Symptom Escalation';
         nlpRationale = 'Affirmed acute cardiorenal / respiratory distress entity. Immediate clinician interrupt triggered.';
-        nextSafeQuestion = 'Eleanor, I am alerting Dr. Thorne immediately regarding your chest discomfort. Please rest comfortably while the emergency protocol connects.';
+        nextSafeQuestion = 'I am alerting the clinical team immediately regarding your chest discomfort. Please rest comfortably while the emergency protocol connects.';
       }
     }
     // 2. Peripheral Edema & Fluid Markers (including metaphors)
@@ -883,7 +885,7 @@ export class EndToEndWorkflowEngine {
               assertion = 'Affirmed';
               intent = 'Report New Fatigue';
               nlpRationale = `Affirmed fatigue / lethargy marker ("${matchedFatigue}").`;
-              nextSafeQuestion = 'I hear you, Eleanor. Aside from the fatigue, have you noticed any ankle puffiness or changes when walking upstairs?';
+              nextSafeQuestion = 'I hear you. Aside from the fatigue, have you noticed any ankle puffiness or changes when walking upstairs?';
             }
           }
           // 5. Short or Vague
@@ -1210,7 +1212,7 @@ export class EndToEndWorkflowEngine {
           decisionMatrix: {
             action: 'Continue Screening',
             confidence: 96.5,
-            nextSafeQuestion: 'Understood, Eleanor. Let\'s look at your joint pain: how often have you taken Ibuprofen for your knee recently?'
+            nextSafeQuestion: 'Understood. Let\'s look at your joint pain: how often have you taken pain medications or Ibuprofen recently?'
           }
         }
       },

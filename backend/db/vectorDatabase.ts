@@ -204,7 +204,7 @@ export class VectorDatabase {
   /**
    * Ingest a single clinical guideline document or chunk
    */
-  public ingest(payload: IngestDocumentPayload): VectorEvidenceChunk {
+  public ingest(payload: IngestDocumentPayload, skipPersist: boolean = false): VectorEvidenceChunk {
     const docId = payload.documentId || `DOC-${crypto.randomBytes(4).toString('hex').toUpperCase()}`;
     let chunkId: string | undefined;
     for (const [id, c] of this.chunks.entries()) {
@@ -242,7 +242,9 @@ export class VectorDatabase {
     };
 
     this.chunks.set(chunkId, chunk);
-    this.persist();
+    if (!skipPersist) {
+      this.persist();
+    }
     return chunk;
   }
 
@@ -252,9 +254,10 @@ export class VectorDatabase {
   public ingestBatch(payloads: IngestDocumentPayload[]): VectorEvidenceChunk[] {
     const ingested: VectorEvidenceChunk[] = [];
     for (const p of payloads) {
-      const chunk = this.ingest(p);
+      const chunk = this.ingest(p, true);
       ingested.push(chunk);
     }
+    this.persist();
     return ingested;
   }
 

@@ -72,7 +72,7 @@ export const UnderstandWorkspace: React.FC = () => {
           </div>
 
           <div className="space-y-2 font-sans">
-            {currentPatient.conditions.map((cond, i) => (
+            {currentPatient.conditions.map((cond: string, i: number) => (
               <div key={i} className="p-2.5 bg-[#FAF8F5] border-2 border-black">
                 <span className="font-extrabold text-xs text-black block">{cond}</span>
                 <span className="font-mono text-[10px] text-black/60">Source: User Profile Setup • Verified</span>
@@ -93,7 +93,7 @@ export const UnderstandWorkspace: React.FC = () => {
           </div>
 
           <div className="space-y-2 font-sans">
-            {currentPatient.medications.map((med, i) => (
+            {currentPatient.medications.map((med: string, i: number) => (
               <div key={i} className="p-2.5 bg-[#FAF8F5] border-2 border-black space-y-0.5">
                 <div className="flex items-center justify-between">
                   <span className="font-extrabold text-xs text-black">{med}</span>

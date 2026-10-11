@@ -18,7 +18,7 @@ export class PatientStateEngine {
     const user = userOverride !== undefined ? userOverride : getStoredUser();
     const dynamicProfile = getDynamicPatientProfile(user);
 
-    const conditionsList = dynamicProfile.conditions.map((c, idx) => ({
+    const conditionsList = dynamicProfile.conditions.map((c: string, idx: number) => ({
       value: c,
       date: '2025-03-15',
       source: 'User Health Onboarding & EHR Feeds',
@@ -26,7 +26,7 @@ export class PatientStateEngine {
       validityPeriod: 'Ongoing'
     }));
 
-    const medicationsList = dynamicProfile.medications.map((m, idx) => ({
+    const medicationsList = dynamicProfile.medications.map((m: string, idx: number) => ({
       id: `med-${idx + 1}`,
       name: m,
       dosage: m.includes('mg') ? '' : 'Standard Dose',
@@ -38,7 +38,7 @@ export class PatientStateEngine {
       knownAllergies: []
     }));
 
-    const allergiesList = dynamicProfile.allergies.map(a => ({
+    const allergiesList = dynamicProfile.allergies.map((a: string) => ({
       value: a,
       date: '2024-05-04',
       source: 'Patient Health Setup Record',

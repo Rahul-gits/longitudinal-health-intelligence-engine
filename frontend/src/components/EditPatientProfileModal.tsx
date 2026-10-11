@@ -165,30 +165,28 @@ export const EditPatientProfileModal: React.FC<EditPatientProfileModalProps> = (
     setAllergies(prev => prev.filter((_, i) => i !== index));
   };
 
-  // Reset to default Eleanor Vance cohort clinical data
+  // Reset to clean health baseline template
   const handleResetDefaults = () => {
-    setFullName('Eleanor Vance');
-    setDob('1958-03-14');
+    setFullName(user?.fullName || 'Active Patient');
+    setDob('1985-06-20');
     setSex('Female');
     setBloodType('A+');
-    setPrimaryPhysician('Dr. Aris Thorne, MD (Cardiology)');
-    setBaselineStatus('Needs Clinician Review');
+    setPrimaryPhysician('Dr. Aris Thorne, MD (Attending Physician)');
+    setBaselineStatus('Active Monitoring');
     setConditions([
-      'Heart Failure with Preserved Ejection Fraction (HFpEF)',
-      'Chronic Kidney Disease (Stage 3b)',
-      'Type 2 Diabetes Mellitus'
+      'Essential Hypertension (Managed)',
+      'Cardiometabolic Monitoring'
     ]);
     setMedications([
-      'Empagliflozin 10mg',
-      'Furosemide 40mg',
-      'Spironolactone 25mg'
+      'Lisinopril 10mg'
     ]);
-    setAllergies(['Sulfa drugs', 'NSAIDs (Avoid)']);
+    setAllergies(['No Known Drug Allergies (NKDA)']);
     setPreferredLanguage('English');
-    setCommunicationPref('SMS & Mobile App');
-    setEmergencyContactName('Thomas Vance (Son)');
+    setCommunicationPref('Mobile App & SMS');
+    setEmergencyContactName('Designated Family Contact');
     setEmergencyContactPhone('(555) 234-8901');
   };
+
 
   // Save handler
   const handleSave = async () => {
@@ -337,9 +335,10 @@ export const EditPatientProfileModal: React.FC<EditPatientProfileModalProps> = (
                     type="text"
                     value={fullName}
                     onChange={e => setFullName(e.target.value)}
-                    placeholder="e.g. Eleanor Vance"
+                    placeholder="e.g. Jane Doe"
                     className="w-full px-3 py-2 bg-white border-2 border-black text-sm font-bold text-black font-display shadow-[2px_2px_0px_0px_#000] focus:bg-[#FFE600]/10 focus:outline-none"
                   />
+
                 </div>
 
                 {/* Date of Birth & Calculated Age */}
@@ -811,12 +810,13 @@ export const EditPatientProfileModal: React.FC<EditPatientProfileModalProps> = (
             type="button"
             onClick={handleResetDefaults}
             className="text-[11px] font-bold text-black/70 hover:text-black flex items-center space-x-1 cursor-pointer underline hover:no-underline"
-            title="Reset to default Eleanor Vance clinical benchmark data"
+            title="Reset to clean clinical health baseline template"
           >
             <RotateCcw className="w-3 h-3" />
-            <span>Reset to Eleanor Vance Defaults</span>
+            <span>Reset to Standard Baseline</span>
           </button>
         </div>
+
 
         {/* Footer Actions */}
         <div className="bg-white border-t-3 border-black p-4 flex flex-wrap items-center justify-between gap-3 shrink-0">

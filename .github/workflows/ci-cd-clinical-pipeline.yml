@@ -32,15 +32,17 @@ jobs:
           npm run lint:server
 
   # ============================================================================
-  # Stage 2: Automated Security & RBAC Boundary Evaluation
+  # Stage 2: Automated Security & Vulnerability Evaluation (V01-V20)
   # ============================================================================
   security_rbac_evaluation:
-    name: 2. Security Invariant & RBAC Test Suite
+    name: 2. Security Invariants, Secret Detection & 20-Vuln Suite
     needs: static_analysis
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Node.js 20
         uses: actions/setup-node@v4
@@ -51,8 +53,20 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      - name: Run Automated Security Test Suite (SEC-001 - SEC-004)
+      - name: Secret Detection & Sensitive Pattern Scan
+        run: |
+          echo "Scanning for accidental committed API keys and private certificates..."
+          ! grep -rE "(AIzaSy[0-9A-Za-z_-]{33}|sk-[a-zA-Z0-9]{48}|ghp_[a-zA-Z0-9]{36}|-----BEGIN (RSA|EC|OPENSSH|DSA)? PRIVATE KEY-----)" backend frontend || exit 1
+
+      - name: Software Supply Chain Dependency Audit
+        run: npm audit --audit-level=critical || true
+
+      - name: Run 20-Vulnerability Automated Security Suite (V01 - V20)
+        run: npm run test:vulnerabilities
+
+      - name: Run Automated RBAC & Tenant Isolation Test Suite (SEC-001 - SEC-009)
         run: npm run test:security
+
 
   # ============================================================================
   # Stage 3: Automated Clinical Scenario Validation (12 Core Tests)

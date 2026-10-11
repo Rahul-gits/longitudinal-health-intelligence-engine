@@ -498,9 +498,10 @@ export const EndToEndWorkflowWorkspace: React.FC<EndToEndWorkflowWorkspaceProps>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-2.5 pt-1 text-[11px]">
             <div className="bg-white p-2.5 border border-black">
               <span className="text-[9px] text-black/60 font-black block uppercase">AUTHENTICATED IDENTITY</span>
-              <span className="font-black text-black text-xs block mt-0.5">Eleanor Vance</span>
-              <span className="text-[10px] text-black/70">MRN: #HL-882910 • Age: 68</span>
+              <span className="font-black text-black text-xs block mt-0.5">{currentPatient.name}</span>
+              <span className="text-[10px] text-black/70">ID: #{currentPatient.id} • Age: {currentPatient.age}</span>
             </div>
+
             <div className="bg-white p-2.5 border border-black">
               <span className="text-[9px] text-black/60 font-black block uppercase">INTEGRITY SHA-256 CHECKSUM</span>
               <span className="font-mono text-[10px] text-black font-bold truncate block mt-0.5" title="0x8f3c7a19e24b91702f3a9e01bc49d8e74a123ffb916d8e21a415ec800a7b93de">
@@ -647,7 +648,7 @@ export const EndToEndWorkflowWorkspace: React.FC<EndToEndWorkflowWorkspaceProps>
                 <div className="p-4 bg-[#FFFBEA] border-2 border-black shadow-[3px_3px_0px_0px_#000]">
                   <h3 className="text-xs font-black uppercase text-black flex items-center gap-1.5 mb-1">
                     <UserCheck className="w-4 h-4 stroke-[2.5]" />
-                    <span>What Eleanor Experiences:</span>
+                    <span>What {currentPatient.name.split(' ')[0] || 'Patient'} Experiences:</span>
                   </h3>
                   <p className="text-sm font-sans font-bold text-black/90 leading-relaxed">
                     {currentPhase.patientExperience}
@@ -766,7 +767,7 @@ export const EndToEndWorkflowWorkspace: React.FC<EndToEndWorkflowWorkspaceProps>
                 </div>
                 <div className="p-3 bg-[#FAF8F5] border-2 border-black text-xs">
                   <span className="text-[10px] text-black/60 font-black block">AUTHENTICATED EMAIL</span>
-                  <div className="font-bold text-black mt-1 truncate">eleanor.vance@securehealth.org</div>
+                  <div className="font-bold text-black mt-1 truncate">{user?.email || 'patient@securehealth.org'}</div>
                   <div className="text-[10px] text-[#00A86B] font-black">✓ 2FA Biometric Verified</div>
                 </div>
                 <div className="p-3 bg-[#FAF8F5] border-2 border-black text-xs">
@@ -1011,7 +1012,7 @@ export const EndToEndWorkflowWorkspace: React.FC<EndToEndWorkflowWorkspaceProps>
                   </span>
                 </div>
                 <p className="text-xs font-sans text-black/90 font-bold leading-relaxed">
-                  "Eleanor, this kidney filtration decline (eGFR 64 → 52) is a <strong>temporary, reversible hemodynamic effect</strong> caused by taking OTC Ibuprofen while on Lisinopril. It is not permanent kidney damage and typically recovers fully within 14 days after transitioning to topical analgesia."
+                  "{currentPatient.name.split(' ')[0] || 'Patient'}, this kidney filtration decline (eGFR 64 → 52) is a <strong>temporary, reversible hemodynamic effect</strong> caused by taking OTC Ibuprofen while on Lisinopril. It is not permanent kidney damage and typically recovers fully within 14 days after transitioning to topical analgesia."
                 </p>
               </div>
 

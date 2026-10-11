@@ -29,26 +29,14 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ children, title, subtitl
           </div>
         </div>
 
-        {/* Demo Fast-Switch Pills */}
+        {/* Security & Clinical Intelligence Mode Badge */}
         <div className="flex items-center space-x-2">
-          <span className="text-xs text-[#667085] font-medium hidden sm:inline">Demo Quick-Access:</span>
-          <button
-            onClick={() => demoLoginAs('eleanor')}
-            className="text-xs px-2.5 py-1 bg-white hover:bg-[#EFF6FF] text-[#2563EB] border border-[#BFDBFE] rounded-md font-semibold transition-colors flex items-center gap-1 shadow-xs cursor-pointer"
-            title="Login directly as Eleanor Vance (HFpEF patient)"
-          >
-            <Sparkles className="w-3 h-3 text-[#2563EB]" />
-            <span>Eleanor (Patient)</span>
-          </button>
-          <button
-            onClick={() => demoLoginAs('rahul')}
-            className="text-xs px-2.5 py-1 bg-white hover:bg-[#F8FAFC] text-[#334155] border border-[#CBD5E1] rounded-md font-semibold transition-colors flex items-center gap-1 shadow-xs cursor-pointer"
-            title="Login as Rahul Gunda"
-          >
-            <UserCheck className="w-3 h-3 text-[#334155]" />
-            <span>Rahul Gunda</span>
-          </button>
+          <span className="text-[11px] font-mono px-2.5 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-md font-semibold flex items-center gap-1.5 shadow-xs">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span>CLINICAL OS · STANDALONE READY</span>
+          </span>
         </div>
+
       </header>
 
       {/* Main Card Container */}

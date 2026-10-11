@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, Suspense, lazy } from 'react';
 import { Navigation } from './components/Navigation';
 import { CommandCenter } from './components/CommandCenter';
 import { UnderstandWorkspace } from './components/UnderstandWorkspace';
@@ -9,30 +9,39 @@ import { ProtectWorkspace } from './components/ProtectWorkspace';
 import { DecideWorkspace } from './components/DecideWorkspace';
 import { RecoveryJourney } from './components/RecoveryJourney';
 import { CaseConferenceWorkspace } from './components/CaseConferenceWorkspace';
-import { SwarmIntelligenceWorkspace } from './components/SwarmIntelligenceWorkspace';
 import { HealthTimeline } from './components/HealthTimeline';
 import { ReportIntelligence } from './components/ReportIntelligence';
 import { ClinicianPortal } from './components/ClinicianPortal';
 import { ConsentAndAudit } from './components/ConsentAndAudit';
 import { EmergencyScreen } from './components/EmergencyScreen';
-import { AIVirtualSpecialistStudio } from './components/AIVirtualSpecialistStudio';
-import { EndToEndWorkflowWorkspace } from './components/EndToEndWorkflowWorkspace';
 import { ClinicalSummaryWorkspace } from './components/ClinicalSummaryWorkspace';
 import { ClinicalConferenceEngine } from './engine/clinicalConferenceEngine';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { AuthGateway } from './components/auth/AuthGateway';
-import { Activity, ShieldAlert, Sparkles } from 'lucide-react';
+import { Activity, ShieldAlert, Sparkles, Loader2 } from 'lucide-react';
+
+// Code-split heavy clinical laboratory and 3D consultation workspaces
+const AIVirtualSpecialistStudio = lazy(() => import('./components/AIVirtualSpecialistStudio').then(m => ({ default: m.AIVirtualSpecialistStudio })));
+const ClinicalValidationHarnessLaboratory = lazy(() => import('./components/ClinicalValidationHarnessLaboratory').then(m => ({ default: m.ClinicalValidationHarnessLaboratory })));
+const EndToEndWorkflowWorkspace = lazy(() => import('./components/EndToEndWorkflowWorkspace').then(m => ({ default: m.EndToEndWorkflowWorkspace })));
+const SwarmIntelligenceWorkspace = lazy(() => import('./components/SwarmIntelligenceWorkspace').then(m => ({ default: m.SwarmIntelligenceWorkspace })));
 
 import { PatientPortalDashboard } from './components/PatientPortalDashboard';
 import { CareFollowUpWorkspace } from './components/CareFollowUpWorkspace';
 import { EvidenceProvenanceModal } from './components/EvidenceProvenanceModal';
 import { NotificationBanner } from './components/NotificationBanner';
-
-import { ClinicalValidationHarnessLaboratory } from './components/ClinicalValidationHarnessLaboratory';
 import { EditPatientProfileModal, EditProfileTab } from './components/EditPatientProfileModal';
+import { NotFoundRecoveryWorkspace } from './components/NotFoundRecoveryWorkspace';
 import { useAuth } from './context/AuthContext';
 import { getDynamicPatientProfile } from './data/mockPatientData';
+
+const VALID_TABS = new Set([
+  'command', 'reports', 'timeline', 'insights', 'virtual-doctor',
+  'validation-harness', 'recovery', 'clinician-summary', 'workflow',
+  'safety', 'conference', 'swarm', 'clinician', 'governance',
+  'health', 'changes', 'decide'
+]);
 
 const conferenceEngine = new ClinicalConferenceEngine();
 
@@ -117,65 +126,105 @@ const MainDashboard: React.FC = () => {
         )}
 
         {/* Primary Tab Routing (Human + Clinical) */}
-        {activeTab === 'command' && (
-          activeRole === 'patient' ? (
-            <PatientPortalDashboard
+        <Suspense fallback={
+          <div className="p-12 text-center flex flex-col items-center justify-center space-y-3">
+            <Loader2 className="w-8 h-8 animate-spin text-black" />
+            <p className="font-mono text-xs uppercase tracking-wider font-bold">Loading Clinical Workspace Module...</p>
+          </div>
+        }>
+          {activeTab === 'command' && (
+            activeRole === 'patient' ? (
+              <PatientPortalDashboard
+                onNavigateTab={setActiveTab}
+                onOpenVirtualDoctor={() => setActiveTab('virtual-doctor')}
+                onOpenEditProfile={handleOpenEditProfile}
+              />
+            ) : (
+              <CommandCenter onNavigateTab={setActiveTab} />
+            )
+          )}
+          {activeTab === 'reports' && <ReportIntelligence />}
+          {activeTab === 'timeline' && <HealthTimeline />}
+          {activeTab === 'insights' && <ExplainWorkspace />}
+          {activeTab === 'virtual-doctor' && (
+            <AIVirtualSpecialistStudio onNavigateTab={setActiveTab} />
+          )}
+          {activeTab === 'validation-harness' && <ClinicalValidationHarnessLaboratory />}
+          {activeTab === 'recovery' && (
+            activeRole === 'patient' ? (
+              <CareFollowUpWorkspace onNavigateTab={setActiveTab} />
+            ) : (
+              <RecoveryJourney onNavigateTab={setActiveTab} />
+            )
+          )}
+          {activeTab === 'clinician-summary' && <ClinicalSummaryWorkspace onNavigateTab={setActiveTab} />}
+
+          {/* Advanced & Forensic Engine Workspaces */}
+          {activeTab === 'workflow' && <EndToEndWorkflowWorkspace onNavigateTab={setActiveTab} />}
+          {activeTab === 'safety' && <ProtectWorkspace />}
+          {activeTab === 'conference' && <CaseConferenceWorkspace engine={conferenceEngine} />}
+          {activeTab === 'swarm' && <SwarmIntelligenceWorkspace />}
+          {activeTab === 'clinician' && <ClinicianPortal />}
+          {activeTab === 'governance' && <ConsentAndAudit />}
+
+          {/* Legacy Routing Aliases */}
+          {activeTab === 'health' && <UnderstandWorkspace />}
+          {activeTab === 'changes' && <DetectWorkspace />}
+          {activeTab === 'decide' && <DecideWorkspace />}
+
+          {/* 404 Route / Workspace Fallback */}
+          {!VALID_TABS.has(activeTab) && (
+            <NotFoundRecoveryWorkspace
               onNavigateTab={setActiveTab}
-              onOpenVirtualDoctor={() => setActiveTab('virtual-doctor')}
-              onOpenEditProfile={handleOpenEditProfile}
+              onTriggerEmergency={() => setShowEmergencyModal(true)}
+              attemptedRoute={activeTab}
             />
-          ) : (
-            <CommandCenter onNavigateTab={setActiveTab} />
-          )
-        )}
-        {activeTab === 'reports' && <ReportIntelligence />}
-        {activeTab === 'timeline' && <HealthTimeline />}
-        {activeTab === 'insights' && <ExplainWorkspace />}
-        {activeTab === 'virtual-doctor' && (
-          <AIVirtualSpecialistStudio onNavigateTab={setActiveTab} />
-        )}
-        {activeTab === 'validation-harness' && <ClinicalValidationHarnessLaboratory />}
-        {activeTab === 'recovery' && (
-          activeRole === 'patient' ? (
-            <CareFollowUpWorkspace onNavigateTab={setActiveTab} />
-          ) : (
-            <RecoveryJourney onNavigateTab={setActiveTab} />
-          )
-        )}
-        {activeTab === 'clinician-summary' && <ClinicalSummaryWorkspace onNavigateTab={setActiveTab} />}
-
-        {/* Advanced & Forensic Engine Workspaces */}
-        {activeTab === 'workflow' && <EndToEndWorkflowWorkspace onNavigateTab={setActiveTab} />}
-        {activeTab === 'safety' && <ProtectWorkspace />}
-        {activeTab === 'conference' && <CaseConferenceWorkspace engine={conferenceEngine} />}
-        {activeTab === 'swarm' && <SwarmIntelligenceWorkspace />}
-        {activeTab === 'clinician' && <ClinicianPortal />}
-        {activeTab === 'governance' && <ConsentAndAudit />}
-
-        {/* Legacy Routing Aliases */}
-        {activeTab === 'health' && <UnderstandWorkspace />}
-        {activeTab === 'changes' && <DetectWorkspace />}
-        {activeTab === 'decide' && <DecideWorkspace />}
+          )}
+        </Suspense>
       </main>
 
       {/* Real-Time Live Notification Banner (SSE Driven) */}
       <NotificationBanner />
 
       {/* Footer — editorial */}
-      <footer className="mt-8 py-5" style={{ borderTop: '2px solid var(--border)', background: 'var(--bg-surface)' }}>
-        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <span className="he-btn !shadow-brutal-xs !text-xs !px-2 !py-1 cursor-default" style={{ background: '#FFE45C' }}>HEAL ENGINE</span>
-            <span className="font-mono text-xs" style={{ color: 'var(--text-muted)' }}>Longitudinal Clinical Decision Intelligence</span>
+      <footer className="mt-8 py-6" style={{ borderTop: '2px solid var(--border)', background: 'var(--bg-surface)' }}>
+        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setActiveTab('command')}
+                className="he-btn !shadow-brutal-xs !text-xs !px-2.5 !py-1 cursor-pointer"
+                style={{ background: '#FFE45C', color: '#080808' }}
+                aria-label="Navigate to dashboard"
+              >
+                HEAL ENGINE
+              </button>
+              <span className="font-mono text-xs" style={{ color: 'var(--text-muted)' }}>Longitudinal Clinical Decision Intelligence OS</span>
+            </div>
+            <div className="flex flex-wrap items-center gap-3 text-xs font-mono" style={{ color: 'var(--text-muted)' }}>
+              <button onClick={() => setActiveTab('safety')} className="hover:underline cursor-pointer">Safety Gates</button>
+              <span>·</span>
+              <button onClick={() => setActiveTab('governance')} className="hover:underline cursor-pointer">Audit &amp; DPDP</button>
+              <span>·</span>
+              <a href="tel:+18005554325" className="hover:underline inline-flex items-center gap-1" style={{ color: '#0D9488' }}>
+                Emergency: 1-800-555-HEAL
+              </a>
+              <span>·</span>
+              <a href="mailto:dpo@healengine.hospital.org" className="hover:underline inline-flex items-center gap-1" style={{ color: '#0D9488' }}>
+                dpo@healengine.hospital.org
+              </a>
+            </div>
           </div>
-          <div className="flex items-center gap-2 text-[11px] font-mono" style={{ color: 'var(--text-muted)' }}>
-            <span className="he-badge he-badge-neutral">Human UX</span>
-            <span>·</span>
-            <span className="he-badge he-badge-neutral">Evidence Engine</span>
-            <span>·</span>
-            <span className="he-badge he-badge-neutral">Safety Checks</span>
-            <span>·</span>
-            <span style={{ color: 'var(--rule)' }}>v2.0.0</span>
+          <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] font-mono border-t pt-3" style={{ borderColor: 'var(--rule)', color: 'var(--text-muted)' }}>
+            <div>
+              <span>&copy; {new Date().getFullYear()} HEAL Health Systems. All clinical algorithms human-in-the-loop governed.</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="he-badge he-badge-neutral">FHIR R4</span>
+              <span className="he-badge he-badge-neutral">LOINC</span>
+              <span className="he-badge he-badge-neutral">SNOMED CT</span>
+              <span style={{ color: 'var(--text-muted)' }}>v2.5.0-governed</span>
+            </div>
           </div>
         </div>
       </footer>

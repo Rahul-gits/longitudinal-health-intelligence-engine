@@ -1885,7 +1885,7 @@ export const ClinicalValidationHarnessLaboratory: React.FC = () => {
                   CRITICAL CONTRAINDICATION: NSAID Prescribing Blocked
                 </div>
                 <p className="text-neutral-700 text-xs">
-                  Patient Eleanor Vance exhibits CKD Stage 3b (eGFR 38 mL/min/1.73m²). Prescribing oral Ibuprofen 600mg TID precipitates acute renal functional deterioration.
+                  Patient record exhibits CKD Stage 3b (eGFR 38 mL/min/1.73m²). Prescribing oral Ibuprofen 600mg TID precipitates acute renal functional deterioration.
                 </p>
                 <div className="p-2 bg-white border border-amber-300 text-[11px] text-neutral-700">
                   <span className="font-bold text-emerald-700">ACTIONABLE ALTERNATIVE: </span>

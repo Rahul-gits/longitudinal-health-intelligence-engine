@@ -200,7 +200,7 @@ export const Navigation: React.FC<NavigationProps> = ({
           >
             <span className={`w-1.5 h-1.5 rounded-full he-keep-round ${serverDot}`} aria-hidden="true" />
             <Server className="w-3 h-3" aria-hidden="true" />
-            <span>{serverStatus.status === 'HEALTHY' ? 'LIVE' : serverStatus.status === 'CONNECTING' ? '…' : 'OFFLINE'}</span>
+            <span>{serverStatus.status === 'HEALTHY' ? 'ONLINE' : serverStatus.status === 'CONNECTING' ? '…' : 'STANDALONE'}</span>
           </div>
 
           {/* Theme toggle */}
@@ -224,8 +224,13 @@ export const Navigation: React.FC<NavigationProps> = ({
             </button>
           )}
 
-          {/* Notifications placeholder */}
-          <button className="he-btn-ghost !px-2 !py-2 !shadow-brutal-xs hidden sm:flex" aria-label="Notifications">
+          {/* Notifications button */}
+          <button
+            onClick={() => setActiveTab('recovery')}
+            className="he-btn-ghost !px-2 !py-2 !shadow-brutal-xs hidden sm:flex cursor-pointer"
+            aria-label="View notifications and follow-up tasks"
+            title="View monitoring notifications & follow-up"
+          >
             <Bell className="w-3.5 h-3.5" aria-hidden="true" />
           </button>
 

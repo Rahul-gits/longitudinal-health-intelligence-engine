@@ -28,7 +28,7 @@ export const DOCTOR_STYLE_MAP: Record<string, {
     irisHex: '#38BDF8',
     stethoscopeColor: 0xCBD5E1,
     isFemale: false,
-    photoUrl: '/avatars/doc-vance.jpg',
+    photoUrl: '/avatars/doc-thorne.jpg',
     modelUrl: '/models/specialist-doctor-vance.glb'
   },
   'doc-jacob': {
@@ -39,7 +39,7 @@ export const DOCTOR_STYLE_MAP: Record<string, {
     irisHex: '#38BDF8',
     stethoscopeColor: 0xCBD5E1,
     isFemale: false,
-    photoUrl: '/avatars/doc-vance.jpg',
+    photoUrl: '/avatars/doc-jacob.jpg',
     modelUrl: '/models/specialist-doctor-vance.glb'
   },
   'doc-lin': {
@@ -50,7 +50,7 @@ export const DOCTOR_STYLE_MAP: Record<string, {
     irisHex: '#422818',
     stethoscopeColor: 0x64748B,
     isFemale: true,
-    photoUrl: '/avatars/doc-chen.jpg',
+    photoUrl: '/avatars/doc-lin.jpg',
     modelUrl: '/models/specialist-doctor-chen.glb'
   },
   'doc-vance': {

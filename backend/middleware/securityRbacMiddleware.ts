@@ -77,6 +77,17 @@ export const authenticateAndAuthorize = (allowedRoles?: UserRole[]) => {
       });
     }
 
+    // 4b. Privileged MFA Session Requirement
+    if ((authenticatedUser.role === 'clinician' || authenticatedUser.role === 'admin') &&
+        process.env.ENFORCE_PRIVILEGED_MFA === 'true' &&
+        !result.session.mfaVerified) {
+      return res.status(403).json({
+        success: false,
+        error: 'MFA_VERIFICATION_REQUIRED',
+        message: 'Privileged role requires an MFA-verified session token.'
+      });
+    }
+
     // 5. Resource-Level Patient Scope Check (Prevents cross-patient leakage / IDOR / BOLA)
     const patientParam = (req.params.patientId || req.query.patientId || req.body?.patientId) as string | undefined;
     if (patientParam && authenticatedUser.role === 'patient') {

@@ -39,9 +39,14 @@ export const PatientPortalDashboard: React.FC<PatientPortalDashboardProps> = ({
   const currentPatient = getDynamicPatientProfile(user);
   const [showExplainModal, setShowExplainModal] = useState<boolean>(false);
 
-  // Determine if this is a cardiorenal profile or customized user profile
-  const isCardiorenalCase = currentPatient.name.toLowerCase().includes('eleanor') ||
-    currentPatient.conditions.some(c => c.toLowerCase().includes('heart') || c.toLowerCase().includes('kidney'));
+  // Determine if this is a cardiorenal profile based on user's active conditions
+  const isCardiorenalCase = currentPatient.conditions.some((c: string) => 
+    c.toLowerCase().includes('heart') || 
+    c.toLowerCase().includes('kidney') || 
+    c.toLowerCase().includes('renal') || 
+    c.toLowerCase().includes('hypertension') ||
+    c.toLowerCase().includes('ckd')
+  );
 
   return (
     <div className="max-w-5xl mx-auto space-y-6 pb-12">
@@ -181,7 +186,7 @@ export const PatientPortalDashboard: React.FC<PatientPortalDashboardProps> = ({
               </button>
             </div>
             <div className="flex flex-wrap gap-1.5">
-              {currentPatient.conditions.map((cond, idx) => (
+              {currentPatient.conditions.map((cond: string, idx: number) => (
                 <span
                   key={idx}
                   className="px-2 py-0.5 font-medium text-[11px]"
@@ -214,7 +219,7 @@ export const PatientPortalDashboard: React.FC<PatientPortalDashboardProps> = ({
               </button>
             </div>
             <div className="flex flex-wrap gap-1.5">
-              {currentPatient.medications.map((med, idx) => (
+              {currentPatient.medications.map((med: string, idx: number) => (
                 <span
                   key={idx}
                   className="px-2 py-0.5 font-medium text-[11px]"
@@ -248,7 +253,7 @@ export const PatientPortalDashboard: React.FC<PatientPortalDashboardProps> = ({
             </div>
             <div className="space-y-1">
               <div className="flex flex-wrap gap-1">
-                {currentPatient.allergies.map((all, idx) => (
+                {currentPatient.allergies.map((all: string, idx: number) => (
                   <span
                     key={idx}
                     className="px-2 py-0.5 font-semibold text-[10px]"
@@ -508,7 +513,7 @@ export const PatientPortalDashboard: React.FC<PatientPortalDashboardProps> = ({
       >
         <div className="flex items-center gap-2">
           <PhoneCall className="w-4 h-4 text-teal-600 shrink-0" />
-          <span>Need immediate assistance? 24/7 Nurse Triage Line is available at <strong style={{ color: 'var(--text-ink)' }}>(800) 555-HEAL</strong>.</span>
+          <span>Need immediate assistance? 24/7 Nurse Triage Line is available at <a href="tel:+18005554325" className="font-bold underline hover:text-teal-600 inline-flex items-center gap-1" style={{ color: 'var(--text-ink)' }} aria-label="Call Nurse Triage Line at 1-800-555-4325">(800) 555-HEAL</a>.</span>
         </div>
         <div className="flex items-center gap-4 font-mono text-[11px]" style={{ color: 'var(--text-muted)' }}>
           <span>Encrypted with TLS 1.3</span>

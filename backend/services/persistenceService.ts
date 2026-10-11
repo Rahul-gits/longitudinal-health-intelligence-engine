@@ -65,7 +65,8 @@ export class PersistenceService {
   constructor() {
     this.qdrantClient = new QdrantClient({
       host: process.env.VECTOR_DB_HOST || 'localhost',
-      port: parseInt(process.env.VECTOR_DB_PORT || '6333', 10)
+      port: parseInt(process.env.VECTOR_DB_PORT || '6333', 10),
+      apiKey: process.env.VECTOR_DB_API_KEY
     });
     this.initializeVectorCollections();
     this.seedDefaultPatients();
@@ -80,7 +81,7 @@ export class PersistenceService {
       for (const col of requiredCollections) {
         if (!collectionNames.includes(col)) {
           await this.qdrantClient.createCollection(col, {
-            vectors: { size: 1, distance: 'Cosine' }
+            vectors: { size: 128, distance: 'Cosine' }
           });
         }
       }

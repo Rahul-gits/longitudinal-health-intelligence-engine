@@ -13,7 +13,7 @@ import {
   PatientConsentSetting,
   StaticClinicalCase
 } from '../types/health';
-import { AuthUser } from '../services/authApi';
+import { AuthUser, getStoredUser } from '../services/authApi';
 
 export const calculateAgeFromDob = (dob?: string): number => {
   if (!dob) return 64;
@@ -24,68 +24,66 @@ export const calculateAgeFromDob = (dob?: string): number => {
 };
 
 export const getDynamicPatientProfile = (user?: AuthUser | null) => {
-  if (!user || user.email === 'eleanor@example.com' || user.fullName?.toLowerCase().includes('eleanor')) {
-    const age = user?.profile?.dob ? calculateAgeFromDob(user.profile.dob) : 68;
+  // If user is not passed directly, read from local session storage
+  const activeUser = user || (typeof window !== 'undefined' ? getStoredUser() : null);
+
+  if (activeUser) {
+    const age = activeUser.profile?.dob ? calculateAgeFromDob(activeUser.profile.dob) : 45;
+    const conditions = activeUser.profile?.conditions && activeUser.profile.conditions.length > 0
+      ? activeUser.profile.conditions
+      : ['Hypertension (Managed)', 'Preventive Baseline'];
+    const medications = activeUser.profile?.medications && activeUser.profile.medications.length > 0
+      ? activeUser.profile.medications
+      : ['Lisinopril 10mg'];
+    const allergies = activeUser.profile?.allergies && activeUser.profile.allergies.length > 0
+      ? activeUser.profile.allergies
+      : ['No Known Drug Allergies (NKDA)'];
+
     return {
-      id: user?.id || 'PT-884920',
-      name: user?.fullName || 'Eleanor Vance',
-      age: age > 0 && age < 120 ? age : 68,
-      gender: user?.profile?.sex || 'Female',
-      bloodType: user?.profile?.bloodType || 'A+',
-      primaryPhysician: user?.profile?.primaryPhysician || 'Dr. Aris Thorne, MD (Cardiology)',
-      status: user?.profile?.baselineStatus || 'Needs Clinician Review',
-      statusColor: 'amber',
-      overallHealthScore: 74,
-      conditions: user?.profile?.conditions && user.profile.conditions.length > 0 ? user.profile.conditions : [
-        'Heart Failure with Preserved Ejection Fraction (HFpEF)',
-        'Chronic Kidney Disease (Stage 3b)',
-        'Type 2 Diabetes Mellitus'
-      ],
-      medications: user?.profile?.medications && user.profile.medications.length > 0 ? user.profile.medications : [
-        'Empagliflozin 10mg',
-        'Furosemide 40mg',
-        'Spironolactone 25mg'
-      ],
-      allergies: user?.profile?.allergies && user.profile.allergies.length > 0 ? user.profile.allergies : ['Sulfa drugs', 'NSAIDs (Avoid)'],
-      emergencyContactName: user?.profile?.emergencyContactName || 'Thomas Vance (Son)',
-      emergencyContactPhone: user?.profile?.emergencyContactPhone || '(555) 234-8901',
-      preferredLanguage: user?.profile?.preferredLanguage || 'English',
-      communicationPref: user?.profile?.communicationPref || 'SMS & Mobile App',
-      dob: user?.profile?.dob || '1958-03-14',
+      id: activeUser.id || 'PT-ACTIVE-01',
+      name: activeUser.fullName || activeUser.email.split('@')[0],
+      age: age > 0 && age < 120 ? age : 45,
+      gender: activeUser.profile?.sex || 'Not Specified',
+      bloodType: activeUser.profile?.bloodType || 'A+',
+      primaryPhysician: activeUser.profile?.primaryPhysician || 'Dr. Aris Thorne, MD (Attending Physician)',
+      status: activeUser.profile?.baselineStatus || (activeUser.profile?.hasUploadedRecords ? 'Active Monitoring' : 'Healthy Baseline'),
+      statusColor: 'emerald',
+      overallHealthScore: 88,
+      conditions,
+      medications,
+      allergies,
+      emergencyContactName: activeUser.profile?.emergencyContactName || 'Family Contact',
+      emergencyContactPhone: activeUser.profile?.emergencyContactPhone || '(555) 019-2834',
+      preferredLanguage: activeUser.profile?.preferredLanguage || 'English',
+      communicationPref: activeUser.profile?.communicationPref || 'Mobile App & SMS',
+      dob: activeUser.profile?.dob || '1981-04-12',
       lastUpdated: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) + ' ' + new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
     };
   }
 
-  // Registered User (e.g. Rahul Gunda or New Patient)
-  const age = calculateAgeFromDob(user.profile?.dob);
-  const conditions = user.profile?.conditions && user.profile.conditions.length > 0
-    ? user.profile.conditions
-    : ['Essential Hypertension', 'Mild Seasonal Asthma'];
-  const medications = user.profile?.medications && user.profile.medications.length > 0
-    ? user.profile.medications
-    : ['Lisinopril 10mg', 'Albuterol Inhaler (PRN)'];
-
+  // Clean initial patient state awaiting authentic user setup
   return {
-    id: user.id || `PT-${Math.floor(100000 + Math.random() * 900000)}`,
-    name: user.fullName || user.email.split('@')[0],
-    age: age > 0 && age < 120 ? age : 28,
-    gender: user.profile?.sex || 'Male',
-    bloodType: user.profile?.bloodType || 'O+',
-    primaryPhysician: user.profile?.primaryPhysician || 'Dr. Sarah Jenkins, MD (Internal Medicine)',
-    status: user.profile?.baselineStatus || (user.profile?.hasUploadedRecords ? 'Active Monitoring' : 'Healthy Baseline'),
+    id: 'PT-NEW-001',
+    name: 'New Patient',
+    age: 40,
+    gender: 'Female',
+    bloodType: 'O+',
+    primaryPhysician: 'Dr. Aris Thorne, MD (Attending Physician)',
+    status: 'Initial Health Baseline',
     statusColor: 'emerald',
-    overallHealthScore: 89,
-    conditions,
-    medications,
-    allergies: user.profile?.allergies && user.profile.allergies.length > 0 ? user.profile.allergies : ['None Reported'],
-    emergencyContactName: user.profile?.emergencyContactName || 'Family Member',
-    emergencyContactPhone: user.profile?.emergencyContactPhone || '(555) 123-4567',
-    preferredLanguage: user.profile?.preferredLanguage || 'English',
-    communicationPref: user.profile?.communicationPref || 'Email & SMS',
-    dob: user.profile?.dob || '1998-06-20',
+    overallHealthScore: 92,
+    conditions: ['Essential Hypertension (Managed)'],
+    medications: ['Lisinopril 10mg'],
+    allergies: ['No Known Drug Allergies (NKDA)'],
+    emergencyContactName: 'Designated Contact',
+    emergencyContactPhone: '(555) 234-5678',
+    preferredLanguage: 'English',
+    communicationPref: 'Mobile App & SMS',
+    dob: '1986-06-15',
     lastUpdated: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) + ' ' + new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
   };
 };
+
 
 export const PATIENT_INFO = getDynamicPatientProfile();
 

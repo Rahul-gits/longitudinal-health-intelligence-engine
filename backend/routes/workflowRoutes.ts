@@ -8,30 +8,33 @@ const router = Router();
 // Real-Time Server-Sent Events (SSE) Client Registry with Heartbeat & Scoping
 const sseClients: { res: Response; patientId: string; userId: string }[] = [];
 
-// Periodic 15s Heartbeat to prevent socket drops
+// Periodic 15s Heartbeat to prevent socket drops & prune dead connections
 setInterval(() => {
   const ping = `event: heartbeat\ndata: ${JSON.stringify({ timestamp: new Date().toISOString() })}\n\n`;
-  sseClients.forEach(c => {
+  for (let i = sseClients.length - 1; i >= 0; i--) {
     try {
-      c.res.write(ping);
+      sseClients[i].res.write(ping);
     } catch {
-      // cleaned on close
+      sseClients.splice(i, 1);
+      observabilityService.updateSseCount(sseClients.length);
     }
-  });
+  }
 }, 15000);
 
 export function broadcastWorkflowEvent(eventType: string, data: Record<string, any>, targetPatientId?: string) {
   const payload = `event: ${eventType}\ndata: ${JSON.stringify({ timestamp: new Date().toISOString(), ...data })}\n\n`;
-  sseClients.forEach(client => {
+  for (let i = sseClients.length - 1; i >= 0; i--) {
+    const client = sseClients[i];
     // Scoped event delivery: only deliver if target matches or is platform broadcast
     if (!targetPatientId || client.patientId === targetPatientId || client.patientId === '*') {
       try {
         client.res.write(payload);
-      } catch (err) {
-        // Handled on close
+      } catch {
+        sseClients.splice(i, 1);
+        observabilityService.updateSseCount(sseClients.length);
       }
     }
-  });
+  }
 }
 
 // GET /api/workflow/events/stream (Server-Sent Events Real-Time Bus)

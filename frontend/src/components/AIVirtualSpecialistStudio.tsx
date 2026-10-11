@@ -16,7 +16,7 @@ import {
   Mic, MicOff, Volume2, VolumeX, PhoneOff, Send, ChevronRight,
   AlertTriangle, ShieldCheck, CheckCircle2, Activity, Pill,
   Download, FileText, Clock, User, Stethoscope, RotateCcw,
-  Play, Pause, X, Sparkles, Heart, Info, ArrowRight
+  Play, Pause, X, Sparkles, Heart, Info, ArrowRight, BookOpen, Database
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { getDynamicPatientProfile } from '../data/mockPatientData';
@@ -37,6 +37,19 @@ interface DialogueTurn {
   clinicalObservations?: string[];
   safetyAlert?: string;
   riskLevel?: 'LOW' | 'MODERATE' | 'HIGH_SUBACUTE' | 'CRITICAL';
+  personaId?: string;
+  personaName?: string;
+  ragEvidence?: Array<{
+    chunkId: string;
+    title: string;
+    sourceOrganization: string;
+    guidelineVersion: string;
+    clinicalDomain: string;
+    recommendation: string;
+    similarityScore: number;
+    actionableContraindication?: boolean;
+  }>;
+  ragContextSummary?: string;
 }
 
 interface SoapNote {
@@ -80,7 +93,7 @@ const MOUTH_MAP: Record<string, { x: number; y: number; w: number; h: number; ul
 };
 
 const PHOTO_MAP: Record<string, string> = {
-  'doc-thorne': '/avatars/doc-jacob.jpg',
+  'doc-thorne': '/avatars/doc-thorne.jpg',
   'doc-jacob':  '/avatars/doc-jacob.jpg',
   'doc-lin':    '/avatars/doc-lin.jpg',
   'doc-vance':  '/avatars/doc-vance.jpg',
@@ -645,6 +658,79 @@ const SbarCard: React.FC<{ patientName: string; physician: string; specialist: s
 );
 
 /* ════════════════════════════════════════════════════════════════
+   CLINICAL GUIDELINE EVIDENCE (RAG)
+   ════════════════════════════════════════════════════════════════ */
+const ClinicalRagCard: React.FC<{
+  evidence: Array<{
+    chunkId: string;
+    title: string;
+    sourceOrganization: string;
+    guidelineVersion: string;
+    clinicalDomain: string;
+    recommendation: string;
+    similarityScore: number;
+    actionableContraindication?: boolean;
+  }>;
+  specialistName: string;
+  summary?: string;
+}> = ({ evidence, specialistName, summary }) => (
+  <div style={{ background: 'var(--bg-surface)', border: '1.5px solid var(--border)', boxShadow: '3px 3px 0 var(--border)' }}>
+    <div className="px-4 py-3 flex items-center justify-between" style={{ borderBottom: '1.5px solid var(--border)', background: '#CCFBF1' }}>
+      <div className="flex items-center gap-2">
+        <BookOpen className="w-4 h-4 text-teal-800" />
+        <span className="text-xs font-mono font-bold uppercase tracking-widest text-teal-900">CLINICAL EVIDENCE RAG</span>
+      </div>
+      <span className="text-[10px] font-mono font-bold px-2 py-0.5 bg-teal-800 text-teal-100">
+        {evidence.length} GUIDELINES GROUNDED
+      </span>
+    </div>
+    <div className="p-4 space-y-3 text-xs">
+      {summary && (
+        <div className="p-2.5 text-[11px] font-mono leading-relaxed" style={{ background: 'var(--bg-paper)', border: '1px solid var(--rule)', color: 'var(--text-ink)' }}>
+          <span className="font-bold text-teal-700">RAG GROUNDING: </span>{summary}
+        </div>
+      )}
+      {evidence.length === 0 ? (
+        <div className="text-center py-6 text-slate-400 font-mono text-xs">
+          Dialogue active with {specialistName}. Ask a question or report a symptom to retrieve vector guideline matches.
+        </div>
+      ) : (
+        evidence.map((item, idx) => (
+          <div key={idx} className="p-3 space-y-2" style={{ background: 'var(--bg-paper)', border: '1px solid var(--border)', borderLeft: item.actionableContraindication ? '4px solid #DC2626' : '4px solid #0D9488' }}>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="px-1.5 py-0.5 text-[10px] font-mono font-bold" style={{ background: item.actionableContraindication ? '#DC2626' : '#0D9488', color: '#fff' }}>
+                  {item.sourceOrganization}
+                </span>
+                <span className="font-bold text-[11px]" style={{ color: 'var(--text-ink)' }}>{item.title}</span>
+              </div>
+              <span className="text-[10px] font-mono font-bold text-teal-700">
+                {(item.similarityScore * 100).toFixed(0)}% MATCH
+              </span>
+            </div>
+            <p className="text-[11px] leading-relaxed" style={{ color: 'var(--text-ink)', opacity: 0.9 }}>
+              {item.recommendation}
+            </p>
+            <div className="flex items-center justify-between pt-1.5 text-[10px] font-mono" style={{ borderTop: '1px solid var(--rule)', color: 'var(--text-muted)' }}>
+              <span>Domain: {item.clinicalDomain}</span>
+              <span>Guideline: {item.guidelineVersion}</span>
+              {item.actionableContraindication && (
+                <span className="px-1.5 py-0.5 font-bold" style={{ background: '#FEE2E2', color: '#991B1B', border: '1px solid #DC2626' }}>
+                  CONTRAINDICATION
+                </span>
+              )}
+            </div>
+          </div>
+        ))
+      )}
+    </div>
+    <div className="px-4 py-2 text-[10px] font-mono" style={{ borderTop: '1px solid var(--rule)', color: 'var(--text-muted)' }}>
+      Dense 128-Dim Vector Embedding · Cosine Grounding to LLM Inference
+    </div>
+  </div>
+);
+
+/* ════════════════════════════════════════════════════════════════
    MAIN STUDIO COMPONENT
    ════════════════════════════════════════════════════════════════ */
 interface AIVirtualSpecialistStudioProps {
@@ -674,7 +760,9 @@ export const AIVirtualSpecialistStudio: React.FC<AIVirtualSpecialistStudioProps>
   const [isCallActive, setIsCallActive] = useState(true);
   const [callEnded, setCallEnded] = useState(false);
   const [aiModel, setAiModel] = useState('LLM Clinical');
-  const [activeTab, setActiveTab] = useState<'chat' | 'soap' | 'safety' | 'sbar' | 'report'>('chat');
+  const [activeTab, setActiveTab] = useState<'chat' | 'soap' | 'safety' | 'sbar' | 'rag' | 'report'>('chat');
+  const [currentRagEvidence, setCurrentRagEvidence] = useState<any[]>([]);
+  const [latestRagContext, setLatestRagContext] = useState<string>('');
   const [exportDone, setExportDone] = useState(false);
   const [emergencyAlert, setEmergencyAlert] = useState<string | null>(null);
   const [visionNotes, setVisionNotes] = useState<string[]>([]);
@@ -737,8 +825,8 @@ export const AIVirtualSpecialistStudio: React.FC<AIVirtualSpecialistStudioProps>
 
   /* ── Safety Matrix ── */
   const safetyMatrix: SafetyMatrixEntry[] = useMemo(() => {
-    const hasLisinopril = patient.medications.some(m => m.toLowerCase().includes('lisinopril'));
-    const hasFurosemide = patient.medications.some(m => m.toLowerCase().includes('furosemide'));
+    const hasLisinopril = patient.medications.some((m: string) => m.toLowerCase().includes('lisinopril'));
+    const hasFurosemide = patient.medications.some((m: string) => m.toLowerCase().includes('furosemide'));
     const entries: SafetyMatrixEntry[] = [];
     if (hasLisinopril) entries.push({
       drug1: 'Lisinopril (ACEi)',
@@ -801,7 +889,13 @@ export const AIVirtualSpecialistStudio: React.FC<AIVirtualSpecialistStudioProps>
     speechEngine.stop();
     setIsPlaying(true);
     setSpeakingText(text);
-    speechEngine.speak(text, { pitch: activePersona.voicePitch, rate: speechRate, voiceName: activePersona.preferredVoiceName }, {
+    speechEngine.speak(text, { 
+      pitch: activePersona.voicePitch, 
+      rate: speechRate, 
+      voiceName: activePersona.preferredVoiceName,
+      personaId: activePersona.id,
+      gender: (activePersona.id === 'doc-lin' || activePersona.id === 'doc-chen') ? 'female' : 'male'
+    }, {
       onStart: () => setIsPlaying(true),
       onEnd:   () => { setIsPlaying(false); setActiveWord(''); },
       onWordBoundary: (_ci, _l, w) => setActiveWord(w),
@@ -834,9 +928,13 @@ export const AIVirtualSpecialistStudio: React.FC<AIVirtualSpecialistStudioProps>
             name: patient.name, age: patient.age, gender: patient.gender,
             conditions: patient.conditions, medications: patient.medications,
             allergies: patient.allergies, primaryPhysician: patient.primaryPhysician,
+            recentVitals: { bp: '138/86', heartRate: '78', egfr: 52 }
           },
-          personaId: activePersona.id, personaName: activePersona.name,
+          personaId: activePersona.id, 
+          personaName: activePersona.name,
           specialty: activePersona.specialty,
+          clinicalFocus: activePersona.clinicalFocus,
+          credentials: activePersona.credentials,
           dialogueHistory: dialogueHistory.slice(-8).map(d => ({ speaker: d.speaker, text: d.text })),
         }),
       });
@@ -844,6 +942,11 @@ export const AIVirtualSpecialistStudio: React.FC<AIVirtualSpecialistStudioProps>
       if (res.ok) {
         const data = await res.json();
         if (data.provider) setAiModel(`${data.provider} (${data.model || 'v2'})`);
+
+        if (data.ragEvidence && data.ragEvidence.length > 0) {
+          setCurrentRagEvidence(data.ragEvidence);
+          setLatestRagContext(data.ragContextSummary || '');
+        }
 
         const newPosture = data.requiresEmergency ? 'alerting'
           : data.safetyGateTriggered ? 'alerting'
@@ -857,11 +960,18 @@ export const AIVirtualSpecialistStudio: React.FC<AIVirtualSpecialistStudioProps>
         }
 
         const docTurn: DialogueTurn = {
-          id: `dr${Date.now()}`, speaker: 'doctor', text: data.doctorResponse, time: ts(),
+          id: `dr${Date.now()}`, 
+          speaker: 'doctor', 
+          text: data.doctorResponse, 
+          time: ts(),
+          personaId: data.personaId || activePersona.id,
+          personaName: data.personaName || activePersona.name,
           quickReplies: data.suggestedReplies || data.suggestedQuickReplies,
           clinicalObservations: data.clinicalObservations,
           riskLevel: data.riskLevel,
           safetyAlert: data.safetyGateTriggered ? (data.safetyDetails || 'Clinical safety boundary triggered.') : undefined,
+          ragEvidence: data.ragEvidence,
+          ragContextSummary: data.ragContextSummary
         };
         setDialogueHistory(prev => [...prev, docTurn]);
         setSpeakingText(data.doctorResponse);
@@ -884,7 +994,7 @@ export const AIVirtualSpecialistStudio: React.FC<AIVirtualSpecialistStudioProps>
         fPosture = 'alerting';
         setEmergencyAlert('🚨 EMERGENCY — Please call 911 immediately.');
       } else if (isPain) {
-        const hasCKD = patient.conditions.some(c => c.toLowerCase().includes('kidney') || c.toLowerCase().includes('ckd'));
+        const hasCKD = patient.conditions.some((c: string) => c.toLowerCase().includes('kidney') || c.toLowerCase().includes('ckd'));
         if (hasCKD)
           reply = `I hear you, ${patient.name.split(' ')[0]}. Joint pain can be very uncomfortable. However, because of your kidney condition and ${patient.medications[0] || 'blood pressure medication'}, oral pain relievers like Advil or Ibuprofen are not safe for you right now. A topical Diclofenac 1% gel delivers relief directly to the joint without affecting your kidneys. Would you like to explore that option?`;
         fPosture = 'explaining';
@@ -942,13 +1052,45 @@ export const AIVirtualSpecialistStudio: React.FC<AIVirtualSpecialistStudioProps>
     }
   }, [isRecording, liveTranscript, handleSubmit]);
 
-  /* ── Persona change ── */
-  const handlePersonaChange = (id: string) => {
+  /* ── Persona change with Specialist Handover ── */
+  const handlePersonaChange = async (id: string) => {
     speechEngine.stop();
     setIsPlaying(false);
     setActivePersonaId(id);
-    const greeting = `Hello ${patient.name.split(' ')[0]}. This is ${virtualDoctorScreeningEngine.getPersonaById(id, user).name.split(',')[0]}, switching to your consultation now. How can I help?`;
-    const t: DialogueTurn = { id: `sw${Date.now()}`, speaker: 'doctor', text: greeting, time: ts(), quickReplies: ["Tell me about my medications", "My symptoms today", "I have a question"] };
+    const targetPersona = virtualDoctorScreeningEngine.getPersonaById(id, user);
+
+    let greeting = `Hello ${patient.name.split(' ')[0]}. This is ${targetPersona.name.split(',')[0]}, switching to your consultation now. How can I help?`;
+    let quickReplies = ["Tell me about my medications", "My symptoms today", "I have a question"];
+
+    try {
+      const token = localStorage.getItem('heal_token') || sessionStorage.getItem('heal_token');
+      const res = await fetch('/api/screening/specialist-switch', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        body: JSON.stringify({
+          previousPersonaId: activePersonaId,
+          targetPersonaId: id,
+          patientName: patient.name
+        })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.handoverMessage) greeting = data.handoverMessage;
+        if (data.suggestedQuickReplies) quickReplies = data.suggestedQuickReplies;
+      }
+    } catch {
+      // Fallback greeting already prepared
+    }
+
+    const t: DialogueTurn = {
+      id: `sw${Date.now()}`,
+      speaker: 'doctor',
+      text: greeting,
+      time: ts(),
+      personaId: id,
+      personaName: targetPersona.name,
+      quickReplies
+    };
     setDialogueHistory(prev => [...prev, t]);
     setPosture('greeting');
     setSpeakingText(greeting);
@@ -1260,6 +1402,19 @@ DISCLAIMER: This is an AI-assisted summary. Not a substitute for physician revie
                         ))}
                       </div>
                     )}
+                    {turn.ragEvidence && turn.ragEvidence.length > 0 && (
+                      <div className="mt-2 pt-1.5 flex flex-wrap items-center gap-1" style={{ borderTop: '1px solid var(--rule)' }}>
+                        <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded flex items-center gap-1" style={{ background: '#CCFBF1', color: '#0F766E' }}>
+                          <BookOpen className="w-2.5 h-2.5" />
+                          {turn.ragEvidence.length} Guidelines Cited
+                        </span>
+                        {turn.ragEvidence.slice(0, 2).map((ev, i) => (
+                          <span key={i} className="text-[9px] font-mono px-1 py-0.5" style={{ background: 'var(--bg-surface)', color: 'var(--text-muted)', border: '1px solid var(--rule)' }}>
+                            {ev.sourceOrganization} ({(ev.similarityScore * 100).toFixed(0)}%)
+                          </span>
+                        ))}
+                      </div>
+                    )}
                     {turn.safetyAlert && (
                       <div className="mt-2 p-2 flex items-start gap-1.5 text-[10px]"
                         style={{ background: '#FEF3C7', border: '1px solid #F59E0B', borderLeft: '3px solid #F59E0B', color: '#92400E' }}>
@@ -1286,6 +1441,7 @@ DISCLAIMER: This is an AI-assisted summary. Not a substitute for physician revie
                 { id: 'soap',   label: 'SOAP Note',    icon: <FileText className="w-3.5 h-3.5" /> },
                 { id: 'safety', label: 'Safety Matrix', icon: <ShieldCheck className="w-3.5 h-3.5" /> },
                 { id: 'sbar',   label: 'Handover',      icon: <Stethoscope className="w-3.5 h-3.5" /> },
+                { id: 'rag',    label: 'Guideline RAG', icon: <BookOpen className="w-3.5 h-3.5" /> },
               ] as const).map(t => (
                 <button key={t.id} onClick={() => setActiveTab(t.id)}
                   className="flex items-center gap-1.5 px-3 py-2.5 text-[11px] font-mono font-bold uppercase tracking-wider whitespace-nowrap cursor-pointer transition-colors flex-shrink-0"
@@ -1301,6 +1457,13 @@ DISCLAIMER: This is an AI-assisted summary. Not a substitute for physician revie
             <div>
               {activeTab === 'soap'   && <SoapNoteCard soap={soap} patientName={patient.name} specialistName={activePersona.name.split(',')[0]} />}
               {activeTab === 'safety' && <SafetyMatrixCard entries={safetyMatrix} />}
+              {activeTab === 'rag'    && (
+                <ClinicalRagCard
+                  evidence={currentRagEvidence}
+                  specialistName={activePersona.name.split(',')[0]}
+                  summary={latestRagContext}
+                />
+              )}
               {activeTab === 'sbar'   && (
                 <SbarCard
                   patientName={patient.name}

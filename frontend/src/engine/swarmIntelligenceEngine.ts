@@ -295,7 +295,7 @@ export class SwarmIntelligenceEngine {
       {
         personaId: personaBId,
         personaName: personaB.name,
-        argument: `That resolves the friction! Topical Lidocaine provides targeted knee analgesia with negligible plasma absorption (<3%), safeguarding both eGFR stability and Eleanor's daily mobility.`,
+        argument: `That resolves the friction! Topical Lidocaine provides targeted knee analgesia with negligible plasma absorption (<3%), safeguarding both eGFR stability and patient functional mobility.`,
         evidenceRef: 'OARSI Clinical Practice Guidelines for Osteoarthritis',
         tensionScore: 10
       }

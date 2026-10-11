@@ -88,6 +88,8 @@ export const ExpressionController: React.FC<ExpressionControllerProps> = ({
     return () => clearInterval(saccadeInterval);
   }, [behavior.state]);
 
+  const lastEmittedRef = useRef<FacialExpressionWeights | null>(null);
+
   // 3. Continuous frame loop updating final expression weights & gaze
   useEffect(() => {
     const loop = () => {
@@ -132,7 +134,20 @@ export const ExpressionController: React.FC<ExpressionControllerProps> = ({
         gazeVector: [baseGazeX, baseGazeY, baseGazeZ]
       };
 
-      onExpressionUpdate?.(weights);
+      const prev = lastEmittedRef.current;
+      const hasSignificantChange = !prev ||
+        Math.abs(weights.eyeBlinkLeft - prev.eyeBlinkLeft) > 0.01 ||
+        Math.abs(weights.browInnerUp - prev.browInnerUp) > 0.01 ||
+        Math.abs(weights.browDown - prev.browDown) > 0.01 ||
+        Math.abs(weights.mouthSmile - prev.mouthSmile) > 0.01 ||
+        Math.abs(weights.gazeVector[0] - prev.gazeVector[0]) > 0.005 ||
+        Math.abs(weights.gazeVector[1] - prev.gazeVector[1]) > 0.005;
+
+      if (hasSignificantChange) {
+        lastEmittedRef.current = weights;
+        onExpressionUpdate?.(weights);
+      }
+
       animFrameRef.current = requestAnimationFrame(loop);
     };
 

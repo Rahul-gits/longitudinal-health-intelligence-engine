@@ -62,7 +62,7 @@ export const canonicalPatients: Map<string, CanonicalPatientState> = new Map([
       gender: 'Female',
       dob: '1958-03-14',
       conditions: [
-        { name: 'Chronic Kidney Disease', stage: 'Stage 3b (eGFR 38 mL/min)', onset: '2023-04', status: 'ACTIVE' },
+        { name: 'Chronic Kidney Disease', stage: 'Stage 3a (eGFR 52 mL/min)', onset: '2023-04', status: 'ACTIVE' },
         { name: 'Essential Hypertension', stage: 'Stage 1 (Controlled)', onset: '2019-11', status: 'ACTIVE' },
         { name: 'Osteoarthritis', stage: 'Bilateral Knees', onset: '2021-08', status: 'ACTIVE' },
         { name: 'Type 2 Diabetes Mellitus', stage: 'Mild (HbA1c 6.8%)', onset: '2022-01', status: 'ACTIVE' }
@@ -74,8 +74,8 @@ export const canonicalPatients: Map<string, CanonicalPatientState> = new Map([
         { drug: 'Atorvastatin', dose: '20mg', freq: 'Daily bedtime', adherence: 95, indication: 'Lipid Management' }
       ],
       biomarkers: [
-        { marker: 'eGFR', baseline: 64, current: 38, unit: 'mL/min/1.73m²', trend: 'declining' },
-        { marker: 'Serum Creatinine', baseline: 1.10, current: 1.42, unit: 'mg/dL', trend: 'declining' },
+        { marker: 'eGFR', baseline: 64, current: 52, unit: 'mL/min/1.73m²', trend: 'declining' },
+        { marker: 'Serum Creatinine', baseline: 1.18, current: 1.45, unit: 'mg/dL', trend: 'declining' },
         { marker: 'Serum Potassium', baseline: 4.4, current: 4.8, unit: 'mEq/L', trend: 'stable' },
         { marker: 'Blood Pressure (SBP)', baseline: 128, current: 126, unit: 'mmHg', trend: 'stable' }
       ],

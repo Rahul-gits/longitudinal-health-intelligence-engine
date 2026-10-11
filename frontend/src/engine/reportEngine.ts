@@ -83,7 +83,7 @@ export class ReportEngine {
         { name: 'Serum Potassium', value: '4.6 mEq/L', status: 'normal' },
         { name: 'NT-proBNP', value: '480 pg/mL', status: 'abnormal' }
       ],
-      ocrTextSnippet: `QUEST DIAGNOSTICS - CLINICAL LABORATORY REPORT\nPatient: Eleanor Vance | DOB: 1962-03-11 | Order Date: 2026-08-10\nSPECIMEN: Blood\nCREATININE: 1.45 H (Ref: 0.60-1.10 mg/dL)\neGFR: 52 L (Ref: >60 mL/min/1.73m2)\nNT-proBNP: 480 H (Ref: <125 pg/mL)\nValidated by Pathologist Dr. R. Mehta, MD`,
+      ocrTextSnippet: `QUEST DIAGNOSTICS - CLINICAL LABORATORY REPORT\nPatient: Verified Patient Record | DOB: 1962-03-11 | Order Date: 2026-08-10\nSPECIMEN: Blood\nCREATININE: 1.45 H (Ref: 0.60-1.10 mg/dL)\neGFR: 52 L (Ref: >60 mL/min/1.73m2)\nNT-proBNP: 480 H (Ref: <125 pg/mL)\nValidated by Pathologist Dr. R. Mehta, MD`,
       confidenceScore: 98.4
     };
   }

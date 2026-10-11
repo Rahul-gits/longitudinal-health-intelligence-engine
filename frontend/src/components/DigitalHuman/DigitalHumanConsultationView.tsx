@@ -449,7 +449,7 @@ export const DigitalHumanConsultationView: React.FC<DigitalHumanConsultationView
                 Select Clinical Specialist
               </div>
               {[
-                { id: 'doc-thorne', name: 'Dr. Jacob Jones, MD', role: 'Cardiorenal Medicine' },
+                { id: 'doc-thorne', name: 'Dr. Aris Thorne, MD', role: 'Cardiorenal Medicine' },
                 { id: 'doc-lin', name: 'Dr. Maya Lin, PharmD', role: 'Clinical Pharmacology' },
                 { id: 'doc-vance', name: 'Dr. Marcus Vance, MD', role: 'Family Medicine' },
                 { id: 'doc-chen', name: 'Dr. Sarah Chen, MD', role: 'Nephrology' }
@@ -653,11 +653,13 @@ export const DigitalHumanConsultationView: React.FC<DigitalHumanConsultationView
                 className="w-full h-full object-cover transform -scale-x-100"
               />
             ) : (
-              <img 
-                src="/avatars/patient-eleanor.jpg" 
-                alt={`You (${displayPatientName})`} 
-                className="w-full h-full object-cover"
-              />
+              <div className="w-full h-full bg-slate-800 flex flex-col items-center justify-center text-white p-2 text-center">
+                <div className="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center font-bold text-lg mb-1 shadow-inner">
+                  {displayPatientName.charAt(0).toUpperCase() || 'P'}
+                </div>
+                <span className="text-[11px] font-bold truncate max-w-[120px]">{displayPatientName}</span>
+                <span className="text-[9px] text-slate-300">Self Video (Standby)</span>
+              </div>
             )
           ) : (
             <div className="w-full h-full bg-slate-950 flex flex-col items-center justify-center text-slate-500">

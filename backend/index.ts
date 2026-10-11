@@ -35,7 +35,23 @@ const PORT = process.env.PORT || 5000;
 
 // Security & Robustness Middleware
 app.use(secureHeadersMiddleware);
-app.use(cors());
+
+const allowedOrigins = process.env.CORS_ALLOWED_ORIGINS
+  ? process.env.CORS_ALLOWED_ORIGINS.split(',').map(s => s.trim())
+  : ['http://localhost:3000', 'http://localhost:5000', 'http://127.0.0.1:3000', 'http://127.0.0.1:5000'];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin) || process.env.NODE_ENV !== 'production') {
+      callback(null, true);
+    } else {
+      callback(new Error('Blocked by CORS policy for clinical data protection'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-session-id', 'x-patient-id', 'x-user-role', 'x-tenant-id']
+}));
 app.use(rateLimitMiddleware);
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
@@ -137,14 +153,20 @@ app.use((_req: Request, res: Response) => {
   });
 });
 
-// Global Error Handler
+// Global Error Handler (V17: Production error sanitization)
 app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
   console.error('[HEAL-ENGINE-ERROR]', err);
-  res.status(500).json({
+  const isProd = process.env.NODE_ENV === 'production';
+  const statusCode = err.status || err.statusCode || 500;
+  res.status(statusCode).json({
     success: false,
-    error: err.message || 'Internal Server Error in Clinical Engine'
+    error: isProd
+      ? 'An unexpected error occurred in clinical processing. Please contact system support.'
+      : (err.message || 'Internal Server Error in Clinical Engine'),
+    code: err.code || 'INTERNAL_SERVER_ERROR'
   });
 });
+
 
 // Start Server
 app.listen(PORT, () => {

@@ -71,7 +71,7 @@ interface AuthContextType {
     hasUploadedRecords?: boolean;
   }) => Promise<boolean>;
   logout: () => Promise<void>;
-  demoLoginAs: (role: 'eleanor' | 'rahul') => Promise<void>;
+  demoLoginAs: (role?: 'eleanor' | 'rahul' | 'guest') => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -103,15 +103,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setActiveEmail(session.user.email);
           setAuthState(evaluateUserState(session.user));
         } else {
-          // If fresh session, check stored user
-          const stored = getStoredUser();
-          if (stored) {
-            setUser(stored);
-            setActiveEmail(stored.email);
-            setAuthState(evaluateUserState(stored));
-          } else {
-            setAuthState('UNAUTHENTICATED');
-          }
+          setUser(null);
+          setAuthState('UNAUTHENTICATED');
         }
       } catch {
         setAuthState('UNAUTHENTICATED');
@@ -326,11 +319,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const demoLoginAs = async (role: 'eleanor' | 'rahul') => {
-    if (role === 'eleanor') {
-      await login('eleanor@example.com', 'HealDemo2026!');
-    } else {
-      await login('rahul@example.com', 'HealDemo2026!');
+  const demoLoginAs = async (role: 'eleanor' | 'rahul' | 'guest' = 'guest') => {
+    setIsLoading(true);
+    try {
+      const guestUser: AuthUser = {
+        id: `usr_guest_${Date.now()}`,
+        email: 'guest.patient@healengine.local',
+        fullName: role === 'rahul' ? 'Dr. Lead Clinician' : 'Guest Patient',
+        emailVerified: true,
+        consentAccepted: true,
+        profileCompleted: true,
+        createdAt: new Date().toISOString(),
+        lastLoginAt: new Date().toISOString(),
+        profile: {
+          conditions: [],
+          medications: [],
+          allergies: [],
+          baselineStatus: 'Active standalone session'
+        }
+      };
+      setStoredSession(`sess_guest_${Date.now()}`, guestUser);
+      setUser(guestUser);
+      setAuthState('AUTHENTICATED');
+    } finally {
+      setIsLoading(false);
     }
   };
 

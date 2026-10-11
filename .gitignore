@@ -14,6 +14,21 @@ dist-ssr
 .env
 .env.*
 !.env.example
+!.env.production.example
+
+# Certificates, private keys, secrets, and database dumps
+*.pem
+*.key
+*.cert
+*.crt
+*.pfx
+*.p12
+*.sql
+*.dump
+*.db
+*.sqlite
+secrets/
+private/
 
 # Editor directories and files
 .vscode/*
@@ -28,3 +43,4 @@ dist-ssr
 *.zip
 backend/db/*.zip
 devops/*.glb
+

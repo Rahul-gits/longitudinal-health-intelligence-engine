@@ -26,58 +26,52 @@ export const ProfileSetupView: React.FC = () => {
   const [preferredLanguage, setPreferredLanguage] = useState<string>('English');
   const [communicationPref, setCommunicationPref] = useState<string>('Email & SMS');
 
-  // Step 2: Health Context
-  const [conditions, setConditions] = useState<string[]>([
-    'Heart Failure with Preserved Ejection Fraction (HFpEF)',
-    'Chronic Kidney Disease (Stage 3b)'
-  ]);
+  // Step 2: Health Context (User-driven & interactive)
+  const [conditions, setConditions] = useState<string[]>([]);
   const [newConditionInput, setNewConditionInput] = useState<string>('');
 
-  const [medications, setMedications] = useState<string[]>([
-    'Empagliflozin 10mg',
-    'Furosemide 40mg',
-    'Spironolactone 25mg'
-  ]);
+  const [medications, setMedications] = useState<string[]>([]);
   const [newMedicationInput, setNewMedicationInput] = useState<string>('');
 
-  const [allergies, setAllergies] = useState<string[]>([
-    'NSAIDs (Ibuprofen/Naproxen)',
-    'Penicillin'
-  ]);
+  const [allergies, setAllergies] = useState<string[]>([]);
   const [newAllergyInput, setNewAllergyInput] = useState<string>('');
 
-  // Step 3: Health Data Upload Simulation
+  // Step 3: Health Data Upload
   const [uploadedFiles, setUploadedFiles] = useState<string[]>([]);
   const [isUploading, setIsUploading] = useState<boolean>(false);
 
-  const handleAddCondition = () => {
-    if (newConditionInput.trim() && !conditions.includes(newConditionInput.trim())) {
-      setConditions([...conditions, newConditionInput.trim()]);
-      setNewConditionInput('');
+  const handleAddCondition = (customName?: string) => {
+    const text = (customName || newConditionInput).trim();
+    if (text && !conditions.includes(text)) {
+      setConditions([...conditions, text]);
+      if (!customName) setNewConditionInput('');
     }
   };
 
-  const handleAddMedication = () => {
-    if (newMedicationInput.trim() && !medications.includes(newMedicationInput.trim())) {
-      setMedications([...medications, newMedicationInput.trim()]);
-      setNewMedicationInput('');
+  const handleAddMedication = (customName?: string) => {
+    const text = (customName || newMedicationInput).trim();
+    if (text && !medications.includes(text)) {
+      setMedications([...medications, text]);
+      if (!customName) setNewMedicationInput('');
     }
   };
 
-  const handleAddAllergy = () => {
-    if (newAllergyInput.trim() && !allergies.includes(newAllergyInput.trim())) {
-      setAllergies([...allergies, newAllergyInput.trim()]);
-      setNewAllergyInput('');
+  const handleAddAllergy = (customName?: string) => {
+    const text = (customName || newAllergyInput).trim();
+    if (text && !allergies.includes(text)) {
+      setAllergies([...allergies, text]);
+      if (!customName) setNewAllergyInput('');
     }
   };
 
   const handleSimulateUpload = () => {
     setIsUploading(true);
     setTimeout(() => {
-      setUploadedFiles(['EHR_Lab_Panel_Sept2026.pdf', 'Echocardiogram_Report_HFpEF.pdf']);
+      setUploadedFiles(['Patient_Clinical_Summary.pdf', 'Comprehensive_Metabolic_Panel.pdf']);
       setIsUploading(false);
-    }, 1200);
+    }, 1000);
   };
+
 
   const handleFinish = async (skipData: boolean = false) => {
     await submitProfile({
@@ -230,7 +224,7 @@ export const ProfileSetupView: React.FC = () => {
               />
               <button
                 type="button"
-                onClick={handleAddCondition}
+                onClick={() => handleAddCondition()}
                 className="px-3 py-1.5 bg-[#F1F5F9] hover:bg-[#E2E8F0] text-[#1E293B] text-xs font-bold rounded-xl border border-[#CBD5E1]"
               >
                 + Add
@@ -271,7 +265,7 @@ export const ProfileSetupView: React.FC = () => {
               />
               <button
                 type="button"
-                onClick={handleAddMedication}
+                onClick={() => handleAddMedication()}
                 className="px-3 py-1.5 bg-[#F1F5F9] hover:bg-[#E2E8F0] text-[#1E293B] text-xs font-bold rounded-xl border border-[#CBD5E1]"
               >
                 + Add
@@ -312,7 +306,7 @@ export const ProfileSetupView: React.FC = () => {
               />
               <button
                 type="button"
-                onClick={handleAddAllergy}
+                onClick={() => handleAddAllergy()}
                 className="px-3 py-1.5 bg-[#F1F5F9] hover:bg-[#E2E8F0] text-[#1E293B] text-xs font-bold rounded-xl border border-[#CBD5E1]"
               >
                 + Add

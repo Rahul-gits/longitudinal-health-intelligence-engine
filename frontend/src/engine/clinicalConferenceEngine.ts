@@ -127,7 +127,7 @@ export class ClinicalConferenceEngine {
         personaId: 'clinical',
         timestamp,
         headline: 'Clinical Reasoning & History Mapping',
-        speechText: `Cross-referencing "${userQuery}" with Eleanor's history (CKD Stage 2 & Hypertension). Symptoms align with fluid balance or metabolic fluctuations.`,
+        speechText: `Cross-referencing "${userQuery}" with active clinical history (CKD Stage 2 & Hypertension). Symptoms align with fluid balance or metabolic fluctuations.`,
         citedClusterIds: ['symptoms', 'history', 'reports'],
         citedNodeIds: ['hist-2', 'rep-2'],
         turnType: 'correlation',

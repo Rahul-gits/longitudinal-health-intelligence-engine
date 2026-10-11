@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { vectorDatabase } from '../db/vectorDatabase';
+import { validateSession } from './authRoutes';
 
 const router = Router();
 
@@ -99,6 +100,19 @@ router.post('/ingest', (req: Request, res: Response) => {
         status: 'error',
         message: 'Missing required ingestion fields: "title", "sourceOrganization", "clinicalDomain", and "content" are required.'
       });
+    }
+
+    const authHeader = req.headers.authorization;
+    const sessionId = (req.headers['x-session-id'] as string) || (authHeader ? authHeader.replace('Bearer ', '') : null);
+    if (sessionId) {
+      const sessionResult = validateSession(sessionId);
+      if (sessionResult && sessionResult.user.role === 'patient') {
+        return res.status(403).json({
+          status: 'error',
+          error: 'FORBIDDEN_ROLE',
+          message: 'Patients cannot modify or inject clinical guidelines into the RAG vector store.'
+        });
+      }
     }
 
     const ingestedChunk = vectorDatabase.ingest({

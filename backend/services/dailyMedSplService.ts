@@ -181,12 +181,14 @@ export class DailyMedSplService {
         }
       };
 
-      // Ingest into vectorDatabase (automatically embeds into 128-d dense vector and persists)
-      vectorDatabase.ingest(payload);
+      // Ingest into vectorDatabase in-memory and flush to disk once at loop completion
+      vectorDatabase.ingest(payload, true);
 
       domainDist[record.clinicalDomain] = (domainDist[record.clinicalDomain] || 0) + 1;
       ingestedNames.push(record.medicationName);
     }
+
+    vectorDatabase.persist();
 
     return {
       ingestedCount: records.length,

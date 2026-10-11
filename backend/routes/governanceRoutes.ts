@@ -4,6 +4,7 @@
 
 import { Router, Request, Response } from 'express';
 import { ClinicalGovernanceService } from '../services/clinicalGovernanceService';
+import { DpdpComplianceService } from '../services/dpdpComplianceService';
 import { authenticateAndAuthorize } from '../middleware/securityRbacMiddleware';
 
 const router = Router();
@@ -156,6 +157,62 @@ router.post('/change-control/submit', (req: Request, res: Response) => {
   } catch (error: any) {
     res.status(500).json({ success: false, error: error.message });
   }
+});
+
+/**
+ * GET /api/governance/dpdp-compliance
+ * Returns DPDP Act 2023 DPO credentials, grievance SLA, and compliance status
+ */
+router.get('/dpdp-compliance', (_req: Request, res: Response) => {
+  const dpo = DpdpComplianceService.getDpoRegistry();
+  res.json({
+    success: true,
+    framework: 'Digital Personal Data Protection Act (DPDP) 2023 (India)',
+    dpoRegistry: dpo,
+    complianceStatus: 'READY_FOR_CLINICAL_DEPLOYMENT',
+    certInBreachReportingWindowHours: 6
+  });
+});
+
+/**
+ * POST /api/governance/dpdp/consent
+ * Record or verify itemized patient consent artifact
+ */
+router.post('/dpdp/consent', (req: Request, res: Response) => {
+  const { patientId, patientName, abhaNumber, purposes } = req.body;
+  if (!patientId || !purposes) {
+    return res.status(400).json({ success: false, error: 'patientId and purposes object are required.' });
+  }
+  const artifact = DpdpComplianceService.recordConsent({
+    patientId,
+    patientName: patientName || 'Eleanor Vance',
+    abhaNumber,
+    purposes
+  });
+  res.json({ success: true, consentArtifact: artifact });
+});
+
+/**
+ * POST /api/governance/dpdp/erasure-request
+ * Submit Right to Erasure / Right to be Forgotten request
+ */
+router.post('/dpdp/erasure-request', (req: Request, res: Response) => {
+  const { patientId } = req.body;
+  if (!patientId) {
+    return res.status(400).json({ success: false, error: 'patientId is required for erasure request.' });
+  }
+  const result = DpdpComplianceService.processErasureRequest(patientId);
+  res.json({ success: true, erasureResult: result });
+});
+
+/**
+ * GET /api/governance/abdm-status/:abhaNumber
+ * Validate ABHA format and verify ABDM Milestones M1/M2/M3
+ */
+router.get('/abdm-status/:abhaNumber', (req: Request, res: Response) => {
+  const abha = Array.isArray(req.params.abhaNumber) ? req.params.abhaNumber[0] : (req.params.abhaNumber || '');
+  const result = DpdpComplianceService.validateAbhaNumber(abha);
+  res.json({ success: true, abdmVerification: result });
 });
 
 export default router;

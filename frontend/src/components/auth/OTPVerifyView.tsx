@@ -5,7 +5,7 @@ import { AlertCircle, Loader2, KeyRound, RefreshCw, Sparkles } from 'lucide-reac
 
 export const OTPVerifyView: React.FC = () => {
   const { verifyOtp, activeEmail, demoOtp, error, isLoading, setError, setAuthView } = useAuth();
-  const [digits, setDigits] = useState<string[]>(['4', '2', '8', '1', '9', '3']);
+  const [digits, setDigits] = useState<string[]>(['', '', '', '', '', '']);
   const [resendTimer, setResendTimer] = useState<number>(42);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 

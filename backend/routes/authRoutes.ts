@@ -65,6 +65,7 @@ export interface SessionRecord {
   userId: string;
   createdAt: string;
   expiresAt: string;
+  mfaVerified?: boolean;
 }
 
 export const usersDb: Map<string, UserRecord> = new Map();
@@ -125,15 +126,62 @@ const defaultEleanorUser: UserRecord = {
     sex: 'Female',
     preferredLanguage: 'English',
     communicationPref: 'SMS & Mobile App',
-    conditions: ['Heart Failure with Preserved Ejection Fraction (HFpEF)', 'CKD Stage 3b', 'T2D'],
-    medications: ['Empagliflozin 10mg', 'Furosemide 40mg', 'Spironolactone 25mg'],
+    conditions: ['Heart Failure with Preserved Ejection Fraction (HFpEF)', 'Chronic Kidney Disease (Stage 3a)', 'Essential Hypertension', 'Type 2 Diabetes Mellitus'],
+    medications: ['Lisinopril 20mg', 'Empagliflozin 10mg', 'Furosemide 40mg', 'Spironolactone 25mg'],
     allergies: ['Sulfa drugs', 'NSAIDs (Avoid)'],
     hasUploadedRecords: true
   }
 };
 
-usersDb.set(defaultDemoUser.email.toLowerCase(), defaultDemoUser);
-usersDb.set(defaultEleanorUser.email.toLowerCase(), defaultEleanorUser);
+export function seedDemoUsers(): void {
+  usersDb.set(defaultDemoUser.email.toLowerCase(), defaultDemoUser);
+  usersDb.set(defaultEleanorUser.email.toLowerCase(), defaultEleanorUser);
+}
+
+// Only seed default demo users in development / non-production mode
+if (process.env.NODE_ENV !== 'production') {
+  seedDemoUsers();
+}
+
+export const COMMON_BREACHED_PASSWORDS = new Set([
+  'password',
+  'password123',
+  '12345678',
+  '123456789',
+  '1234567890',
+  'qwerty123',
+  'admin123',
+  'welcome1',
+  'welcome123',
+  'letmein123',
+  'healdemo123',
+  'iloveyou1',
+  'changeme123',
+  'doctor123',
+  'hospital123',
+  'medical123',
+  'passw0rd123',
+  'secret123',
+  'sunshine1',
+  'princess1'
+]);
+
+export function isBreachedOrCommonPassword(pwd: string): boolean {
+  if (!pwd) return true;
+  const lower = pwd.toLowerCase().trim();
+  if (COMMON_BREACHED_PASSWORDS.has(lower)) return true;
+  if (/^(.)\1+$/.test(pwd)) return true;
+  return false;
+}
+
+export function isStrongPassword(pwd: string): boolean {
+  if (!pwd || pwd.length < 8) return false;
+  const hasUpper = /[A-Z]/.test(pwd);
+  const hasLower = /[a-z]/.test(pwd);
+  const hasDigitOrSpecial = /[0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(pwd);
+  return hasUpper && hasLower && hasDigitOrSpecial && !isBreachedOrCommonPassword(pwd);
+}
+
 
 // ============================================================================
 // Session Validation — exported for RBAC middleware
@@ -189,9 +237,13 @@ router.post('/register', (req: Request, res: Response) => {
     return res.status(400).json({ success: false, error: 'Full name, email, and password are required.' });
   }
 
-  if (typeof password !== 'string' || password.length < 8) {
-    return res.status(400).json({ success: false, error: 'Password must be at least 8 characters.' });
+  if (typeof password !== 'string' || !isStrongPassword(password)) {
+    return res.status(400).json({
+      success: false,
+      error: 'Password must be at least 8 characters, include uppercase, lowercase, numbers/symbols, and not appear in common breached password lists.'
+    });
   }
+
 
   const normalizedEmail = email.trim().toLowerCase();
   if (usersDb.has(normalizedEmail)) {
@@ -282,23 +334,48 @@ router.post('/login', (req: Request, res: Response) => {
     });
   }
 
-  // Successful login — reset failure counters
-  user.failedLoginAttempts = 0;
-  user.lockedUntil = null;
-  user.lastLoginAt = new Date().toISOString();
-  usersDb.set(normalizedEmail, user);
+  // Privileged role MFA verification (clinician or admin)
+  const isPrivileged = user.role === 'clinician' || user.role === 'admin';
+  const enforceMfa = process.env.ENFORCE_PRIVILEGED_MFA === 'true';
+
+  if (isPrivileged && enforceMfa) {
+    const { mfaOtp } = req.body;
+    if (!mfaOtp) {
+      const otpCode = generateOtp();
+      activeOtps.set(normalizedEmail, { otp: otpCode, expiresAt: Date.now() + 5 * 60 * 1000 });
+      return res.status(200).json({
+        success: false,
+        mfaRequired: true,
+        message: 'Multi-factor authentication required for privileged role. Verification code sent.',
+        email: normalizedEmail,
+        ...(process.env.NODE_ENV !== 'production' ? { demoOtp: otpCode } : {})
+      });
+    }
+
+    const storedOtp = activeOtps.get(normalizedEmail);
+    if (!storedOtp || storedOtp.otp !== mfaOtp.trim() || Date.now() > storedOtp.expiresAt) {
+      return res.status(401).json({
+        success: false,
+        error: 'INVALID_MFA_OTP',
+        message: 'Invalid or expired MFA verification code.'
+      });
+    }
+    activeOtps.delete(normalizedEmail);
+  }
 
   const sessionId = generateSessionId();
   sessionsDb.set(sessionId, {
     userId: user.id,
     createdAt: new Date().toISOString(),
-    expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
+    expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+    mfaVerified: isPrivileged ? true : undefined
   });
 
   return res.json({
     success: true,
     message: 'Signed in successfully.',
     sessionId,
+    mfaVerified: isPrivileged ? true : undefined,
     user: sanitizeUser(user)
   });
 });
@@ -575,9 +652,13 @@ router.post('/reset-password', (req: Request, res: Response) => {
     return res.status(400).json({ success: false, error: 'Reset token and new password are required.' });
   }
 
-  if (typeof newPassword !== 'string' || newPassword.length < 8) {
-    return res.status(400).json({ success: false, error: 'Password must be at least 8 characters.' });
+  if (typeof newPassword !== 'string' || !isStrongPassword(newPassword)) {
+    return res.status(400).json({
+      success: false,
+      error: 'Password must be at least 8 characters, include uppercase, lowercase, numbers/symbols, and not appear in common breached password lists.'
+    });
   }
+
 
   const record = resetTokens.get(resetToken);
   if (!record || Date.now() > record.expiresAt) {
