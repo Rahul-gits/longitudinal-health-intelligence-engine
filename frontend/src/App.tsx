@@ -1,5 +1,5 @@
 
-import React, { useState, Suspense, lazy } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { Navigation } from './components/Navigation';
 import { CommandCenter } from './components/CommandCenter';
 import { UnderstandWorkspace } from './components/UnderstandWorkspace';
@@ -20,6 +20,20 @@ import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { AuthGateway } from './components/auth/AuthGateway';
 import { Activity, ShieldAlert, Sparkles, Loader2 } from 'lucide-react';
+
+// Public Marketing, Informational & Governance Components
+import { PublicHeader } from './components/public/PublicHeader';
+import { PublicFooter } from './components/public/PublicFooter';
+import { HomePage } from './components/public/HomePage';
+import { AboutPage } from './components/public/AboutPage';
+import { SpecialistsPage } from './components/public/SpecialistsPage';
+import { TechnologyPage } from './components/public/TechnologyPage';
+import { PrivacyPolicyPage } from './components/public/PrivacyPolicyPage';
+import { TermsPage } from './components/public/TermsPage';
+import { ContactPage } from './components/public/ContactPage';
+import { CookieConsentBanner } from './components/public/CookieConsentBanner';
+import { applyPageSeoMetadata, PUBLIC_ROUTES_METADATA } from './services/seoMetadata';
+import { analyticsService } from './services/analytics';
 
 // Code-split heavy clinical laboratory and 3D consultation workspaces
 const AIVirtualSpecialistStudio = lazy(() => import('./components/AIVirtualSpecialistStudio').then(m => ({ default: m.AIVirtualSpecialistStudio })));
@@ -45,7 +59,7 @@ const VALID_TABS = new Set([
 
 const conferenceEngine = new ClinicalConferenceEngine();
 
-const MainDashboard: React.FC = () => {
+const MainDashboard: React.FC<{ onNavigatePublic?: (path: string) => void }> = ({ onNavigatePublic }) => {
   const { user } = useAuth();
   const currentPatient = getDynamicPatientProfile(user);
   const [activeTab, setActiveTab] = useState<string>('command');
@@ -206,6 +220,18 @@ const MainDashboard: React.FC = () => {
               <span>·</span>
               <button onClick={() => setActiveTab('governance')} className="hover:underline cursor-pointer">Audit &amp; DPDP</button>
               <span>·</span>
+              {onNavigatePublic && (
+                <>
+                  <button onClick={() => onNavigatePublic('/about')} className="hover:underline cursor-pointer">About</button>
+                  <span>·</span>
+                  <button onClick={() => onNavigatePublic('/specialists')} className="hover:underline cursor-pointer">Specialists</button>
+                  <span>·</span>
+                  <button onClick={() => onNavigatePublic('/privacy')} className="hover:underline cursor-pointer">Privacy</button>
+                  <span>·</span>
+                  <button onClick={() => onNavigatePublic('/contact')} className="hover:underline cursor-pointer">Contact</button>
+                  <span>·</span>
+                </>
+              )}
               <a href="tel:+18005554325" className="hover:underline inline-flex items-center gap-1" style={{ color: '#0D9488' }}>
                 Emergency: 1-800-555-HEAL
               </a>
@@ -250,13 +276,121 @@ const MainDashboard: React.FC = () => {
   );
 };
 
+const RootApp: React.FC = () => {
+  const { authState } = useAuth();
+  const [currentRoute, setCurrentRoute] = useState<string>(() => {
+    if (typeof window === 'undefined') return '/';
+    let path = window.location.pathname.toLowerCase();
+    if (path.length > 1 && path.endsWith('/')) path = path.slice(0, -1);
+    if (path === '/home') path = '/';
+    return path || '/';
+  });
+
+  const navigateTo = (path: string) => {
+    let normalized = path.toLowerCase();
+    if (normalized.length > 1 && normalized.endsWith('/')) {
+      normalized = normalized.slice(0, -1);
+    }
+    if (normalized === '/home') normalized = '/';
+    if (typeof window !== 'undefined' && window.location.pathname !== normalized) {
+      window.history.pushState({}, '', normalized);
+    }
+    setCurrentRoute(normalized);
+    applyPageSeoMetadata(normalized);
+    analyticsService.trackPublicPageView(normalized);
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  useEffect(() => {
+    let path = window.location.pathname.toLowerCase();
+    if (path.length > 1 && path.endsWith('/')) path = path.slice(0, -1);
+    if (path === '/home') path = '/';
+    setCurrentRoute(path || '/');
+    applyPageSeoMetadata(path || '/');
+    analyticsService.init();
+    analyticsService.trackPublicPageView(path || '/');
+
+    const handlePopState = () => {
+      let p = window.location.pathname.toLowerCase();
+      if (p.length > 1 && p.endsWith('/')) p = p.slice(0, -1);
+      if (p === '/home') p = '/';
+      setCurrentRoute(p || '/');
+      applyPageSeoMetadata(p || '/');
+      analyticsService.trackPublicPageView(p || '/');
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  const isPublicRoute = Object.prototype.hasOwnProperty.call(PUBLIC_ROUTES_METADATA, currentRoute);
+
+  if (isPublicRoute) {
+    return (
+      <div className="min-h-screen flex flex-col bg-[#FAF8F5] text-[#080808]">
+        <PublicHeader
+          currentPath={currentRoute}
+          onNavigate={navigateTo}
+          isAuthenticated={authState === 'AUTHENTICATED'}
+          onLaunchApp={() => navigateTo('/app')}
+        />
+        <main className="flex-1">
+          {currentRoute === '/' && (
+            <HomePage
+              onNavigate={navigateTo}
+              onLaunchApp={() => navigateTo('/app')}
+              isAuthenticated={authState === 'AUTHENTICATED'}
+            />
+          )}
+          {currentRoute === '/about' && (
+            <AboutPage
+              onNavigate={navigateTo}
+              onLaunchApp={() => navigateTo('/app')}
+            />
+          )}
+          {currentRoute === '/specialists' && (
+            <SpecialistsPage
+              onNavigate={navigateTo}
+              onLaunchApp={() => navigateTo('/app')}
+            />
+          )}
+          {currentRoute === '/technology' && (
+            <TechnologyPage
+              onNavigate={navigateTo}
+              onLaunchApp={() => navigateTo('/app')}
+            />
+          )}
+          {currentRoute === '/privacy' && (
+            <PrivacyPolicyPage onNavigate={navigateTo} />
+          )}
+          {currentRoute === '/terms' && (
+            <TermsPage onNavigate={navigateTo} />
+          )}
+          {currentRoute === '/contact' && (
+            <ContactPage onNavigate={navigateTo} />
+          )}
+        </main>
+        <PublicFooter onNavigate={navigateTo} onLaunchApp={() => navigateTo('/app')} />
+        <CookieConsentBanner onNavigate={navigateTo} />
+      </div>
+    );
+  }
+
+  // Otherwise, user is accessing the clinical application workspace
+  return (
+    <AuthGateway>
+      <MainDashboard onNavigatePublic={navigateTo} />
+    </AuthGateway>
+  );
+};
+
 export const App: React.FC = () => {
   return (
     <ThemeProvider>
       <AuthProvider>
-        <AuthGateway>
-          <MainDashboard />
-        </AuthGateway>
+        <RootApp />
       </AuthProvider>
     </ThemeProvider>
   );

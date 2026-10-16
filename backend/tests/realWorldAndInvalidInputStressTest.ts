@@ -17,6 +17,8 @@ interface TestCaseResult {
   notes: string;
 }
 
+import '../index';
+
 const SERVER_URL = 'http://localhost:5000';
 
 export async function runRealWorldAndInvalidInputTests(): Promise<{
@@ -471,16 +473,18 @@ export async function runRealWorldAndInvalidInputTests(): Promise<{
   };
 }
 
-// Auto-run
-runRealWorldAndInvalidInputTests().then(res => {
-  if (!res.allPassed) {
-    console.error('Some stress test assertions failed.');
+// Auto-run with 500ms startup delay
+setTimeout(() => {
+  runRealWorldAndInvalidInputTests().then(res => {
+    if (!res.allPassed) {
+      console.error('Some stress test assertions failed.');
+      process.exit(1);
+    } else {
+      console.log('✓ All Real-World & Invalid Input assertions 100% PASSED');
+      process.exit(0);
+    }
+  }).catch(err => {
+    console.error('Test runner fatal error:', err);
     process.exit(1);
-  } else {
-    console.log('✓ All Real-World & Invalid Input assertions 100% PASSED');
-    process.exit(0);
-  }
-}).catch(err => {
-  console.error('Test runner fatal error:', err);
-  process.exit(1);
-});
+  });
+}, 500);

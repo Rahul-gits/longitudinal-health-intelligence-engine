@@ -31,10 +31,17 @@ declare global {
  */
 export const authenticateAndAuthorize = (allowedRoles?: UserRole[]) => {
   return (req: Request, res: Response, next: NextFunction) => {
-    // 1. Extract session ID from Authorization header or x-session-id
+    // 1. Extract session ID from Authorization header, x-session-id, or secure cookie
     const authHeader = req.headers.authorization;
-    const sessionId = req.headers['x-session-id'] as string ||
+    let sessionId = req.headers['x-session-id'] as string ||
       (authHeader ? authHeader.replace('Bearer ', '') : null);
+
+    if (!sessionId && req.headers.cookie) {
+      const match = req.headers.cookie.match(/(?:^|;\s*)(?:__Host-heal\.sid|heal\.sid)=([^;]+)/);
+      if (match) {
+        sessionId = decodeURIComponent(match[1]);
+      }
+    }
 
     if (!sessionId) {
       return res.status(401).json({
@@ -90,7 +97,7 @@ export const authenticateAndAuthorize = (allowedRoles?: UserRole[]) => {
 
     // 5. Resource-Level Patient Scope Check (Prevents cross-patient leakage / IDOR / BOLA)
     const patientParam = (req.params.patientId || req.query.patientId || req.body?.patientId) as string | undefined;
-    if (patientParam && authenticatedUser.role === 'patient') {
+    if (patientParam && patientParam !== 'me' && authenticatedUser.role === 'patient') {
       if (!authenticatedUser.allowedPatientIds.includes(patientParam)) {
         return res.status(403).json({
           success: false,

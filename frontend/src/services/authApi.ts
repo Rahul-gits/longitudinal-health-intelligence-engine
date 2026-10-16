@@ -365,26 +365,117 @@ export const forgotPasswordApi = async (email: string): Promise<{ success: boole
   }
 };
 
+// ============================================================================
+// Target Architecture: Google OAuth & Resend Email OTP
+// ============================================================================
+
+export const requestEmailOtp = async (
+  email: string,
+  purpose: 'signup' | 'login' | 'verification' = 'verification'
+): Promise<{ success: boolean; message: string; cooldownSeconds?: number; demoOtp?: string }> => {
+  const res = await fetch('/api/auth/otp/request', {
+    method: 'POST',
+    credentials: 'include',
+    headers: getHeaders(),
+    body: JSON.stringify({ email, purpose })
+  });
+
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(data.error || 'Could not request a verification code');
+  }
+  return data;
+};
+
+export const verifyEmailOtp = async (
+  email: string,
+  otp: string,
+  purpose: 'signup' | 'login' | 'verification' = 'verification'
+): Promise<{ success: boolean; message: string; sessionId?: string; user?: AuthUser }> => {
+  const res = await fetch('/api/auth/otp/verify', {
+    method: 'POST',
+    credentials: 'include',
+    headers: getHeaders(),
+    body: JSON.stringify({ email, otp, purpose })
+  });
+
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(data.message || data.error || 'Verification failed. Check the code or request a new one.');
+  }
+
+  if (data.sessionId && data.user) {
+    setStoredSession(data.sessionId, data.user);
+    saveVaultUser(data.user);
+  }
+
+  return data;
+};
+
+export const verifyGoogleCredential = async (
+  credential: string
+): Promise<{ success: boolean; sessionId?: string; user?: AuthUser }> => {
+  const res = await fetch('/api/auth/google/verify-token', {
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ credential })
+  });
+
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(data.message || data.error || 'Google authentication failed');
+  }
+
+  if (data.sessionId && data.user) {
+    setStoredSession(data.sessionId, data.user);
+    saveVaultUser(data.user);
+  }
+
+  return data;
+};
+
+export const initiateGoogleLogin = () => {
+  if (typeof window !== 'undefined') {
+    window.location.assign('/api/auth/google');
+  }
+};
+
 export const checkSessionApi = async (): Promise<{ authenticated: boolean; user?: AuthUser | null }> => {
   const sessionId = getStoredSessionId();
-  if (!sessionId) return { authenticated: false, user: null };
 
   try {
-    const res = await fetch('/api/auth/me', { headers: getHeaders() });
+    const res = await fetch('/api/auth/me', {
+      credentials: 'include',
+      headers: getHeaders()
+    });
     if (res.ok) {
       const data = await res.json();
-      return { authenticated: data.authenticated, user: data.user };
+      if (data.authenticated && data.user) {
+        if (!sessionId) {
+          // If authenticated via cookie alone, update stored session
+          localStorage.setItem(USER_KEY, JSON.stringify(data.user));
+        }
+        return { authenticated: true, user: data.user };
+      }
     }
   } catch {
-    // Offline / static standalone mode
+    // Offline / standalone fallback
   }
+
+  if (!sessionId) return { authenticated: false, user: null };
+
   const stored = getStoredUser();
   return { authenticated: !!(sessionId && stored), user: stored };
 };
 
 export const logoutApi = async () => {
   try {
-    await fetch('/api/auth/logout', { method: 'POST', headers: getHeaders() });
+    await fetch('/api/auth/logout', {
+      method: 'POST',
+      credentials: 'include',
+      headers: getHeaders()
+    });
   } finally {
     clearStoredSession();
   }

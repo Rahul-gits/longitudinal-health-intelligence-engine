@@ -327,9 +327,76 @@ router.use(authenticateAndAuthorize(['patient', 'clinician', 'admin']));
 // Apply cross-patient isolation guard (uses validated session identity)
 router.use(enforceStrictPatientIsolation);
 
+// Helper to resolve patient ID for 'me' or explicit patient ID
+function resolveTargetPatientId(req: Request): string | null {
+  const paramId = req.params.id as string | undefined;
+  if (!paramId || paramId === 'me') {
+    const authUser = req.authenticatedUser;
+    if (!authUser) return null;
+    return authUser.allowedPatientIds[0] || (authUser.email === 'eleanor@example.com' ? 'patient-ev-68' : null);
+  }
+  return paramId;
+}
+
+// GET /api/patients/me (Resolve authenticated patient's own profile)
+router.get('/me', (req: Request, res: Response) => {
+  const patientId = resolveTargetPatientId(req);
+  if (!patientId) {
+    return res.status(404).json({
+      success: false,
+      error: 'NO_LINKED_PATIENT_RECORD',
+      message: 'No patient record linked to this authenticated user account.'
+    });
+  }
+  const patient = canonicalPatients.get(patientId);
+  if (!patient) {
+    return res.status(404).json({ success: false, error: 'PATIENT_NOT_FOUND', message: 'Linked patient record not found.' });
+  }
+  return res.json({ success: true, patientId, patient });
+});
+
+// PATCH /api/patients/me (Update allowed patient profile fields)
+router.patch('/me', (req: Request, res: Response) => {
+  const patientId = resolveTargetPatientId(req);
+  if (!patientId) {
+    return res.status(404).json({
+      success: false,
+      error: 'NO_LINKED_PATIENT_RECORD',
+      message: 'No patient record linked to this authenticated user account.'
+    });
+  }
+  const patient = canonicalPatients.get(patientId);
+  if (!patient) {
+    return res.status(404).json({ success: false, error: 'PATIENT_NOT_FOUND' });
+  }
+
+  const { name, dob, gender, vitals } = req.body;
+  if (name && typeof name === 'string') patient.name = name.trim();
+  if (dob && typeof dob === 'string') patient.dob = dob;
+  if (gender && typeof gender === 'string') patient.gender = gender;
+  if (vitals && typeof vitals === 'object') {
+    patient.vitals = { ...patient.vitals, ...vitals };
+  }
+
+  broadcastWorkflowEvent('PATIENT_STATE_UPDATED', { patientId, patient, message: 'Patient profile updated' }, patientId);
+
+  return res.json({
+    success: true,
+    message: 'Patient profile updated successfully.',
+    patient
+  });
+});
+
 // GET /api/patient/:id/state
 router.get('/:id/state', (req: Request, res: Response) => {
-  const patient = canonicalPatients.get(req.params.id as string) || canonicalPatients.get('patient-ev-68')!;
+  const targetId = resolveTargetPatientId(req);
+  if (!targetId) {
+    return res.status(404).json({ success: false, error: 'PATIENT_NOT_FOUND', message: 'Patient not found' });
+  }
+  const patient = canonicalPatients.get(targetId);
+  if (!patient) {
+    return res.status(404).json({ success: false, error: 'PATIENT_NOT_FOUND', message: `Patient with ID '${targetId}' was not found.` });
+  }
   return res.json({ success: true, patient });
 });
 
@@ -389,8 +456,14 @@ router.put('/:id/profile', (req: Request, res: Response) => {
 
 // GET /api/patient/:id/attention
 router.get('/:id/attention', (req: Request, res: Response) => {
-  const patientId = (req.params.id as string) || 'patient-ev-68';
-  const patient = canonicalPatients.get(patientId) || canonicalPatients.get('patient-ev-68')!;
+  const patientId = resolveTargetPatientId(req);
+  if (!patientId) {
+    return res.status(404).json({ success: false, error: 'PATIENT_NOT_FOUND' });
+  }
+  const patient = canonicalPatients.get(patientId);
+  if (!patient) {
+    return res.status(404).json({ success: false, error: 'PATIENT_NOT_FOUND', message: `Patient with ID '${patientId}' was not found.` });
+  }
   const plan = activeCarePlans.get(patient.patientId);
 
   let attentionItems = [
@@ -503,8 +576,14 @@ router.get('/:id/timeline', (req: Request, res: Response) => {
 
 // GET /api/patient/:id/care-plan
 router.get('/:id/care-plan', (req: Request, res: Response) => {
-  const patientId = (req.params.id as string) || 'patient-ev-68';
-  const plan = activeCarePlans.get(patientId) || activeCarePlans.get('patient-ev-68')!;
+  const patientId = resolveTargetPatientId(req);
+  if (!patientId) {
+    return res.status(404).json({ success: false, error: 'PATIENT_NOT_FOUND' });
+  }
+  const plan = activeCarePlans.get(patientId);
+  if (!plan) {
+    return res.status(404).json({ success: false, error: 'CARE_PLAN_NOT_FOUND', message: `No active care plan found for patient '${patientId}'.` });
+  }
   return res.json({ success: true, carePlan: plan });
 });
 

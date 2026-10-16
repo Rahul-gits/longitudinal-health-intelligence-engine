@@ -4,9 +4,9 @@ import { AuthLayout } from './AuthLayout';
 import { AlertCircle, Loader2, KeyRound, RefreshCw, Sparkles } from 'lucide-react';
 
 export const OTPVerifyView: React.FC = () => {
-  const { verifyOtp, activeEmail, demoOtp, error, isLoading, setError, setAuthView } = useAuth();
+  const { verifyOtp, requestOtp, activeEmail, demoOtp, error, isLoading, setError, setAuthView } = useAuth();
   const [digits, setDigits] = useState<string[]>(['', '', '', '', '', '']);
-  const [resendTimer, setResendTimer] = useState<number>(42);
+  const [resendTimer, setResendTimer] = useState<number>(60);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   useEffect(() => {
@@ -15,6 +15,16 @@ export const OTPVerifyView: React.FC = () => {
       return () => clearTimeout(timer);
     }
   }, [resendTimer]);
+
+  const handleResend = async () => {
+    if (!activeEmail) return;
+    try {
+      const res = await requestOtp(activeEmail, 'verification');
+      setResendTimer(res.cooldownSeconds || 60);
+    } catch {
+      // Error handled by AuthContext
+    }
+  };
 
   const handleDigitChange = (index: number, val: string) => {
     if (!/^\d*$/.test(val)) return;
@@ -114,7 +124,7 @@ export const OTPVerifyView: React.FC = () => {
           ) : (
             <button
               type="button"
-              onClick={() => setResendTimer(45)}
+              onClick={handleResend}
               className="text-[#2563EB] hover:text-[#1D4ED8] font-bold hover:underline inline-flex items-center gap-1 cursor-pointer"
             >
               <RefreshCw className="w-3 h-3" /> Resend verification code

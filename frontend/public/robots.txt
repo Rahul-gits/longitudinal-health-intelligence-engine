@@ -1,0 +1,32 @@
+# ==============================================================================
+# HEAL ENGINE — Production Robots Configuration
+# Longitudinal Clinical Decision Intelligence Operating System
+# Domain: https://healengine.hospital.org
+# ==============================================================================
+
+User-agent: *
+
+# Public Informational, Architecture, Specialist & Governance Pages
+Allow: /
+Allow: /about
+Allow: /specialists
+Allow: /technology
+Allow: /privacy
+Allow: /terms
+Allow: /contact
+Allow: /favicon.svg
+Allow: /og-image.png
+Allow: /og-image.webp
+Allow: /avatars/*.webp
+Allow: /avatars/*.jpg
+
+# Disallow Private Authenticated Workspaces & Clinical Data Endpoints
+Disallow: /api/
+Disallow: /app/
+Disallow: /dashboard/
+Disallow: /clinical/
+Disallow: /patient/
+Disallow: /auth/
+
+# Sitemap Declaration
+Sitemap: https://healengine.hospital.org/sitemap.xml

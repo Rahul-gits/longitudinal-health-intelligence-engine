@@ -1,5 +1,9 @@
 import { Router, Request, Response } from 'express';
 import crypto from 'crypto';
+import { sendOtpEmail } from '../services/emailService';
+import { OtpService } from '../services/otpService';
+import { GoogleAuthService } from '../services/googleAuthService';
+import { SessionStore, activeSessions } from '../services/sessionStore';
 
 const router = Router();
 
@@ -38,6 +42,8 @@ export interface UserRecord {
   allowedPatientIds: string[];
   tenantId: string;
   emailVerified: boolean;
+  emailVerifiedAt?: string;
+  googleSubject?: string;
   consentAccepted: boolean;
   profileCompleted: boolean;
   failedLoginAttempts: number;
@@ -69,8 +75,8 @@ export interface SessionRecord {
 }
 
 export const usersDb: Map<string, UserRecord> = new Map();
-export const sessionsDb: Map<string, SessionRecord> = new Map();
-const activeOtps: Map<string, { otp: string; expiresAt: number }> = new Map();
+// Synchronized active session database backed by memory and PostgreSQL
+export const sessionsDb: Map<string, SessionRecord> = activeSessions;
 
 // ============================================================================
 // Demo Seed Users — passwords hashed with scrypt at startup
@@ -225,12 +231,66 @@ function generateOtp(): string {
 const MAX_FAILED_ATTEMPTS = 5;
 const LOCKOUT_DURATION_MS = 15 * 60 * 1000; // 15 minutes
 
+/**
+ * Extracts session ID from x-session-id header, Authorization Bearer header, or HttpOnly cookie.
+ */
+export function extractSessionId(req: Request): string | null {
+  if (req.headers['x-session-id']) {
+    return req.headers['x-session-id'] as string;
+  }
+  const authHeader = req.headers.authorization;
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    return authHeader.substring(7).trim();
+  }
+  const cookieHeader = req.headers.cookie;
+  if (cookieHeader) {
+    const match = cookieHeader.match(/(?:^|;\s*)(?:__Host-heal\.sid|heal\.sid)=([^;]+)/);
+    if (match) {
+      return decodeURIComponent(match[1]);
+    }
+  }
+  return null;
+}
+
+/**
+ * Sets hardened server session cookie on response.
+ */
+export function setSessionCookie(res: Response, sessionId: string): void {
+  const isProd = process.env.NODE_ENV === 'production';
+  const cookieName = isProd ? '__Host-heal.sid' : 'heal.sid';
+  const maxAgeSeconds = 7 * 24 * 60 * 60; // 7 days
+
+  const parts = [
+    `${cookieName}=${encodeURIComponent(sessionId)}`,
+    'Path=/',
+    'HttpOnly',
+    'SameSite=Lax',
+    `Max-Age=${maxAgeSeconds}`
+  ];
+  if (isProd) {
+    parts.push('Secure');
+  }
+  res.setHeader('Set-Cookie', parts.join('; '));
+}
+
+/**
+ * Invalidates session cookie on logout.
+ */
+export function clearSessionCookie(res: Response): void {
+  const isProd = process.env.NODE_ENV === 'production';
+  const cookieName = isProd ? '__Host-heal.sid' : 'heal.sid';
+  res.setHeader(
+    'Set-Cookie',
+    `${cookieName}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0; Expires=Thu, 01 Jan 1970 00:00:00 GMT`
+  );
+}
+
 // ============================================================================
 // Routes
 // ============================================================================
 
 // 1. POST /api/auth/register
-router.post('/register', (req: Request, res: Response) => {
+router.post('/register', async (req: Request, res: Response) => {
   const { fullName, email, password } = req.body;
 
   if (!fullName || !email || !password) {
@@ -243,7 +303,6 @@ router.post('/register', (req: Request, res: Response) => {
       error: 'Password must be at least 8 characters, include uppercase, lowercase, numbers/symbols, and not appear in common breached password lists.'
     });
   }
-
 
   const normalizedEmail = email.trim().toLowerCase();
   if (usersDb.has(normalizedEmail)) {
@@ -269,30 +328,25 @@ router.post('/register', (req: Request, res: Response) => {
 
   usersDb.set(normalizedEmail, newUser);
 
-  const otpCode = generateOtp();
-  activeOtps.set(normalizedEmail, { otp: otpCode, expiresAt: Date.now() + 10 * 60 * 1000 });
+  // Request single-use HMAC-hashed OTP via OtpService
+  const otpResult = await OtpService.requestOtp(normalizedEmail, 'signup');
+  if (otpResult.otp) {
+    sendOtpEmail(normalizedEmail, otpResult.otp, 'signup').catch(err => {
+      console.warn('[AUTH] Notice: Resend email notification logged:', err.message);
+    });
+  }
 
-  const sessionId = generateSessionId();
-  sessionsDb.set(sessionId, {
-    userId: newUser.id,
-    createdAt: new Date().toISOString(),
-    expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
-  });
-
-  // In production, OTP is sent via email/SMS. In dev, include it for testing.
-  const isDev = process.env.NODE_ENV !== 'production';
-
+  // P0 Gating: Account remains in pending state. NO session created until verified.
   return res.status(201).json({
     success: true,
-    message: 'Account created successfully. Verification code sent.',
-    sessionId,
-    user: sanitizeUser(newUser),
-    ...(isDev ? { demoOtp: otpCode } : {})
+    message: 'Account created successfully. A verification code has been dispatched to your email.',
+    requiresVerification: true,
+    user: sanitizeUser(newUser)
   });
 });
 
 // 2. POST /api/auth/login
-router.post('/login', (req: Request, res: Response) => {
+router.post('/login', async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
@@ -320,7 +374,6 @@ router.post('/login', (req: Request, res: Response) => {
   }
 
   // FIXED: Real password verification using constant-time comparison.
-  // No backdoor passwords. No universal bypass.
   if (!verifyPassword(password, user.passwordHash)) {
     user.failedLoginAttempts += 1;
     if (user.failedLoginAttempts >= MAX_FAILED_ATTEMPTS) {
@@ -341,35 +394,33 @@ router.post('/login', (req: Request, res: Response) => {
   if (isPrivileged && enforceMfa) {
     const { mfaOtp } = req.body;
     if (!mfaOtp) {
-      const otpCode = generateOtp();
-      activeOtps.set(normalizedEmail, { otp: otpCode, expiresAt: Date.now() + 5 * 60 * 1000 });
+      const otpRes = await OtpService.requestOtp(normalizedEmail, 'login');
+      if (otpRes.otp) {
+        sendOtpEmail(normalizedEmail, otpRes.otp, 'login').catch(() => {});
+      }
       return res.status(200).json({
         success: false,
         mfaRequired: true,
         message: 'Multi-factor authentication required for privileged role. Verification code sent.',
-        email: normalizedEmail,
-        ...(process.env.NODE_ENV !== 'production' ? { demoOtp: otpCode } : {})
+        email: normalizedEmail
       });
     }
 
-    const storedOtp = activeOtps.get(normalizedEmail);
-    if (!storedOtp || storedOtp.otp !== mfaOtp.trim() || Date.now() > storedOtp.expiresAt) {
+    const verifyMfa = await OtpService.verifyOtp(normalizedEmail, String(mfaOtp).trim(), 'login');
+    if (!verifyMfa.valid) {
       return res.status(401).json({
         success: false,
         error: 'INVALID_MFA_OTP',
-        message: 'Invalid or expired MFA verification code.'
+        message: verifyMfa.message || 'Invalid or expired MFA verification code.'
       });
     }
-    activeOtps.delete(normalizedEmail);
   }
 
-  const sessionId = generateSessionId();
-  sessionsDb.set(sessionId, {
-    userId: user.id,
-    createdAt: new Date().toISOString(),
-    expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+  const { sessionId } = await SessionStore.createSession(user.id, {
     mfaVerified: isPrivileged ? true : undefined
   });
+
+  setSessionCookie(res, sessionId);
 
   return res.json({
     success: true,
@@ -381,117 +432,461 @@ router.post('/login', (req: Request, res: Response) => {
 });
 
 // 3. POST /api/auth/send-otp
-router.post('/send-otp', (req: Request, res: Response) => {
+router.post('/send-otp', async (req: Request, res: Response) => {
   const { email } = req.body;
-  if (!email) {
-    return res.status(400).json({ success: false, error: 'Email is required to send verification code.' });
+  if (!email || typeof email !== 'string') {
+    return res.status(400).json({ success: false, error: 'Valid email is required to send verification code.' });
   }
   const normalizedEmail = email.trim().toLowerCase();
-  const otpCode = generateOtp();
-  activeOtps.set(normalizedEmail, { otp: otpCode, expiresAt: Date.now() + 10 * 60 * 1000 });
 
-  const isDev = process.env.NODE_ENV !== 'production';
+  const otpResult = await OtpService.requestOtp(normalizedEmail, 'verification');
+  if (!otpResult.allowed) {
+    return res.status(429).json({
+      success: false,
+      error: otpResult.error || 'Please wait before requesting another code.',
+      cooldownRemainingSeconds: otpResult.cooldownRemainingSeconds
+    });
+  }
+
+  if (otpResult.otp) {
+    sendOtpEmail(normalizedEmail, otpResult.otp, 'verification').catch(err => {
+      console.warn('[AUTH] Send OTP dispatch notice:', err.message);
+    });
+  }
 
   return res.json({
     success: true,
-    message: `Verification code sent to ${normalizedEmail}.`,
-    ...(isDev ? { demoOtp: otpCode } : {})
+    message: `Verification code sent to ${normalizedEmail}.`
   });
 });
 
 // 4. POST /api/auth/verify-otp / verify-email
-router.post('/verify-otp', (req: Request, res: Response) => {
+router.post('/verify-otp', async (req: Request, res: Response) => {
   const { email, otp } = req.body;
   if (!email || !otp) {
     return res.status(400).json({ success: false, error: 'Email and 6-digit verification code are required.' });
   }
 
-  const normalizedEmail = email.trim().toLowerCase();
-  const user = usersDb.get(normalizedEmail);
-  const storedOtp = activeOtps.get(normalizedEmail);
+  const normalizedEmail = String(email).trim().toLowerCase();
+  const trimmedOtp = String(otp).trim();
 
-  // FIXED: Only accept the exact stored OTP. No wildcard/any-6-digit bypass.
-  if (!storedOtp || storedOtp.otp !== otp.trim()) {
-    return res.status(400).json({ success: false, error: 'Invalid verification code. Please check and try again.' });
+  // Atomically verify code through OtpService (HMAC check, single-use consumption, attempt rate-limiting)
+  const verifyResult = await OtpService.verifyOtp(normalizedEmail, trimmedOtp);
+  if (!verifyResult.valid) {
+    const statusMap: Record<string, number> = {
+      TOO_MANY_ATTEMPTS: 429,
+      EXPIRED: 400,
+      ALREADY_CONSUMED: 400,
+      INVALID_CODE: 400,
+      NOT_FOUND: 400
+    };
+    return res.status(statusMap[verifyResult.status] || 400).json({
+      success: false,
+      error: verifyResult.status,
+      message: verifyResult.message,
+      attemptsRemaining: verifyResult.attemptsRemaining
+    });
   }
 
-  // Check OTP expiration
-  if (Date.now() > storedOtp.expiresAt) {
-    activeOtps.delete(normalizedEmail);
-    return res.status(400).json({ success: false, error: 'Verification code has expired. Please request a new one.' });
-  }
-
-  // Consume OTP (single-use)
-  activeOtps.delete(normalizedEmail);
-
+  let user = usersDb.get(normalizedEmail);
   if (user) {
     user.emailVerified = true;
+    user.emailVerifiedAt = new Date().toISOString();
+    user.lastLoginAt = new Date().toISOString();
+    usersDb.set(normalizedEmail, user);
+  } else {
+    // Passwordless OTP signup
+    user = {
+      id: `user-${crypto.randomBytes(8).toString('hex')}`,
+      email: normalizedEmail,
+      fullName: normalizedEmail.split('@')[0],
+      passwordHash: hashPassword(crypto.randomBytes(24).toString('hex')),
+      role: 'patient',
+      allowedPatientIds: [],
+      tenantId: 'default',
+      emailVerified: true,
+      emailVerifiedAt: new Date().toISOString(),
+      consentAccepted: false,
+      profileCompleted: false,
+      failedLoginAttempts: 0,
+      lockedUntil: null,
+      createdAt: new Date().toISOString(),
+      lastLoginAt: new Date().toISOString()
+    };
     usersDb.set(normalizedEmail, user);
   }
+
+  // Create persistent authenticated session upon verification
+  const { sessionId } = await SessionStore.createSession(user.id);
+  setSessionCookie(res, sessionId);
 
   return res.json({
     success: true,
     message: 'Identity verified successfully.',
-    user: user ? sanitizeUser(user) : null
+    sessionId,
+    user: sanitizeUser(user)
   });
+});
+
+// ============================================================================
+// Target Architecture: Google Sign-In & Resend Email OTP
+// ============================================================================
+
+// 4a. POST /api/auth/otp/request (Transactional OTP with Resend & Cooldown)
+router.post('/otp/request', async (req: Request, res: Response) => {
+  const { email, purpose } = req.body;
+  if (!email || typeof email !== 'string') {
+    return res.status(400).json({ success: false, error: 'Valid email address is required.' });
+  }
+
+  const normalizedEmail = email.trim().toLowerCase();
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(normalizedEmail)) {
+    return res.status(400).json({ success: false, error: 'Invalid email address format.' });
+  }
+
+  const otpPurpose = (purpose === 'signup' || purpose === 'login') ? purpose : 'verification';
+
+  try {
+    const otpResult = await OtpService.requestOtp(normalizedEmail, otpPurpose);
+    if (!otpResult.allowed) {
+      return res.status(429).json({
+        success: false,
+        error: otpResult.error || 'Please wait before requesting another code.',
+        cooldownRemainingSeconds: otpResult.cooldownRemainingSeconds
+      });
+    }
+
+    // Deliver code via Resend transactional email
+    await sendOtpEmail(normalizedEmail, otpResult.otp!, otpPurpose);
+
+    return res.json({
+      success: true,
+      message: 'Verification code sent to your email address.',
+      cooldownSeconds: Number(process.env.OTP_RESEND_COOLDOWN_SECONDS ?? 60)
+    });
+  } catch (err: any) {
+    console.error('[AUTH-OTP] Request error:', err.message);
+    return res.status(500).json({
+      success: false,
+      error: 'Could not send verification code. Please try again later.'
+    });
+  }
+});
+
+// 4b. POST /api/auth/otp/verify (Atomic single-use OTP verification & session creation)
+router.post('/otp/verify', async (req: Request, res: Response) => {
+  const { email, otp, purpose } = req.body;
+  if (!email || !otp) {
+    return res.status(400).json({ success: false, error: 'Email and 6-digit verification code are required.' });
+  }
+
+  const normalizedEmail = String(email).trim().toLowerCase();
+  const trimmedOtp = String(otp).trim();
+
+  if (!/^\d{6}$/.test(trimmedOtp)) {
+    return res.status(400).json({ success: false, error: 'Verification code must be exactly 6 digits.' });
+  }
+
+  try {
+    const otpPurpose = (purpose === 'signup' || purpose === 'login') ? purpose : undefined;
+    const verifyResult = await OtpService.verifyOtp(normalizedEmail, trimmedOtp, otpPurpose);
+
+    if (!verifyResult.valid) {
+      const statusMap: Record<string, number> = {
+        TOO_MANY_ATTEMPTS: 429,
+        EXPIRED: 400,
+        ALREADY_CONSUMED: 400,
+        INVALID_CODE: 400,
+        NOT_FOUND: 400
+      };
+      return res.status(statusMap[verifyResult.status] || 400).json({
+        success: false,
+        error: verifyResult.status,
+        message: verifyResult.message,
+        attemptsRemaining: verifyResult.attemptsRemaining
+      });
+    }
+
+    let user = usersDb.get(normalizedEmail);
+    if (!user) {
+      // Default to least-privileged 'patient' role for passwordless OTP sign-up
+      user = {
+        id: `user-${crypto.randomBytes(8).toString('hex')}`,
+        email: normalizedEmail,
+        fullName: normalizedEmail.split('@')[0],
+        passwordHash: hashPassword(crypto.randomBytes(24).toString('hex')),
+        role: 'patient',
+        allowedPatientIds: [],
+        tenantId: 'default',
+        emailVerified: true,
+        emailVerifiedAt: new Date().toISOString(),
+        consentAccepted: false,
+        profileCompleted: false,
+        failedLoginAttempts: 0,
+        lockedUntil: null,
+        createdAt: new Date().toISOString(),
+        lastLoginAt: new Date().toISOString()
+      };
+      usersDb.set(normalizedEmail, user);
+    } else {
+      user.emailVerified = true;
+      user.emailVerifiedAt = new Date().toISOString();
+      user.lastLoginAt = new Date().toISOString();
+      usersDb.set(normalizedEmail, user);
+    }
+
+    const { sessionId } = await SessionStore.createSession(user.id);
+    setSessionCookie(res, sessionId);
+
+    return res.json({
+      success: true,
+      message: 'Verified successfully.',
+      sessionId,
+      user: sanitizeUser(user)
+    });
+  } catch (err: any) {
+    console.error('[AUTH-OTP] Verify error:', err.message);
+    return res.status(500).json({
+      success: false,
+      error: 'Verification service error. Please try again.'
+    });
+  }
+});
+
+// 4c. GET /api/auth/google (Initiate Google OAuth Flow)
+router.get('/google', (req: Request, res: Response) => {
+  const state = GoogleAuthService.generateState();
+  const authUrl = GoogleAuthService.getAuthorizationUrl(state);
+
+  // If client or test suite requests JSON
+  if (req.query.format === 'json' || req.headers.accept?.includes('application/json')) {
+    return res.json({ success: true, authUrl, state });
+  }
+
+  return res.redirect(authUrl);
+});
+
+// 4d. GET /api/auth/google/callback (OAuth code exchange & session creation)
+router.get('/google/callback', async (req: Request, res: Response) => {
+  const { code, state, error } = req.query;
+  const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+
+  if (error) {
+    return res.redirect(`${frontendUrl}/?auth_error=${encodeURIComponent(String(error))}`);
+  }
+
+  if (!code || !state || typeof state !== 'string') {
+    return res.status(400).json({
+      success: false,
+      error: 'INVALID_REQUEST',
+      message: 'Authorization code and state are required.'
+    });
+  }
+
+  // Verify HMAC-signed state parameter to prevent CSRF / login-state tampering
+  const isStateValid = GoogleAuthService.verifyState(state);
+  if (!isStateValid) {
+    return res.status(400).json({
+      success: false,
+      error: 'INVALID_OAUTH_STATE',
+      message: 'OAuth state parameter invalid or expired. Authentication aborted.'
+    });
+  }
+
+  try {
+    const profile = await GoogleAuthService.exchangeCodeForProfile(String(code));
+    const normalizedEmail = profile.email.toLowerCase().trim();
+
+    // Check account: match by stable googleSubject first, then by normalized email
+    let user = Array.from(usersDb.values()).find(u => u.googleSubject === profile.googleSubject);
+    if (!user) {
+      user = usersDb.get(normalizedEmail);
+    }
+
+    if (user) {
+      user.googleSubject = profile.googleSubject;
+      user.emailVerified = true;
+      user.emailVerifiedAt = user.emailVerifiedAt || new Date().toISOString();
+      user.lastLoginAt = new Date().toISOString();
+      usersDb.set(user.email.toLowerCase(), user);
+    } else {
+      // Default to least-privileged 'patient' role
+      user = {
+        id: `user-${crypto.randomBytes(8).toString('hex')}`,
+        email: normalizedEmail,
+        fullName: profile.fullName || normalizedEmail.split('@')[0],
+        passwordHash: hashPassword(crypto.randomBytes(24).toString('hex')),
+        role: 'patient',
+        allowedPatientIds: [],
+        tenantId: 'default',
+        googleSubject: profile.googleSubject,
+        emailVerified: true,
+        emailVerifiedAt: new Date().toISOString(),
+        consentAccepted: false,
+        profileCompleted: false,
+        failedLoginAttempts: 0,
+        lockedUntil: null,
+        createdAt: new Date().toISOString(),
+        lastLoginAt: new Date().toISOString()
+      };
+      usersDb.set(normalizedEmail, user);
+    }
+
+    const { sessionId } = await SessionStore.createSession(user.id);
+    setSessionCookie(res, sessionId);
+
+    if (req.query.format === 'json' || req.headers.accept?.includes('application/json')) {
+      return res.json({ success: true, sessionId, user: sanitizeUser(user) });
+    }
+
+    return res.redirect(`${frontendUrl}/?auth_success=true&session=${sessionId}`);
+  } catch (err: any) {
+    console.error('[GOOGLE-AUTH] Callback error:', err.message);
+    return res.redirect(`${frontendUrl}/?auth_error=${encodeURIComponent('Google authentication failed')}`);
+  }
+});
+
+// 4e. POST /api/auth/google/verify-token (Google One-Tap / ID token verification)
+router.post('/google/verify-token', async (req: Request, res: Response) => {
+  const { credential } = req.body;
+  if (!credential || typeof credential !== 'string') {
+    return res.status(400).json({ success: false, error: 'Google credential ID token is required.' });
+  }
+
+  try {
+    const profile = await GoogleAuthService.verifyCredentialIdToken(credential);
+    const normalizedEmail = profile.email.toLowerCase().trim();
+
+    let user = Array.from(usersDb.values()).find(u => u.googleSubject === profile.googleSubject);
+    if (!user) {
+      user = usersDb.get(normalizedEmail);
+    }
+
+    if (user) {
+      user.googleSubject = profile.googleSubject;
+      user.emailVerified = true;
+      user.emailVerifiedAt = user.emailVerifiedAt || new Date().toISOString();
+      user.lastLoginAt = new Date().toISOString();
+      usersDb.set(user.email.toLowerCase(), user);
+    } else {
+      user = {
+        id: `user-${crypto.randomBytes(8).toString('hex')}`,
+        email: normalizedEmail,
+        fullName: profile.fullName || normalizedEmail.split('@')[0],
+        passwordHash: hashPassword(crypto.randomBytes(24).toString('hex')),
+        role: 'patient',
+        allowedPatientIds: [],
+        tenantId: 'default',
+        googleSubject: profile.googleSubject,
+        emailVerified: true,
+        emailVerifiedAt: new Date().toISOString(),
+        consentAccepted: false,
+        profileCompleted: false,
+        failedLoginAttempts: 0,
+        lockedUntil: null,
+        createdAt: new Date().toISOString(),
+        lastLoginAt: new Date().toISOString()
+      };
+      usersDb.set(normalizedEmail, user);
+    }
+
+    const { sessionId } = await SessionStore.createSession(user.id);
+    setSessionCookie(res, sessionId);
+
+    return res.json({
+      success: true,
+      sessionId,
+      user: sanitizeUser(user)
+    });
+  } catch (err: any) {
+    return res.status(401).json({
+      success: false,
+      error: 'INVALID_GOOGLE_CREDENTIAL',
+      message: err.message || 'Failed to verify Google identity credential.'
+    });
+  }
 });
 
 // 5. POST /api/auth/consent
 router.post('/consent', (req: Request, res: Response) => {
-  const { email, acceptedTerms, acceptedPrivacy } = req.body;
-  const normalizedEmail = (email || '').trim().toLowerCase();
-  const user = usersDb.get(normalizedEmail);
+  const sessionId = extractSessionId(req);
+  const sessionResult = validateSession(sessionId);
 
+  if (!sessionResult) {
+    return res.status(401).json({
+      success: false,
+      error: 'AUTHENTICATION_REQUIRED',
+      message: 'Valid active session required to record consent.'
+    });
+  }
+
+  const { acceptedTerms, acceptedPrivacy } = req.body;
   if (!acceptedTerms || !acceptedPrivacy) {
     return res.status(400).json({ success: false, error: 'You must accept the data-use and privacy terms to continue.' });
   }
 
-  if (user) {
-    user.consentAccepted = true;
-    usersDb.set(normalizedEmail, user);
-  }
+  const user = sessionResult.user;
+  user.consentAccepted = true;
+  usersDb.set(user.email.toLowerCase(), user);
 
   return res.json({
     success: true,
     message: 'Consent registered successfully.',
-    user: user ? sanitizeUser(user) : null
+    user: sanitizeUser(user)
   });
 });
 
 // 6. POST /api/auth/profile-setup
 router.post('/profile-setup', (req: Request, res: Response) => {
-  const { email, dob, sex, preferredLanguage, communicationPref, conditions, medications, allergies, hasUploadedRecords } = req.body;
-  const normalizedEmail = (email || '').trim().toLowerCase();
-  const user = usersDb.get(normalizedEmail);
+  const sessionId = extractSessionId(req);
+  const sessionResult = validateSession(sessionId);
 
-  if (user) {
-    user.profileCompleted = true;
-    user.profile = {
-      dob: dob || '1985-05-15',
-      sex: sex || 'Female',
-      preferredLanguage: preferredLanguage || 'English',
-      communicationPref: communicationPref || 'Email & Mobile App',
-      conditions: conditions || [],
-      medications: medications || [],
-      allergies: allergies || [],
-      hasUploadedRecords: !!hasUploadedRecords
-    };
-    usersDb.set(normalizedEmail, user);
+  if (!sessionResult) {
+    return res.status(401).json({
+      success: false,
+      error: 'AUTHENTICATION_REQUIRED',
+      message: 'Valid active session required to set up health profile.'
+    });
   }
+
+  const { dob, sex, preferredLanguage, communicationPref, conditions, medications, allergies, hasUploadedRecords } = req.body;
+  const user = sessionResult.user;
+
+  user.profileCompleted = true;
+  user.profile = {
+    dob: dob || user.profile?.dob || '1985-05-15',
+    sex: sex || user.profile?.sex || 'Female',
+    preferredLanguage: preferredLanguage || user.profile?.preferredLanguage || 'English',
+    communicationPref: communicationPref || user.profile?.communicationPref || 'Email & Mobile App',
+    conditions: conditions || user.profile?.conditions || [],
+    medications: medications || user.profile?.medications || [],
+    allergies: allergies || user.profile?.allergies || [],
+    hasUploadedRecords: hasUploadedRecords !== undefined ? !!hasUploadedRecords : (user.profile?.hasUploadedRecords ?? false)
+  };
+  usersDb.set(user.email.toLowerCase(), user);
 
   return res.json({
     success: true,
     message: 'Health profile setup completed.',
-    user: user ? sanitizeUser(user) : null
+    user: sanitizeUser(user)
   });
 });
 
 // 6b. PUT /api/auth/profile & POST /api/auth/profile (Edit & Modify Patient Data / Profile)
 const handleProfileUpdate = async (req: Request, res: Response) => {
-  const authHeader = req.headers.authorization;
-  const sessionId = req.headers['x-session-id'] as string || (authHeader ? authHeader.replace('Bearer ', '') : null);
+  const sessionId = extractSessionId(req);
   const sessionResult = validateSession(sessionId);
 
+  if (!sessionResult) {
+    return res.status(401).json({
+      success: false,
+      error: 'AUTHENTICATION_REQUIRED',
+      message: 'Unauthorized: Valid active session required to modify profile.'
+    });
+  }
+
+  const user = sessionResult.user;
   const {
     fullName,
     dob,
@@ -507,21 +902,6 @@ const handleProfileUpdate = async (req: Request, res: Response) => {
     allergies,
     baselineStatus
   } = req.body;
-
-  let user = sessionResult?.user;
-  if (!user && req.body.email) {
-    user = usersDb.get(req.body.email.trim().toLowerCase());
-  }
-
-  // If still no user, check demo/fallback users
-  if (!user && usersDb.size > 0) {
-    const firstUser = usersDb.get('eleanor@example.com') || Array.from(usersDb.values())[0];
-    user = firstUser;
-  }
-
-  if (!user) {
-    return res.status(401).json({ success: false, error: 'Unauthorized: No active session or user found.' });
-  }
 
   if (fullName && typeof fullName === 'string') {
     user.fullName = fullName.trim();
@@ -600,8 +980,7 @@ router.post('/profile', handleProfileUpdate);
 
 // 7. GET /api/auth/me
 router.get('/me', (req: Request, res: Response) => {
-  const authHeader = req.headers.authorization;
-  const sessionId = req.headers['x-session-id'] as string || (authHeader ? authHeader.replace('Bearer ', '') : null);
+  const sessionId = extractSessionId(req);
 
   const result = validateSession(sessionId);
   if (result) {
@@ -738,11 +1117,12 @@ router.get('/admin/audit-log', (req: Request, res: Response) => {
 
 // 12. POST /api/auth/logout
 router.post('/logout', (req: Request, res: Response) => {
-  const authHeader = req.headers.authorization;
-  const sessionId = req.headers['x-session-id'] as string || (authHeader ? authHeader.replace('Bearer ', '') : null);
+  const sessionId = extractSessionId(req);
   if (sessionId) {
     sessionsDb.delete(sessionId);
+    SessionStore.destroySession(sessionId).catch(() => {});
   }
+  clearSessionCookie(res);
   return res.json({
     success: true,
     message: 'Logged out successfully.'

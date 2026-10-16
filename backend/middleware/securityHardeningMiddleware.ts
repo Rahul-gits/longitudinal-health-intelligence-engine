@@ -50,7 +50,7 @@ export const secureHeadersMiddleware = (_req: Request, res: Response, next: Next
   res.setHeader('X-Frame-Options', 'DENY');
   res.setHeader('X-XSS-Protection', '1; mode=block');
   res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
-  res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com;");
+  res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com;");
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
   next();
 };
@@ -229,7 +229,7 @@ export const enforceStrictPatientIsolation = (req: Request, res: Response, next:
     const authenticatedPatientId = user.allowedPatientIds[0]; // Patient has exactly one
 
     // 1. Prevent cross-patient data access (IDOR / BOLA)
-    if (targetPatientId && targetPatientId !== authenticatedPatientId) {
+    if (targetPatientId && targetPatientId !== 'me' && targetPatientId !== authenticatedPatientId) {
       const event: SecurityAuditEvent = {
         id: `SEC-ISO-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
         timestamp: new Date().toISOString(),

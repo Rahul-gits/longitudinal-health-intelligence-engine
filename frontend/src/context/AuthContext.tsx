@@ -11,7 +11,11 @@ import {
   logoutApi,
   getStoredUser,
   setStoredSession,
-  getStoredSessionId
+  getStoredSessionId,
+  requestEmailOtp,
+  verifyEmailOtp,
+  verifyGoogleCredential,
+  initiateGoogleLogin
 } from '../services/authApi';
 
 export type AuthState =
@@ -70,6 +74,10 @@ interface AuthContextType {
     baselineStatus?: string;
     hasUploadedRecords?: boolean;
   }) => Promise<boolean>;
+  requestOtp: (email: string, purpose?: 'signup' | 'login' | 'verification') => Promise<{ success: boolean; message: string; cooldownSeconds?: number; demoOtp?: string }>;
+  verifyOtpCode: (email: string, otp: string, purpose?: 'signup' | 'login' | 'verification') => Promise<boolean>;
+  signInWithGoogle: () => void;
+  signInWithGoogleCredential: (credential: string) => Promise<boolean>;
   logout: () => Promise<void>;
   demoLoginAs: (role?: 'eleanor' | 'rahul' | 'guest') => Promise<void>;
 }
@@ -93,10 +101,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return 'AUTHENTICATED';
   };
 
-  // Restore session on mount
+  // Restore session on mount & check URL for Google OAuth callback
   useEffect(() => {
     const initSession = async () => {
       try {
+        if (typeof window !== 'undefined') {
+          const urlParams = new URLSearchParams(window.location.search);
+          const sessionParam = urlParams.get('session');
+          const authSuccess = urlParams.get('auth_success');
+          const authError = urlParams.get('auth_error');
+
+          if (authError) {
+            setError(decodeURIComponent(authError));
+            window.history.replaceState({}, document.title, window.location.pathname);
+          } else if (authSuccess && sessionParam) {
+            localStorage.setItem('heal_engine_session_id', sessionParam);
+            window.history.replaceState({}, document.title, window.location.pathname);
+          }
+        }
+
         const session = await checkSessionApi();
         if (session.authenticated && session.user) {
           setUser(session.user);
@@ -319,6 +342,74 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const requestOtp = async (email: string, purpose: 'signup' | 'login' | 'verification' = 'verification') => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const res = await requestEmailOtp(email, purpose);
+      setActiveEmail(email);
+      if (res.demoOtp) {
+        setDemoOtp(res.demoOtp);
+      }
+      return res;
+    } catch (err: any) {
+      setError(err.message || 'Could not send verification code');
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const verifyOtpCode = async (email: string, otp: string, purpose: 'signup' | 'login' | 'verification' = 'verification'): Promise<boolean> => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const res = await verifyEmailOtp(email, otp, purpose);
+      if (res.success && res.user) {
+        setUser(res.user);
+        setActiveEmail(res.user.email);
+        const nextState = evaluateUserState(res.user);
+        setAuthState(nextState);
+        if (nextState === 'CONSENT_REQUIRED') setAuthView('consent');
+        else if (nextState === 'PROFILE_INCOMPLETE') setAuthView('profile_setup');
+        return true;
+      }
+      return false;
+    } catch (err: any) {
+      setError(err.message || 'Verification failed');
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const signInWithGoogle = () => {
+    initiateGoogleLogin();
+  };
+
+  const signInWithGoogleCredential = async (credential: string): Promise<boolean> => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const res = await verifyGoogleCredential(credential);
+      if (res.success && res.user) {
+        setUser(res.user);
+        setActiveEmail(res.user.email);
+        const nextState = evaluateUserState(res.user);
+        setAuthState(nextState);
+        if (nextState === 'CONSENT_REQUIRED') setAuthView('consent');
+        else if (nextState === 'PROFILE_INCOMPLETE') setAuthView('profile_setup');
+        return true;
+      }
+      return false;
+    } catch (err: any) {
+      setError(err.message || 'Google authentication failed');
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const demoLoginAs = async (role: 'eleanor' | 'rahul' | 'guest' = 'guest') => {
     setIsLoading(true);
     try {
@@ -361,6 +452,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         login,
         register,
         verifyOtp,
+        requestOtp,
+        verifyOtpCode,
+        signInWithGoogle,
+        signInWithGoogleCredential,
         submitConsent,
         submitProfile,
         updateProfile,

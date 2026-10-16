@@ -30,7 +30,20 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ children, title, subtitl
         </div>
 
         {/* Security & Clinical Intelligence Mode Badge */}
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-3">
+          <a
+            href="/"
+            onClick={(e) => {
+              if (typeof window !== 'undefined') {
+                e.preventDefault();
+                window.history.pushState({}, '', '/');
+                window.dispatchEvent(new PopStateEvent('popstate'));
+              }
+            }}
+            className="text-xs font-mono text-[#2563EB] hover:underline flex items-center gap-1 font-bold cursor-pointer"
+          >
+            ← Public Site
+          </a>
           <span className="text-[11px] font-mono px-2.5 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-md font-semibold flex items-center gap-1.5 shadow-xs">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
             <span>CLINICAL OS · STANDALONE READY</span>
@@ -66,9 +79,33 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ children, title, subtitl
         <div className="max-w-6xl mx-auto px-4 flex flex-wrap items-center justify-between gap-2">
           <span>© 2026 HEAL Engine. Longitudinal Clinical Decision Intelligence.</span>
           <div className="flex items-center space-x-4">
-            <span className="hover:underline cursor-pointer">Privacy Policy</span>
+            <a
+              href="/privacy"
+              onClick={(e) => {
+                if (typeof window !== 'undefined') {
+                  e.preventDefault();
+                  window.history.pushState({}, '', '/privacy');
+                  window.dispatchEvent(new PopStateEvent('popstate'));
+                }
+              }}
+              className="hover:underline cursor-pointer"
+            >
+              Privacy Policy
+            </a>
             <span>•</span>
-            <span className="hover:underline cursor-pointer">Terms of Service</span>
+            <a
+              href="/terms"
+              onClick={(e) => {
+                if (typeof window !== 'undefined') {
+                  e.preventDefault();
+                  window.history.pushState({}, '', '/terms');
+                  window.dispatchEvent(new PopStateEvent('popstate'));
+                }
+              }}
+              className="hover:underline cursor-pointer"
+            >
+              Terms of Service
+            </a>
             <span>•</span>
             <span className="flex items-center gap-1 text-[#2E8B70] font-medium">
               <ShieldCheck className="w-3.5 h-3.5" /> HIPAA Compliant Architecture

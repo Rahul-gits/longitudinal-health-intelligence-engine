@@ -20,6 +20,7 @@ import usabilityRoutes from './routes/usabilityRoutes';
 import shadowRoutes from './routes/shadowRoutes';
 import governanceRoutes from './routes/governanceRoutes';
 import ragRoutes from './routes/ragRoutes';
+import contactRoutes from './routes/contactRoutes';
 import {
   secureHeadersMiddleware,
   rateLimitMiddleware,
@@ -27,6 +28,9 @@ import {
 } from './middleware/securityHardeningMiddleware';
 
 import { observabilityService } from './services/observabilityService';
+import { checkDatabaseHealth } from './services/sessionStore';
+import { qdrantClientService } from './services/qdrantClientService';
+import { redisService } from './services/redisService';
 
 dotenv.config();
 
@@ -71,18 +75,47 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   next();
 });
 
-// Health check endpoint
+// Health check endpoint (Real dependency verification: PostgreSQL, Qdrant, Redis)
 app.get('/api/health', async (_req: Request, res: Response) => {
+  const [dbHealth, qdrantHealth, redisHealth] = await Promise.all([
+    checkDatabaseHealth().catch(err => ({ connected: false, status: 'ERROR', error: err.message })),
+    qdrantClientService.checkHealth().catch(err => ({ connected: false, version: undefined as string | undefined, error: err.message })),
+    redisService.checkConnection().catch(err => ({ connected: false, status: 'ERROR', error: err.message }))
+  ]);
+
+  const vectorStoreMode = qdrantHealth.connected ? 'VECTOR_DB_QDRANT' : 'LOCAL_FALLBACK';
+  const overallStatus = 'HEALTHY';
+
   res.json({
-    status: 'HEALTHY',
+    status: overallStatus,
     service: 'HEAL Engine Longitudinal Clinical Intelligence Backend',
     version: '2.5.0-governed',
     uptimeSeconds: Math.floor(process.uptime()),
     timestamp: new Date().toISOString(),
+    dependencies: {
+      postgres: {
+        connected: dbHealth.connected,
+        status: dbHealth.status,
+        ...(dbHealth.error ? { error: dbHealth.error } : {})
+      },
+      vectorStore: {
+        connected: qdrantHealth.connected,
+        mode: vectorStoreMode,
+        ...(qdrantHealth.version ? { version: qdrantHealth.version } : {}),
+        ...(qdrantHealth.error ? { error: qdrantHealth.error } : {})
+      },
+      redis: {
+        connected: redisHealth.connected,
+        status: redisHealth.status,
+        ...(redisHealth.error ? { error: redisHealth.error } : {})
+      }
+    },
     database: {
-      connected: true,
-      mode: 'VECTOR_DB_QDRANT',
-      details: 'Qdrant Vector Store Active'
+      connected: dbHealth.connected,
+      mode: vectorStoreMode,
+      details: qdrantHealth.connected
+        ? 'Qdrant Vector Store Active'
+        : 'Resilient Local Semantic Vector Store Active'
     },
     endpoints: [
       '/api/auth',
@@ -97,6 +130,7 @@ app.get('/api/health', async (_req: Request, res: Response) => {
       '/api/audit',
       '/api/validation',
       '/api/rag',
+      '/api/contact',
       '/api/metrics'
     ]
   });
@@ -128,16 +162,115 @@ app.use('/api/usability', usabilityRoutes);
 app.use('/api/shadow', shadowRoutes);
 app.use('/api/governance', governanceRoutes);
 app.use('/api/rag', ragRoutes);
+app.use('/api/contact', contactRoutes);
 
-// Serve frontend static assets in production if dist directory exists
+// Search Engine Indexing Protection for API endpoints & Private Workspaces
+app.use((req: Request, res: Response, next: NextFunction) => {
+  if (req.path.startsWith('/api') || req.path.startsWith('/app') || req.path.startsWith('/dashboard') || req.path.startsWith('/clinical')) {
+    res.setHeader('X-Robots-Tag', 'noindex, nofollow, noarchive');
+  }
+  next();
+});
+
+// URL Normalization & 301 Permanent Redirects
+app.use((req: Request, res: Response, next: NextFunction) => {
+  if (req.method !== 'GET' && req.method !== 'HEAD') {
+    return next();
+  }
+
+  const pathname = req.path;
+
+  // 1. Legacy Alias 301 Permanent Redirects
+  if (pathname === '/home') {
+    const qs = req.url.includes('?') ? '?' + req.url.split('?')[1] : '';
+    return res.redirect(301, '/' + qs);
+  }
+  if (pathname === '/specialist') {
+    const qs = req.url.includes('?') ? '?' + req.url.split('?')[1] : '';
+    return res.redirect(301, '/specialists' + qs);
+  }
+  if (pathname === '/tech') {
+    const qs = req.url.includes('?') ? '?' + req.url.split('?')[1] : '';
+    return res.redirect(301, '/technology' + qs);
+  }
+
+  // 2. Trailing slash normalization (e.g. /about/ -> /about)
+  if (pathname.length > 1 && pathname.endsWith('/')) {
+    const cleanPath = pathname.slice(0, -1);
+    const qs = req.url.includes('?') ? '?' + req.url.split('?')[1] : '';
+    return res.redirect(301, cleanPath + qs);
+  }
+
+  // 3. Uppercase to lowercase normalization (e.g. /ABOUT -> /about)
+  const lowerPath = pathname.toLowerCase();
+  if (pathname !== lowerPath && !pathname.startsWith('/api/')) {
+    const qs = req.url.includes('?') ? '?' + req.url.split('?')[1] : '';
+    return res.redirect(301, lowerPath + qs);
+  }
+
+  next();
+});
+
+// Static directory paths
 const distPath = fs.existsSync(path.resolve(process.cwd(), 'dist'))
   ? path.resolve(process.cwd(), 'dist')
   : path.resolve(__dirname, '../dist');
+const publicPath = path.resolve(process.cwd(), 'frontend', 'public');
 
+// Explicit robots.txt endpoint
+app.get('/robots.txt', (_req: Request, res: Response) => {
+  const robotsDist = path.resolve(distPath, 'robots.txt');
+  const robotsPublic = path.resolve(publicPath, 'robots.txt');
+  const target = fs.existsSync(robotsDist) ? robotsDist : robotsPublic;
+  if (fs.existsSync(target)) {
+    res.setHeader('Content-Type', 'text/plain; charset=UTF-8');
+    return res.sendFile(target);
+  }
+  res.status(404).send('User-agent: *\nDisallow: /api/');
+});
+
+// Explicit sitemap.xml endpoint
+app.get('/sitemap.xml', (_req: Request, res: Response) => {
+  const sitemapDist = path.resolve(distPath, 'sitemap.xml');
+  const sitemapPublic = path.resolve(publicPath, 'sitemap.xml');
+  const target = fs.existsSync(sitemapDist) ? sitemapDist : sitemapPublic;
+  if (fs.existsSync(target)) {
+    res.setHeader('Content-Type', 'application/xml; charset=UTF-8');
+    return res.sendFile(target);
+  }
+  res.status(404).send('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"></urlset>');
+});
+
+// Google Search Console HTML Verification File Support
+app.get(/^\/google([a-zA-Z0-9_-]+)\.html$/, (req: Request, res: Response) => {
+  const requestedFile = req.path.replace(/^\//, '');
+  const verificationFile = path.resolve(publicPath, requestedFile);
+  if (fs.existsSync(verificationFile)) {
+    return res.sendFile(verificationFile);
+  }
+  const expectedCode = process.env.VITE_GSC_VERIFICATION_CODE || process.env.GSC_VERIFICATION_CODE;
+  if (expectedCode && requestedFile === `google${expectedCode}.html`) {
+    res.setHeader('Content-Type', 'text/html; charset=UTF-8');
+    return res.send(`google-site-verification: google${expectedCode}.html`);
+  }
+  res.status(404).send('Google Search Console verification file not found.');
+});
+
+// Serve frontend static assets in production if dist directory exists
 if (fs.existsSync(distPath)) {
   app.use(express.static(distPath));
+
   app.use((req: Request, res: Response, next: NextFunction) => {
     if (req.method === 'GET' && !req.path.startsWith('/api')) {
+      const routeSegment = req.path.replace(/^\/|\/$/g, '');
+      // Check for pre-rendered route static HTML: e.g. dist/about/index.html, dist/privacy/index.html
+      if (routeSegment) {
+        const prerenderedFile = path.resolve(distPath, routeSegment, 'index.html');
+        if (fs.existsSync(prerenderedFile)) {
+          res.setHeader('Content-Type', 'text/html; charset=UTF-8');
+          return res.sendFile(prerenderedFile);
+        }
+      }
       return res.sendFile(path.resolve(distPath, 'index.html'));
     }
     next();
