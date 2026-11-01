@@ -26,6 +26,12 @@ import { speechRecognitionEngine } from '../engine/speechRecognitionEngine';
 import { VirtualDoctorPersona, DoctorPostureMode } from '../types/health';
 import { ThreeDSpecialistCanvas } from './ThreeDSpecialistCanvas';
 import { VisionObservation } from '../engine/computerVisionEngine';
+import {
+  getWordVisemeAtProgress,
+  lookupClinicalVocabulary,
+  ClinicalVocabularyEntry,
+  VisemeType
+} from './DigitalHuman/LipSyncController';
 
 /* ─────────────────────────────────────────────────────── TYPES ──── */
 interface DialogueTurn {
@@ -71,16 +77,12 @@ interface SafetyMatrixEntry {
 /* ──────────────────────────────────── VISEME & LIP-SYNC UTILITIES ──── */
 type VisemeShape = 'SIL' | 'OH' | 'EE' | 'MBP' | 'FV' | 'LDT' | 'REST_TALK';
 
-function computeViseme(word: string): VisemeShape {
+function computeViseme(word: string, progress: number = 0.5): VisemeShape {
   if (!word?.trim()) return 'REST_TALK';
-  const c = word.toLowerCase().replace(/[^a-z]/g, '');
-  if (!c) return 'REST_TALK';
-  if (/^[mbp]/.test(c) || /(mb|mp)$/.test(c)) return 'MBP';
-  if (/^[fv]/.test(c) || c.includes('ph')) return 'FV';
-  if (/(oo|ou|ow|aw|[ou])/.test(c)) return 'OH';
-  if (/(ee|ea|ai|ay|[ie])/.test(c)) return 'EE';
-  if (/^[ldtnsz]/.test(c) || c.includes('th') || c.includes('sh')) return 'LDT';
-  return 'REST_TALK';
+  const v = getWordVisemeAtProgress(word, progress);
+  if (v === 'SIL') return 'REST_TALK';
+  if (v === 'AA') return 'REST_TALK';
+  return v as VisemeShape;
 }
 
 /* ─────────────────────────────────────── MOUTH LANDMARK MAP ──── */
@@ -227,18 +229,23 @@ const DigitalHumanPanel: React.FC<DigitalHumanPanelProps> = ({
     if (!isSpeaking || isMuted) { setMouthOpen(0); setMouthSpread(1.0); return; }
     let raf: number;
     const start = performance.now();
+    const cleanWord = (activeWord || '').trim();
+    const wordDur = Math.max(220, Math.min(850, cleanWord.length * 55 + 120));
+
     const animate = (now: number) => {
       const e = now - start;
       const s1 = Math.sin((e / 1000) * Math.PI * 8.4);
       const s2 = Math.sin((e / 1000) * Math.PI * 13.8);
       const wave = Math.max(0, s1 * 0.72 + s2 * 0.28);
-      const v = computeViseme(activeWord);
+      const progress = Math.min(1.0, e / wordDur);
+      const v = getWordVisemeAtProgress(cleanWord, progress);
       let vOpen = 0.55, vSpread = 1.0;
       if (v === 'MBP') { vOpen = 0.02; vSpread = 0.96; }
       else if (v === 'OH') { vOpen = 0.88; vSpread = 0.84; }
       else if (v === 'EE') { vOpen = 0.42; vSpread = 1.24; }
       else if (v === 'FV') { vOpen = 0.26; vSpread = 1.04; }
       else if (v === 'LDT') { vOpen = 0.54; vSpread = 1.1; }
+      else if (v === 'AA') { vOpen = 0.82; vSpread = 1.04; }
       else { vOpen = 0.6; vSpread = 1.02; }
       setMouthOpen(Math.min(1, Math.max(0.04, vOpen * (0.3 + 0.7 * wave))));
       setMouthSpread(vSpread);
@@ -1281,29 +1288,109 @@ DISCLAIMER: This is an AI-assisted summary. Not a substitute for physician revie
             onVisionObservation={handleVisionObservation}
           />
 
-          {/* ── KARAOKE CAPTION BAR ── */}
+          {/* ── KARAOKE CAPTION BAR & VOCABULARY UNDERSTANDING ── */}
           {showCaptions && speakingText && (
-            <div className="p-4" style={{ background: 'var(--bg-surface)', border: '1.5px solid var(--border)' }}>
-              <div className="flex items-center justify-between mb-2">
+            <div className="p-4 space-y-3" style={{ background: 'var(--bg-surface)', border: '1.5px solid var(--border)' }}>
+              <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1.5 text-[10px] font-mono font-bold uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 he-keep-round animate-pulse" />
                   LIVE TRANSCRIPT — {activePersona.name.split(',')[0]}
                 </div>
-                <span className="text-[9px] font-mono px-2 py-0.5" style={{ background: 'var(--text-ink)', color: 'var(--bg-surface)' }}>
-                  AI: {aiModel}
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className="text-[9px] font-mono font-bold px-2 py-0.5 rounded-sm" style={{ background: 'rgba(16, 185, 129, 0.15)', color: '#059669', border: '1px solid rgba(16, 185, 129, 0.3)' }}>
+                    👄 SYLLABIC LIP-SYNC CONNECTED
+                  </span>
+                  <span className="text-[9px] font-mono px-2 py-0.5" style={{ background: 'var(--text-ink)', color: 'var(--bg-surface)' }}>
+                    AI: {aiModel}
+                  </span>
+                </div>
               </div>
+
               <div className="text-sm leading-relaxed" style={{ background: 'var(--bg-paper)', padding: '10px 12px', border: '1px solid var(--rule)', minHeight: 52 }}>
                 {speakingText.split(' ').map((w, i) => {
-                  const isActive = activeWord.toLowerCase().replace(/[^a-z0-9]/g, '') === w.toLowerCase().replace(/[^a-z0-9]/g, '');
+                  const cleanW = w.toLowerCase().replace(/[^a-z0-9]/g, '');
+                  const isActive = activeWord.toLowerCase().replace(/[^a-z0-9]/g, '') === cleanW;
+                  const isMedicalTerm = !!lookupClinicalVocabulary(cleanW);
+
                   return (
-                    <span key={i} className="mr-1 transition-all inline-block"
-                      style={isActive && isPlaying ? { background: '#FFE45C', color: '#080808', fontWeight: 'bold', padding: '0 2px', border: '1px solid var(--border)', transform: 'scale(1.05)' } : { color: 'var(--text-ink)' }}>
+                    <span 
+                      key={i} 
+                      className={`mr-1 transition-all inline-block ${isMedicalTerm && !isActive ? 'underline decoration-dotted decoration-teal-600 underline-offset-2' : ''}`}
+                      style={isActive && isPlaying ? { 
+                        background: '#FFE45C', 
+                        color: '#080808', 
+                        fontWeight: 'bold', 
+                        padding: '0 3px', 
+                        border: '1.5px solid #080808', 
+                        transform: 'scale(1.08)',
+                        boxShadow: '1px 1px 0px #000'
+                      } : { color: 'var(--text-ink)' }}
+                    >
                       {w}
                     </span>
                   );
                 })}
               </div>
+
+              {/* ── PATIENT VOCABULARY & PHONETIC UNDERSTANDING CARD ── */}
+              {(() => {
+                const activeVocab = lookupClinicalVocabulary(activeWord);
+                const displayVocab = activeVocab || lookupClinicalVocabulary(speakingText.split(' ').find(w => lookupClinicalVocabulary(w)) || '');
+                if (!displayVocab) return null;
+
+                return (
+                  <div 
+                    className="p-3 transition-all animate-fadeIn" 
+                    style={{ 
+                      background: 'rgba(255, 248, 220, 0.65)', 
+                      border: '1.5px solid #080808',
+                      boxShadow: '3px 3px 0px #080808'
+                    }}
+                  >
+                    <div className="flex flex-wrap items-center justify-between gap-2 pb-1.5 border-b border-black/10">
+                      <div className="flex items-center gap-2">
+                        <span 
+                          className="px-1.5 py-0.5 text-[9px] font-mono font-black uppercase tracking-wider"
+                          style={{ background: '#080808', color: '#FFE45C' }}
+                        >
+                          {displayVocab.category}
+                        </span>
+                        <span className="font-sans font-bold text-sm text-black">
+                          {displayVocab.term}
+                        </span>
+                        <span className="font-mono text-xs text-blue-900 font-semibold italic">
+                          [{displayVocab.phonetic}]
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1 text-[10px] font-mono text-black/70">
+                        <span className="font-bold">Syllable Sync:</span>
+                        <span className="flex items-center gap-1 font-bold text-black">
+                          {displayVocab.syllables.map((syl, sIdx) => {
+                            const isCurrentSyl = isPlaying && activeWord.toLowerCase().includes(syl.toLowerCase());
+                            return (
+                              <span 
+                                key={sIdx}
+                                className={`px-1 py-0.5 rounded text-[10px] ${
+                                  isCurrentSyl 
+                                    ? 'bg-[#FFE45C] text-black font-black border border-black scale-110' 
+                                    : 'bg-black/5 text-black/70 border border-black/10'
+                                }`}
+                              >
+                                {syl}
+                              </span>
+                            );
+                          })}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="mt-2 text-xs text-black/90 leading-relaxed font-sans flex items-start gap-2">
+                      <span className="text-emerald-800 font-bold shrink-0">💡 Patient Clarity:</span>
+                      <span>{displayVocab.patientExplanation}</span>
+                    </div>
+                  </div>
+                );
+              })()}
             </div>
           )}
 

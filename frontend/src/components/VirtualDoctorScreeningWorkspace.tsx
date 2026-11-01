@@ -13,6 +13,7 @@ import { recordVirtualDoctorTurn } from '../services/apiClient';
 import { DoctorAnimatedAvatar } from './DoctorAnimatedAvatar';
 import { PATIENT_INFO, getDynamicPatientProfile } from '../data/mockPatientData';
 import { useAuth } from '../context/AuthContext';
+import { lookupClinicalVocabulary } from './DigitalHuman/LipSyncController';
 import { 
   Video, 
   Mic, 
@@ -589,14 +590,16 @@ CONSENSUS STATUS: Verified by Multi-Agent Swarm (94.8% Cohesion).
               </div>
               <div className="p-3 bg-[#FAF8F5] border-2 border-black min-h-[60px] text-xs font-semibold text-black leading-relaxed font-sans">
                 {spokenText.split(' ').map((w, idx) => {
-                  const isCurrentWord = activeWord.toLowerCase().replace(/[^a-z0-9]/g, '') === w.toLowerCase().replace(/[^a-z0-9]/g, '');
+                  const cleanW = w.toLowerCase().replace(/[^a-z0-9]/g, '');
+                  const isCurrentWord = activeWord.toLowerCase().replace(/[^a-z0-9]/g, '') === cleanW;
+                  const isMed = !!lookupClinicalVocabulary(cleanW);
                   return (
                     <span 
                       key={idx} 
                       className={`mr-1 transition-all inline-block ${
                         isCurrentWord && isPlaying
                           ? 'bg-[#FFE600] text-black font-black px-1 border border-black scale-105' 
-                          : ''
+                          : isMed ? 'underline decoration-dotted decoration-blue-600 underline-offset-2' : ''
                       }`}
                     >
                       {w}
@@ -604,6 +607,51 @@ CONSENSUS STATUS: Verified by Multi-Agent Swarm (94.8% Cohesion).
                   );
                 })}
               </div>
+
+              {/* Real-time Specialist Vocabulary & Patient Understanding */}
+              {(() => {
+                const activeVocab = lookupClinicalVocabulary(activeWord);
+                const displayVocab = activeVocab || lookupClinicalVocabulary(spokenText.split(' ').find(w => lookupClinicalVocabulary(w)) || '');
+                if (!displayVocab) return null;
+                return (
+                  <div className="p-2.5 bg-[#FFF9E6] border-2 border-black shadow-[2px_2px_0px_0px_#000] text-xs">
+                    <div className="flex flex-wrap items-center justify-between gap-1 pb-1 border-b border-black/15">
+                      <div className="flex items-center gap-1.5">
+                        <span 
+                          className="px-1.5 py-0.5 font-black text-[9px] uppercase tracking-wider font-mono"
+                          style={{ background: '#080808', color: '#FFE600' }}
+                        >
+                          {displayVocab.category}
+                        </span>
+                        <span className="font-bold text-black">{displayVocab.term}</span>
+                        <span className="text-blue-900 font-mono text-[11px] font-bold italic">
+                          [{displayVocab.phonetic}]
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1 text-[10px] font-mono text-black/70">
+                        <span className="font-bold">Syllable Articulation:</span>
+                        {displayVocab.syllables.map((syl, sIdx) => {
+                          const isCur = isPlaying && activeWord.toLowerCase().includes(syl.toLowerCase());
+                          return (
+                            <span 
+                              key={sIdx} 
+                              className={`px-1 rounded text-[10px] ${
+                                isCur ? 'bg-[#FFE600] text-black font-black border border-black' : 'bg-black/5 text-black/70'
+                              }`}
+                            >
+                              {syl}
+                            </span>
+                          );
+                        })}
+                      </div>
+                    </div>
+                    <div className="mt-1 text-[11px] text-black/90 leading-normal flex items-start gap-1.5">
+                      <span className="text-emerald-800 font-black shrink-0">💡 Clarity:</span>
+                      <span>{displayVocab.patientExplanation}</span>
+                    </div>
+                  </div>
+                );
+              })()}
 
               {/* Real-Time Clinical Observations & RAG Evidence Chips */}
               {aiObservations.length > 0 && (

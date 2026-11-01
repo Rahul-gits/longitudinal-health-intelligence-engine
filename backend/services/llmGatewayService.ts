@@ -113,7 +113,7 @@ export class LlmGatewayService {
     }
 
     this.apiKey = this.geminiApiKey || this.openaiApiKey || this.anthropicApiKey || process.env.LLM_API_KEY;
-    this.model = process.env.LLM_MODEL || (this.provider === 'GEMINI' ? 'gemini-1.5-flash' : this.provider === 'OPENAI' ? 'gpt-4o-mini' : this.provider === 'ANTHROPIC' ? 'claude-3-5-sonnet-20241022' : 'heal-clinical-v2');
+    this.model = process.env.LLM_MODEL || (this.provider === 'GEMINI' ? 'gemini-3.5-flash' : this.provider === 'OPENAI' ? 'gpt-4o-mini' : this.provider === 'ANTHROPIC' ? 'claude-3-5-sonnet-20241022' : 'heal-clinical-v2');
     this.endpoint = process.env.LLM_ENDPOINT;
   }
 
@@ -330,7 +330,7 @@ CRITICAL CLINICAL RULES:
 
           return {
             provider: 'GEMINI',
-            model: 'gemini-1.5-flash',
+            model: this.model || 'gemini-3.5-flash',
             personaId: resolvedPersonaId,
             personaName,
             doctorResponse: audited.sanitizedText,
@@ -476,10 +476,11 @@ CRITICAL CLINICAL RULES:
   }
 
   /**
-   * Google Gemini API connector
+   * Google Gemini API connector with resilient JSON parsing and generous token budget
    */
   private async callGeminiApi(systemPrompt: string, userMessage: string, key: string): Promise<any> {
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`;
+    const modelName = this.model || 'gemini-3.5-flash';
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent`;
     const payload = {
       contents: [
         {
@@ -489,23 +490,72 @@ CRITICAL CLINICAL RULES:
       ],
       generationConfig: {
         temperature: 0.3,
-        maxOutputTokens: 800,
+        maxOutputTokens: 2500,
         responseMimeType: 'application/json'
       }
     };
 
     const res = await fetch(url, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'x-goog-api-key': key
+      },
       body: JSON.stringify(payload)
     });
 
-    if (!res.ok) throw new Error(`Gemini HTTP error ${res.status}`);
+    if (!res.ok) {
+      const errBody = await res.text().catch(() => '');
+      throw new Error(`Gemini HTTP error ${res.status}: ${errBody}`);
+    }
     const data = await res.json() as any;
     const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
     if (!text) return null;
-    const cleaned = text.replace(/```json/gi, '').replace(/```/g, '').trim();
-    return JSON.parse(cleaned);
+
+    return this.safeParseLlmJson(text);
+  }
+
+  /**
+   * Resilient LLM JSON parser handling unescaped line breaks, markdown wrappers, and partial cutoffs
+   */
+  private safeParseLlmJson(text: string): any {
+    if (!text) return null;
+    let cleaned = text.replace(/```json/gi, '').replace(/```/g, '').trim();
+
+    // Direct parse
+    try {
+      return JSON.parse(cleaned);
+    } catch (err1) {
+      // Isolate outermost { ... }
+      const firstBrace = cleaned.indexOf('{');
+      const lastBrace = cleaned.lastIndexOf('}');
+      if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+        const extracted = cleaned.substring(firstBrace, lastBrace + 1);
+        try {
+          return JSON.parse(extracted);
+        } catch (err2) {
+          // Normalize unescaped newlines within JSON string values
+          try {
+            const sanitized = extracted.replace(/[\r\n]+/g, ' ');
+            return JSON.parse(sanitized);
+          } catch (err3) {
+            // Field-level regex extraction fallback
+            const docMatch = cleaned.match(/"doctorResponse"\s*:\s*"([\s\S]*?)(?<!\\)"/);
+            if (docMatch) {
+              return {
+                doctorResponse: docMatch[1].replace(/\\"/g, '"').replace(/\\n/g, '\n'),
+                clinicalObservations: ['Clinical AI dialogue recorded'],
+                suggestedReplies: ['Tell me more', 'Thank you doctor', 'What should I do next?'],
+                riskLevel: cleaned.includes('"CRITICAL"') ? 'CRITICAL' : cleaned.includes('"HIGH') ? 'HIGH_SUBACUTE' : 'LOW',
+                recommendedPosture: 'explaining',
+                safetyGateTriggered: false
+              };
+            }
+          }
+        }
+      }
+      throw err1;
+    }
   }
 
   /**
@@ -623,7 +673,60 @@ CRITICAL CLINICAL RULES:
         ];
       }
     }
-    // Pattern B: Fluid retention, Swelling, Edema, Pillows, Weight gain
+    // Pattern B: 7-Day Kidney Recovery Trajectory, eGFR Rebound & Hydration (Dr. Sarah Chen's specialty)
+    else if (msg.includes('recovery') || msg.includes('trajectory') || msg.includes('7 day') || msg.includes('7-day') || msg.includes('hydrate') || msg.includes('hydration') || msg.includes('egfr') || msg.includes('filtration') || msg.includes('kidney function')) {
+      observations.push('Renal function trajectory inquiry / 7-day rebound protocol');
+      recommendedPosture = 'explaining';
+      riskLevel = 'LOW';
+
+      if (isChenSynth) {
+        doctorResponse = `Hello ${patientFirstName}. As your Preventive Nephrology specialist, I have mapped your 7-Day Renal Recovery Trajectory. Your baseline filtration was 64 mL/min and dipped to 52 mL/min due to NSAID-induced afferent constriction. Here is our daily roadmap:\n\n• Days 1–2: Strict cessation of all oral NSAIDs. Maintain steady fluid intake of 1.5–2.0 liters of water daily to optimize renal perfusion pressure.\n• Days 3–4: Tubular rest phase. Manage joint pain exclusively with topical Diclofenac 1% gel or Acetaminophen. Check for ankle edema each morning.\n• Days 5–7: Glomerular rebound phase. Most patients recover their baseline filtration rate within 7 days. We have scheduled your follow-up BMP lab draw on Day 7 to verify your eGFR rebound above 60 mL/min.\n\nAre you able to maintain the 1.5 to 2-liter hydration target comfortably?`;
+      } else if (isThorneSynth) {
+        doctorResponse = `${personaPrefix}${patientFirstName}, your 7-day renal recovery depends directly on maintaining optimal renal perfusion. By holding oral NSAIDs and continuing your Lisinopril with adequate hydration (1.5–2L daily), we relieve the hemodynamic stress on your nephrons. We will recheck your serum creatinine and eGFR on Day 7 alongside your telemetry. How is your daily fluid balance feeling?`;
+      } else {
+        doctorResponse = `${personaPrefix}${patientFirstName}, your kidneys are very resilient. By pausing oral NSAIDs, staying hydrated with 1.5–2 liters of water, and avoiding salt substitutes with potassium, your filtration is expected to recover steadily over the next 7 days. Your primary care team and Dr. Thorne have scheduled repeat labs at the end of the week. How can I support your routine today?`;
+      }
+
+      suggestedReplies = [
+        'I can easily drink 1.5 to 2 liters of water daily',
+        'What foods or salt substitutes should I avoid?',
+        'When should I get the Day 7 blood test done?',
+        'Will my eGFR go back above 60 mL/min?'
+      ];
+    }
+    // Pattern C: Pharmacogenomics, CYP2C9, Drug Clearance & Double Whammy (Dr. Maya Lin's specialty)
+    else if (msg.includes('cyp2c9') || msg.includes('genomic') || msg.includes('pharmacology') || msg.includes('clearance') || msg.includes('double whammy') || msg.includes('drug-drug') || msg.includes('interaction')) {
+      observations.push('Pharmacogenomic variant review / CYP2C9 intermediate metabolism');
+      recommendedPosture = 'explaining';
+      riskLevel = 'MODERATE';
+      safetyGateTriggered = true;
+      safetyDetails = 'CPIC Guideline: CYP2C9*1/*3 intermediate metabolizer profile reduces NSAID clearance by ~40%, increasing systemic accumulation risk.';
+
+      doctorResponse = `From a clinical pharmacology standpoint, ${patientFirstName}: Your genomic profile indicates a CYP2C9 *1/*3 intermediate metabolizer status. This means your liver processes non-steroidal anti-inflammatories (NSAIDs) 40% slower than normal, allowing oral pills like Advil or Ibuprofen to accumulate in your bloodstream. When combined with Lisinopril, which relaxes the exit vessel of the kidney, the NSAID constricts the entrance vessel—creating what pharmacologists call the 'double whammy' hemodynamic pinch. This is why topical Diclofenac gel is dramatically safer: it treats joint pain locally without hepatic accumulation or renal constriction. Would you like me to note this pharmacogenomic alert in your chart?`;
+
+      suggestedReplies = [
+        'Yes, please document this pharmacogenomic alert',
+        'Does CYP2C9 affect any of my other prescriptions?',
+        'Can I take Tylenol (Acetaminophen) instead?',
+        'Tell me more about how topical Diclofenac works'
+      ];
+    }
+    // Pattern D: Blood pressure telemetry, NT-proBNP & Cardiorenal Hemodynamics (Dr. Aris Thorne's specialty)
+    else if (msg.includes('blood pressure') || msg.includes('bp') || msg.includes('bnp') || msg.includes('nt-probnp') || msg.includes('telemetry') || msg.includes('heart failure') || msg.includes('hypertension') || msg.includes('cardio')) {
+      observations.push('Cardiorenal hemodynamic surveillance / telemetry inquiry');
+      recommendedPosture = 'explaining';
+
+      const recentBp = req.recentVitals?.bp || '138/86';
+      doctorResponse = `From a Cardiorenal perspective: Hello ${patientFirstName}. We have been tracking your home telemetry closely. Your blood pressure is currently ${recentBp} mmHg, and your NT-proBNP cardiac strain marker is 480 pg/mL (elevated from baseline 180 pg/mL). Our primary clinical goal is maintaining healthy renal perfusion without allowing fluid to back up into your lungs. Your Lisinopril 20mg and Furosemide work in tandem to keep this delicate balance intact. Have you noticed any dizziness when standing up, or any new fatigue?`;
+
+      suggestedReplies = [
+        'No dizziness, feeling relatively steady',
+        'I feel a bit lightheaded when standing quickly',
+        'What is my blood pressure target?',
+        'How often should I record my blood pressure?'
+      ];
+    }
+    // Pattern E: Fluid retention, Swelling, Edema, Pillows, Weight gain
     else if (msg.includes('pillow') || msg.includes('ankle') || msg.includes('swell') || msg.includes('puffy') || msg.includes('weight') || msg.includes('edema') || msg.includes('legs')) {
       observations.push('Fluid accumulation indicator / orthopnea reported');
       riskLevel = 'HIGH_SUBACUTE';
@@ -639,7 +742,21 @@ CRITICAL CLINICAL RULES:
         'I am not sure, let me check my pillbox'
       ];
     }
-    // Pattern C: Shortness of breath or fatigue
+    // Pattern F: Daily Mobility, Exercise, Walking, Garden, Lifestyle (Dr. Marcus Vance's specialty)
+    else if (msg.includes('walk') || msg.includes('garden') || msg.includes('exercise') || msg.includes('mobility') || msg.includes('stair') || msg.includes('active') || msg.includes('sleep') || msg.includes('routine')) {
+      observations.push('Patient lifestyle / daily functional mobility inquiry');
+      recommendedPosture = 'reassuring';
+
+      doctorResponse = `As your primary care advocate, ${patientFirstName}: Staying active and tending to your garden is wonderful for your heart, mental clarity, and joint flexibility! To protect your knees while safeguarding your kidneys: 1) Try gentle 15-minute walks on flat surfaces rather than pushing through pain. 2) Apply a warm compress before activity and ice afterward. 3) Use topical Diclofenac gel 15 minutes before walking if needed. 4) Elevate your legs for 20 minutes in the late afternoon to prevent fluid pooling. How does that daily routine sound to you?`;
+
+      suggestedReplies = [
+        'That daily routine sounds very manageable',
+        'Are there specific knee stretches I should do?',
+        'What should I do if my knees flare up?',
+        'Thank you, Dr. Vance!'
+      ];
+    }
+    // Pattern G: Shortness of breath or fatigue
     else if (msg.includes('breathe') || msg.includes('breath') || msg.includes('winded') || msg.includes('tired') || msg.includes('fatigue') || msg.includes('exhausted')) {
       observations.push('Exertional dyspnea / fatigue reported');
       riskLevel = 'MODERATE';
@@ -652,7 +769,7 @@ CRITICAL CLINICAL RULES:
         'My breathing is fine, just very tired'
       ];
     }
-    // Pattern D: Medication dosing, side effects, or questions
+    // Pattern H: Medication dosing, side effects, or general pharmacy questions
     else if (msg.includes('pill') || msg.includes('medicine') || msg.includes('dose') || msg.includes('side effect') || msg.includes('lisinopril') || msg.includes('furosemide') || msg.includes('metformin')) {
       observations.push('Pharmacotherapy inquiry / medication management');
       recommendedPosture = 'explaining';
@@ -664,7 +781,7 @@ CRITICAL CLINICAL RULES:
         'Everything is going fine with my pills'
       ];
     }
-    // Pattern E: Positive check-in ("I feel good", "Better", "Great")
+    // Pattern I: Positive check-in ("I feel good", "Better", "Great")
     else if (msg.includes('good') || msg.includes('better') || msg.includes('fine') || msg.includes('great') || msg.includes('well') || msg.includes('ok')) {
       observations.push('Patient self-reports clinical stability / improvement');
       recommendedPosture = 'reassuring';
@@ -675,16 +792,18 @@ CRITICAL CLINICAL RULES:
         'I am all set for today, thank you!'
       ];
     }
-    // Pattern F: Default empathetic clinical response
+    // Pattern J: Grounded Clinical Synthesis for any other question
     else {
-      observations.push('General clinical dialogue / symptom check-in');
-      recommendedPosture = 'listening';
-      doctorResponse = `I'm listening carefully, ${patientFirstName}. As ${req.personaName || 'your Virtual Specialist'}, I'm here to help you navigate your health day-to-day alongside ${physicianName}. Could you tell me a little more about how you're feeling right now, or if any particular symptom has been on your mind?`;
+      observations.push('Personalized clinical specialist guidance synthesized');
+      recommendedPosture = 'explaining';
+      
+      const citedDomain = isChenSynth ? 'Preventive Nephrology' : isThorneSynth ? 'Cardiorenal Medicine' : isLinSynth ? 'Precision Pharmacotherapy' : 'Primary Care';
+      doctorResponse = `${personaPrefix}Thank you for your question, ${patientFirstName}. In ${citedDomain}, our focus is aligning your day-to-day comfort with the long-term preservation of your vital organs. Regarding your query ("${req.userMessage.substring(0, 80)}"), your health plan is fully coordinated with ${physicianName}. To ensure complete precision: could you share how long you have noticed this, or if any particular daily activity makes it better or worse?`;
       suggestedReplies = [
-        'I have a question about my medicine',
-        'My knee has been bothering me',
-        'I feel about the same as usual',
-        'How can I check my latest test results?'
+        'It has been going on for a few days',
+        'It mostly happens in the morning',
+        'I wanted to check what the guidelines recommend',
+        'Can we review my current medication list?'
       ];
     }
 

@@ -512,9 +512,20 @@ router.post('/virtual-doctor/session', (req: Request, res: Response) => {
 
 // POST /api/workflow/virtual-doctor/turn (Record Turn with NegEx & Longitudinal Safety Gate)
 router.post('/virtual-doctor/turn', (req: Request, res: Response) => {
-  const { sessionId, questionVersionId, doctorQuestionScript, doctorPosture, patientResponseRaw } = req.body;
+  const { sessionId, questionVersionId, doctorQuestionScript, doctorPosture, patientResponseRaw, patientId, personaId } = req.body;
   if (!sessionId || !patientResponseRaw) {
     return res.status(400).json({ success: false, error: 'sessionId and patientResponseRaw are required' });
+  }
+
+  // Ensure session exists or auto-initialize
+  const existingSession = virtualDoctorSessionService.getSession(sessionId);
+  if (!existingSession) {
+    virtualDoctorSessionService.createSession({
+      sessionId,
+      patientId: patientId || 'patient-ev-68',
+      personaId: personaId || 'dr-aris-thorne',
+      patientStateVersion: 'ps-v2026-08-kdigo-3b'
+    });
   }
 
   const result = virtualDoctorSessionService.recordDialogueTurn({

@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { VirtualDoctorPersona, DoctorPostureMode } from '../types/health';
 import { computerVisionEngine, VisionObservation, PatientAffect, PatientGesture } from '../engine/computerVisionEngine';
+import { getWordVisemeAtProgress } from './DigitalHuman/LipSyncController';
 
 export interface ThreeDSpecialistProps {
   persona: VirtualDoctorPersona;
@@ -194,17 +195,13 @@ export const ThreeDSpecialistCanvas: React.FC<ThreeDSpecialistProps> = ({
     };
   }, [showVisionFeed, isPlaying, onPause, onVisionObservation]);
 
-  // Viseme mapping from active spoken word
+  // Viseme mapping from active spoken word using multi-syllable clinical lexicon
   const activeViseme = useMemo(() => {
     if (!activeWord?.trim()) return 'REST';
-    const c = activeWord.toLowerCase().replace(/[^a-z]/g, '');
-    if (!c) return 'REST';
-    if (/^[mbp]/.test(c) || /(mb|mp)$/.test(c)) return 'MBP';
-    if (/^[fv]/.test(c) || c.includes('ph')) return 'FV';
-    if (/(oo|ou|ow|aw|[ou])/.test(c)) return 'OH';
-    if (/(ee|ea|ai|ay|[ie])/.test(c)) return 'EE';
-    if (/^[ldtnsz]/.test(c) || c.includes('th') || c.includes('sh')) return 'LDT';
-    return 'REST';
+    const clean = activeWord.trim();
+    const v = getWordVisemeAtProgress(clean, 0.5);
+    if (v === 'SIL') return 'REST';
+    return v;
   }, [activeWord]);
 
   // Waveform visualization

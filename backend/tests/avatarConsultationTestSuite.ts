@@ -5,7 +5,13 @@
  */
 
 import { getAvatarBehavior } from '../../frontend/src/components/DigitalHuman/AvatarStateController';
-import { classifyWordToViseme, getVisemeMorphWeights } from '../../frontend/src/components/DigitalHuman/LipSyncController';
+import { 
+  classifyWordToViseme, 
+  getVisemeMorphWeights,
+  decomposeWordToVisemes,
+  getWordVisemeAtProgress,
+  lookupClinicalVocabulary 
+} from '../../frontend/src/components/DigitalHuman/LipSyncController';
 import { virtualDoctorScreeningEngine } from '../../frontend/src/engine/virtualDoctorScreeningEngine';
 import { AvatarState, DoctorPostureMode, postureToAvatarState, avatarStateToPosture } from '../../frontend/src/types/health';
 import { DOCTOR_STYLE_MAP } from '../../frontend/src/components/DigitalHuman/Specialist3DScene';
@@ -72,12 +78,55 @@ export function runAvatarConsultationTestSuite() {
 
   const mbpWeights = getVisemeMorphWeights('MBP', 1.0);
   assert('MBP viseme compresses lips (jawOpen near 0)', mbpWeights.jawOpen < 0.1 && mbpWeights.mouthOpen === 0);
+  assert('MBP viseme drives 3D bilabial morph target (viseme_mbp > 0.8)', (mbpWeights.viseme_mbp || 0) > 0.8);
 
   const aaWeights = getVisemeMorphWeights('AA', 1.0);
   assert('AA viseme articulates wide jaw opening', aaWeights.jawOpen > 0.6 && aaWeights.viseme_aa > 0.8);
 
   const eeWeights = getVisemeMorphWeights('EE', 1.0);
   assert('EE viseme spreads mouth horizontally', eeWeights.mouthSpread > 1.15 && eeWeights.viseme_ee > 0.7);
+
+  const ldtWeights = getVisemeMorphWeights('LDT', 1.0);
+  assert('LDT viseme drives 3D dental/lingual morph target (viseme_th > 0.7)', (ldtWeights.viseme_th || 0) > 0.7);
+
+  // Multi-syllable clinical vocabulary decomposition
+  console.log('\n3b. Testing Clinical Vocabulary & Syllable Lip Sync Progression:');
+  const lisinoprilVisemes = decomposeWordToVisemes('Lisinopril');
+  assert(
+    'Word "Lisinopril" produces multi-syllable viseme sequence (LDT -> EE -> MBP -> LDT)',
+    lisinoprilVisemes.length >= 4 && lisinoprilVisemes[0] === 'LDT' && lisinoprilVisemes.includes('MBP')
+  );
+
+  const potassiumVisemes = decomposeWordToVisemes('Potassium');
+  assert(
+    'Word "Potassium" begins with bilabial MBP and transitions through open vowels',
+    potassiumVisemes.length >= 4 && potassiumVisemes[0] === 'MBP' && potassiumVisemes[potassiumVisemes.length - 1] === 'MBP'
+  );
+
+  const furosemideVisemes = decomposeWordToVisemes('Furosemide');
+  assert(
+    'Word "Furosemide" begins with labiodental FV',
+    furosemideVisemes.length >= 4 && furosemideVisemes[0] === 'FV'
+  );
+
+  // Progressive syllable lookup at 0%, 50%, 95%
+  const startViseme = getWordVisemeAtProgress('Potassium', 0.05);
+  const midViseme = getWordVisemeAtProgress('Potassium', 0.50);
+  const endViseme = getWordVisemeAtProgress('Potassium', 0.95);
+  assert('Potassium progresses from MBP at start to internal vowel and MBP at end', startViseme === 'MBP' && endViseme === 'MBP');
+
+  // Clinical glossary understanding lookup
+  const vocabLisinopril = lookupClinicalVocabulary('Lisinopril');
+  assert(
+    'Clinical vocabulary glossary provides patient-friendly explanation & phonetics for Lisinopril',
+    !!vocabLisinopril && vocabLisinopril.term === 'Lisinopril' && vocabLisinopril.phonetic.includes('lye-SIN') && !!vocabLisinopril.patientExplanation
+  );
+
+  const vocabEgfr = lookupClinicalVocabulary('eGFR');
+  assert(
+    'Clinical vocabulary glossary resolves eGFR biomarker details',
+    !!vocabEgfr && vocabEgfr.category === 'Biomarker'
+  );
 
   // 4. BIDIRECTIONAL STATE CONVERSIONS
   console.log('\n4. Testing State <-> Posture Bidirectional Mapping:');

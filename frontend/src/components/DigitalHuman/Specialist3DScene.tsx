@@ -347,6 +347,12 @@ export const SpecialistDoctorModel: React.FC<SpecialistModelProps> = ({
     if (morphWeights.viseme_fv !== undefined) {
       driveMorph(headMesh, ['viseme_FF', 'viseme_fv'], morphWeights.viseme_fv, 0.35);
     }
+    if (morphWeights.viseme_th !== undefined) {
+      driveMorph(headMesh, ['viseme_TH', 'viseme_th', 'viseme_DD', 'viseme_dd', 'viseme_SS', 'viseme_ss', 'viseme_nn'], morphWeights.viseme_th, 0.35);
+    }
+    if (morphWeights.mouthPucker !== undefined) {
+      driveMorph(headMesh, ['mouthPucker', 'mouthFunnel'], morphWeights.mouthPucker, 0.35);
+    }
 
     // Clinical Expressions
     driveMorph(headMesh, ['mouthSmileLeft', 'mouthSmileRight', 'mouthSmile'], expressionWeights.mouthSmile, 0.15);
